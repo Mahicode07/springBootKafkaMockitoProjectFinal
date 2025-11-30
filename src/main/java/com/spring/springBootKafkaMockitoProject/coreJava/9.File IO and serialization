@@ -1,0 +1,147 @@
+FileInputStream in Java is the most basic file input stream class that is designed to read bytes from a file. I
+n simple words, it reads data from a text file in the form sequence of bytes.
+FileInputStream class is derived from InputStream that is abstract superclass of FileInputStream.
+It implements Closeable and AutoCloseable interfaces.
+
+FileInputStream fis = new FileInputStream("myfile.txt");
+chars = fis.read();
+
+A FileOutputStream in Java is a concrete subclass of OutputStream that provides methods for writing
+ data to a file or to a FileDescriptor.It stores data in the form of individual bytes.
+
+ We can write both byte-oriented as well as character-oriented data via FileOutputStream class.
+ But, for character-oriented data, it is recommended to use FileWriter than FileOutputStream.
+ FileOutputStream fos = new FileOutputStream("fileout.txt");
+ fos.write(ch); // write ch into file.
+
+ BufferedReader in Java->
+ is a buffering input character stream that reads text from the buffer rather
+ than directly underlying input stream or other text sources.
+ It adds the buffering capability to the underlying input character stream so
+ that there is no need to access the underlying file system for each read and write operation.
+
+ Java BufferedReader is good for two important things:
+ 1. It warps another Reader and adds a buffer that will read the text much faster and improves performance by buffering input.
+ For example, InputStreamReader can be wrapped by BufferedReader to buffer input data taken from the underlying file.
+ 2. It provides a readLine() method to read a string of characters, arrays, and text lines.
+
+ BufferedReader br = new BufferedReader(Reader inputStream);
+
+ BufferedWriter in Java->
+ is a Writer that buffers the stream of characters before writing them to an underlying output stream.
+ It adds the buffering capability to the underlying output character stream,
+ so that there is no need to access the underlying file system for each read and write operation.
+ When a program writes to a BufferedWriter, the text is stored in the buffer.
+ When the buffer is filled up or explicitly flushed, the text is moved to the underlying output stream
+ that makes the writes much faster and improves the performance.
+ BufferedWriter bw = new BufferedWriter(Writer out);
+---------------------------------------------------------
+
+Serialization in Java->
+is the process of writing the state of an object to a byte stream. In other words, it is the process by which we can
+store (or save) the state of an object by converting it to a byte stream.
+Once Java object state is converted into byte stream, it can be saved or stored into a hard disk, socket, file, or send over a network.
+The class whose objects need to be serialized must implement the Serializable interface of java.io package.
+Then we pass objects to ObjectOutputStream, which is connected to a file, and store objects to a file.
+
+Serializable Interface in Java->
+A serializable interface is a marker interface that defines no members
+ If a class is serializable then all of its subclasses are also serializable.
+ By default, String class and all the wrapper classes implement Serializable interface.
+
+Deserialization in Java->
+The process of converting byte stream (data) generated through serialization to object is called deserialization in java.
+In simple words, the reverse operation of serialization is called deserialization.
+Once the state of objects is stored in a file, they can be retrieved by reading back objects from
+the file and used as and when needed.
+
+Both serialization and deserialization process is platform-independent.
+So, we can serialize an object in a platform and deserialize it in different platforms.
+
+How to Perform Object Serialization and Deserialization in Java?->
+first, connect objfile.txt file to FileOutputStream. It will write data into objfile.txt file.
+FileOutputStream fos = new FileOutputStream("objfile.txt");
+2. Then, connect FileOutputStream to ObjectOutputStream by code below:
+ObjectOutputStream oos = new ObjectOutputStream(fos);
+Now, call writeObject() method of ObjectOutputStream to write objects to FileOutputStream,
+which stores them into objfile.txt file.
+public class SerializationExample {
+    public static void main(String[] args) {
+        Person person = new Person("John Doe", 30);
+
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("person.ser"))) {
+            out.writeObject(person); // Serialize the person object
+            System.out.println("Object serialized to person.ser");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+deserlization->
+public class DeserializationExample {
+    public static void main(String[] args) {
+        // Attempt to deserialize the object from file
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("person.ser"))) {
+            Person person = (Person) in.readObject(); // Deserialize the object
+
+            // Print the deserialized object
+            System.out.println("Deserialized Object: " + person);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+Any static and transient variables declared inside a class cannot be serialized.
+These variables cannot be stored in a file. Static is the part of class, not object.
+
+Non-serializable Data Fields->
+Suppose a class that implements Serializable interface also contains non-serializable object data fields.
+Can non-serializable data fields be serialized?
+The answer is no. To enable the object not to be serialized, declare these data fields
+with transient keyword to tell JVM to ignore them when writing objects to the byte stream.
+public class A implements Serializable {
+  private int x;
+  private static float y;
+  private transient B b = new B();
+}
+
+class B {    } // B is not serializable.
+
+ If b is not marked transient, a java.io.NotSerializableException would occur.
+
+Java Serialization with Array or Collection->
+ An array or collection is serializable if all its elements are serializable.
+ If any element is not serializable, the serialization process will be failed.
+
+Externalization in Java->
+Externalization in Java is a process that improves the performance of serialization
+and deserialization mechanisms by complete control over what data fields are serialized and deserialized.
+externalization is used to customize serialization and deserialization processes.
+Java supports the externalization process by the externalizable interface. Implementing the Externalizable
+interface by a class provides more control in reading and writing objects from/to a stream.
+The main advantage of externalization over the serialization process is that everything is taken care of by the programmer.
+JVM has no control over it. The complete serialization control goes to the application.
+
+Externalizable Interface in Java->
+Externalizable interface that extends Serializable interface
+package java.io;
+public interface Externalizable extends Serializable
+{
+   public void writeExternal(ObjectOutput out) throws IOException;
+   public void readExternal(ObjectInput in) throws IOException, java.lang.ClassNotFoundException;
+}
+
+Difference between Serializable and Externalizable in Java->
+1. Serializable is a marker interface whereas, Externalizable is not a marker interface.
+It provides two methods: writeExternal() and readExternal().
+2.default serialization process/custom serialization process
+3.care of by JVM and the programmer doesn’t have any control/only programmer have control
+4.Externalizable interface is generally used when we want to store the output data in custom format that
+is different from java default serialization format like csv, database, flat file, XML, etc.
+5.Externalizable interface can improve the performance of serialization process if used correctly.
+
+
+
+

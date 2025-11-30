@@ -1,0 +1,91 @@
+1. Function<T, R>
+
+Takes one argument, returns a result.
+Function<String, Integer> lengthFunc = s -> s.length();
+System.out.println(lengthFunc.apply("hello")); // 5
+
+2. BiFunction<T, U, R>
+Takes two arguments, returns a result.
+BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
+System.out.println(add.apply(3, 4)); // 7
+
+3. Predicate<T>
+
+Takes one argument, returns a boolean.
+
+Predicate<String> isEmpty = s -> s.isEmpty();
+System.out.println(isEmpty.test(""));   // true
+System.out.println(isEmpty.test("hi")); // false
+
+4. BiPredicate<T, U>
+Takes two arguments, returns a boolean.
+BiPredicate<Integer, Integer> isGreater = (a, b) -> a > b;
+System.out.println(isGreater.test(5, 3)); // true
+System.out.println(isGreater.test(2, 4)); // false
+
+5. Consumer<T>
+Takes one argument, returns no result.
+Consumer<String> print = s -> System.out.println(s);
+print.accept("Hello"); // prints "Hello"
+
+6. BiConsumer<T, U>
+Takes two arguments, returns no result.
+BiConsumer<String, Integer> printMultiple = (s, n) -> {
+    for (int i = 0; i < n; i++) {
+        System.out.println(s);
+    }
+};
+printMultiple.accept("Hi", 3); // prints "Hi" 3 times
+
+7. Supplier<T>
+Takes no arguments, returns a result.
+Supplier<Double> randomValue = () -> Math.random();
+System.out.println(randomValue.get()); // prints a random number
+
+8. UnaryOperator<T>
+Takes one argument, returns a result of the same type.
+UnaryOperator<Integer> square = x -> x * x;
+System.out.println(square.apply(5)); // 25
+
+9. BinaryOperator<T>
+Takes two arguments of the same type, returns a result of the same type.
+BinaryOperator<Integer> multiply = (a, b) -> a * b;
+System.out.println(multiply.apply(3, 4)); // 12
+
+10. IntFunction<R>, LongFunction<R>, DoubleFunction<R>
+Specialized versions of Function for primitive types.
+IntFunction<String> intToString = i -> "Number: " + i;
+System.out.println(intToString.apply(5)); // "Number: 5"
+
+11. ToIntFunction<T>, ToLongFunction<T>, ToDoubleFunction<T>
+Specialized versions of Function that return primitive types.
+ToIntFunction<String> stringLength = s -> s.length();
+System.out.println(stringLength.applyAsInt("hello")); // 5
+
+give combine example where u used function predicate consumer and supplier in one program
+import java.util.function.*;
+import java.util.*;
+public class FunctionalInterfacesExample {
+    public static void main(String[] args) {
+        // Supplier to provide a list of strings
+        Supplier<List<String>> stringSupplier = () -> Arrays.asList("apple", "banana", "cherry", "date");
+
+        // Function to convert each string to its uppercase form
+        Function<String, String> toUpperCase = String::toUpperCase;
+
+        // Predicate to filter strings that start with 'A'
+        Predicate<String> startsWithA = s -> s.startsWith("A");
+
+        // Consumer to print each string
+        Consumer<String> printString = System.out::println;
+
+        // Get the list of strings from the supplier
+        List<String> strings = stringSupplier.get();
+
+        // Process the list: convert to uppercase, filter, and print
+        strings.stream()
+               .map(toUpperCase)          // Convert to uppercase
+               .filter(startsWithA)       // Filter strings starting with 'A'
+               .forEach(printString);     // Print each string
+    }
+}

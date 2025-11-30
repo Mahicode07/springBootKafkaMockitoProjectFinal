@@ -1,0 +1,34 @@
+why Rate limiter is used?
+// A rate limiter is used to control the rate of incoming requests to a system or service.
+// It helps prevent abuse, ensures fair usage, and protects the system from being overwhelmed
+by too many requests in a short period of time.
+// Rate limiters are commonly used in APIs, web services
+//, and distributed systems to enforce usage policies and maintain system stability.
+
+// Types of Rate Limiter->
+// Fixed Window: Limits the number of requests in a fixed time window (e.g., 100 requests per minute).
+// Sliding Window: Similar to fixed window but allows for a more granular control by sliding the window over time.
+// Token Bucket: Allows a certain number of requests to be made in bursts while maintaining an average rate over time.
+// Leaky Bucket: Similar to token bucket but processes requests at a fixed rate, allowing for smooth traffic flow.
+sliding window counter
+// A sliding window counter is a type of rate limiting algorithm that allows for more granular control over
+// the rate of incoming requests. It works by maintaining a count of requests within a moving time window.
+// As time progresses, the window "slides" forward, and old requests that fall outside the window are discarded.
+// This allows for a more flexible and dynamic rate limiting approach compared to fixed window algorithms
+
+Design->
+client makes a request to the server
+rate limiter in between checks if the request is allowed based on predefined limits
+it connected with redis to store the count of requests and timestamps and also connect with config server to get the configuration of rate limiter
+which can be cached in local memory for faster access
+if the request is within the limit, it is forwarded to the server for processing
+if the request exceeds the limit, it is rejected with an appropriate response (e.g., HTTP 429 Too Many Requests)
+the rate limiter updates the count of requests and timestamps in redis for future reference
+the server processes the request and sends back the response to the client
+the client receives the response and continues its operations
+
+atomicity in redis can be achieved using transactions or Lua scripts to ensure that the operations
+of checking and updating the request count are performed atomically
+//
+========================================================================
+Data structures to be used->

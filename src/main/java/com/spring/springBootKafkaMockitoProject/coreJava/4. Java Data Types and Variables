@@ -1,0 +1,198 @@
+Primitive data types (also called intrinsic or built-in types)
+Non-primitive data types (also called derived or reference data type)
+
+Primitive data types in Java are those data types whose variables can store only one value at a time.
+We cannot store multiple values of the same type.
+These data types are pre-defined in Java. They are named by a keyword.
+
+Every primitive data type has default values defined in java. When the programmer does not declare any value to the variables,
+the JVM will assign default values during the object creation.
+
+The default value of int is 0 (zero).
+The default value of the byte is 0.
+
+zero is considered a positive number.
+float data type is used to represent the decimal number, which can hold 6 to 7 decimal digits.
+double data type is also used to represent decimal numbers up to 15 decimal digits accurately
+
+Boolean data type takes zero bytes of memory space because
+boolean data type in Java is implemented by Sun Micro System using the concept of a flip-flop.
+
+Difference between Primitive and Non-primitive Data types in Java
+    1. Primitive data types are predefined in Java, whereas non primitive data types are created by programmers. They are not predefined in Java.
+    2. In primitive data type, variables can store only one value at a time.
+    On the other hand, in non-primitive data type, we can store multiple values either the same type or different type or both.
+    3. All the data for primitive type variables are stored on the stack, whereas, for reference types, the stack holds a pointer to the object on the heap.
+    4. In Java, primitive types begin with lowercase letters. Examples include int, double, float, boolean, char, short, long, and byte.
+    On the other hand, non-primitive types typically begin with an uppercase letter. Examples include String, Integer, Double, ArrayList, Car, etc.
+    5. The size of each primitive type is fixed and predefined.
+    For instance, an int is always 32 bits, a double is always 64 bits, and so forth. On the other hand,
+     references to non-primitive objects are of the same size.
+
+Memory Allocation of Primitive, Non-primitive Data Types
+    ➲ In Java, all data type for primitive type variables is stored on the stack.
+    ➲ For reference data types, the stack holds a pointer to the object on the heap.
+    When setting a reference type variable equal to another reference type variable, a copy of only the pointer is made.
+    ➲ Certain object types cannot be manipulated on the heap.
+
+Variables in Java
+    A variable in Java is a container that holds the value during the execution of Java program.
+    In other words, a variable is the name of the memory location reserved for storing value.
+
+    Static: When the class is loaded into the memory, the memory is determined for the variables. Such variables are known as static variables or class variables in java.
+            Static variable will get the memory only once. If anyone changes the value of the static variable using the class name,
+            it will replace the previous value and display the changed value. This is because it is constant for every object created.
+            All the static variables are stored in PermGen space of heap memory.
+
+    local:A variable that is declared and used inside the body of methods, constructors, or blocks is called local variable in Java.
+     It is called so because local variables are not available for use from outside.
+          We must assign a local variable with a value at the time of creating.
+          If you use a local variable without initializing a value, you will get a compile-time error like “variable x not have been initialized”
+          We can not use access modifiers with local variables.
+          A local variable cannot be static.only final keyword is permitted with local variables in the java program
+
+          package localVariables;
+          public class Student
+          {
+          // Declaration of constructor.
+             Student()
+             {
+               String nCollege = "PIET"; // Declaration and initialization of local variable.
+               System.out.println("Name of college: " +nCollege); // We can access local variable inside the constructor.
+             }
+          // Declaration of instance method.
+            void subMarks()
+            {
+           // Declaration and initialization of local variables.
+              int cMarks = 90;
+              int pMarks = 85;
+              int mMarks = 99;
+              int totalMarks = cMarks + pMarks + mMarks;
+              System.out.println("Total marks in PCM: " +totalMarks);
+            }
+          public static void main(String[] args)
+          {
+          // Create an object of class.
+             Student s = new Student();
+          // This statement will produce compile-time error because local variable cannot be accessed from the outside.
+          // System.out.println("Name of college: " +nCollege);
+
+          Local variables are stored in stack memory
+
+              s.subMarks(); // Calling instance method.
+           // System.out.println("Total marks in PCM: " + totalMarks); // Compile-time error.
+             }
+          }
+
+          another program->
+
+          package localVariables;
+          public class Test
+          {
+           void m1() // Instance method.
+           {
+          // This statement will generate compile-time error
+          // because public is an access modifier and we cannot declare access modifiers with local variables.
+             public int x = 20;
+           }
+          public static void main(String[] args)
+          {
+             Test t = new Test(); // Creating object of class Test.
+             t.m1(); // Calling m1 method.
+            }
+          }
+
+    Instance Variables in Java->
+         A variable that is declared inside the class but outside the body of the methods, constructors, or any blocks is called instance variable in Java.
+         They are available for the entire class methods, constructors, and blocks.
+         It is also called non-static variable because it is not declared as static.
+         Instance variables are created when an object is created using the keyword ‘new’ and destroyed when the object is destroyed.
+         We can also use access modifiers with instance variables. If we do not specify any modifiers,
+         the default access modifiers will be used which can be accessed in the same package only
+         It is not necessary to initialize the instance variable
+
+         package instanceVariables;
+          public class Test
+          {
+         // Declare instance variables inside the class, not inside the method, constructor, or block.
+              int a = 30;
+              int b = 40;
+          // This method is called Static method.
+             public static void main(String[] args) // main method.
+             {
+            // This area is called static area. So, you can access instance variables by using an object reference variable.
+            // Creating an object of the class Test.
+               Test t = new Test();
+               System.out.println(t.a); // Accessing instance variable using object reference variable 't'.
+               System.out.println(t.b);
+             }
+         // Declaration of instance method.
+            void m1() // This method is called user-defined method.
+            {
+            // This area is called instance Area. So, we can access directly instance variables without creating any object.
+               System.out.println(a); //Direct access.
+               System.out.println(b); //Direct access.
+            }
+         }
+
+         Each instance (object) of a class has its own copy of each variable.
+         In other words, instance variables have their own separate copy of instance variable.
+         If one object changes the value of a variable, it does not affect the value of other instance variables.
+         All instance variables are stored in PermGen space (Permanent Generation space) of heap memory.
+         If the variables are primitive type, then variable and its value both are stored as a name-value pair in the permgen.
+         But if the variable is user-defined (object), then its reference is stored in PermGen but actually, it is stored in Young/old generation of heap memory
+
+scope of variables->
+    is a location (or region) of the program where the variable is visible to a program and can be accessible.
+    When we create a local variable inside a method, constructor, or block, its scope only remains within the method, block, or constructor.
+    It is visible only within the method, constructor, or block.
+    When we define an instance variable inside a class, its scope is within the class.
+     It is visible inside all the methods, constructors, and from the beginning of its program block to the end of program block in the class
+    Within static methods and different classes, instance variables should be called using an object reference variable
+    package variablePrograms;
+    public class ScopeTest
+    {
+      int num = 20; // instance variable
+      void m1()
+      {
+       int num = 30; // local variable
+       System.out.println("Number: " +num);
+       System.out.println("Number: " +this.num);
+       }
+    public static void main(String[] args)
+    {
+      ScopeTest st = new ScopeTest();
+       st.m1();
+     }
+    }
+    Output:
+           Number: 30
+           Number: 20
+           The local variable num within m1() method hides instance variable num.
+           Therefore, when we will call m1() method from the main() method, the output will be displayed num equal to 20,
+           even though there is also a num instance variable that equals to 30. In this case, we can use this.num to call the instance variable.
+           It will print the output 20.
+
+    When we define a variable with a static keyword inside the class, its scope is within the class.
+    That is, the scope of a static variable is within the class.
+
+Constants in Java->
+    A value which is fixed and does not change during the execution of a program is called constants in Java. In other words,
+    Java constants are fixed (known as immutable) data values that cannot be changed.
+
+    Java supports various types of constants. They are as follows:
+
+    Integer constants-numeric
+    Real constants-numeric
+    Character constants-non-numeric
+    String constants-non-numeric
+
+    In Java, we usually declare a constant with the static and final modifiers, which indicates that the value of the variable cannot be changed once it is initialized.
+    We must declare constants in uppercase letters to make them easily distinguishable from other variables.
+    Initialize the constant when you declare it. Since it’s declared with the final keyword,
+    you must assign its value at the time of the declaration.
+    If you define a constant with static and final keyword, you can also initialize it in the static initialization block.
+
+
+
+

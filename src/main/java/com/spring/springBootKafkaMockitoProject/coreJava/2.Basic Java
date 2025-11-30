@@ -1,0 +1,32 @@
+Tokens in Java->
+    A class is a container that contains a set of declaration statements and methods containing executable statements.
+    A statement consists of variables, constants, operators, keywords, comments, identifiers, punctuators, etc.
+    When the program is run, comments are stripped and executable statements are executed.
+
+    A translation unit is a sequence of tokens: symbols, numbers, and words
+
+    Tokens are the various elements in the Java program that are identified by Java compiler.
+    A token is the smallest individual element (unit) in a program that is meaningful to the compiler.
+
+    final double p = 3.14   which is made up of six tokens: “final”, “double”, “p”, “=”, “3.14”, and “;”.
+
+    Java language contains five types of tokens that are as follows:
+    Reserved Keywords->class, public, static, if, else,
+    Identifiers->names given to elements, such as variables, methods, classes, and interfaces
+    Literals->constants or fixed values in the program that don’t change during the execution of the program,integer, floating-point, character, string, and boolean literals.
+    Operators-> Examples of operators are arithmetic operators (+, -, *, /), comparison operators (<, >, ==, !=), logical operators (&&, ||), etc.
+    Separators->characters that separate elements within the program code
+
+    The process of breaking down the source code into valid tokens is known as tokenization.
+    Java language has currently reserved 50 words as keywords and these keywords are called reserved keywords.
+    Data Type,Access Modifiers,Control Statement,Object and Classes
+
+Rules for Naming Identifiers in Java
+    It must start with a letter, an underscore (_), or a dollar sign ($). It cannot begin with a digit
+    It cannot be a reserved word
+    It cannot be true, false, or null
+    It can be of any length
+
+Escape Sequence->
+    System.out.println("He said "Java is fun unlimited""); compile time error
+    ystem.out.println("He said \"Java is fun unlimited\""); o/p->He said "Java is fun unlimited"

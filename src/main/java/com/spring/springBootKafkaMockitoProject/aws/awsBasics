@@ -1,0 +1,30 @@
+Explain the difference between IaaS, PaaS, and SaaS.
+Infrastructure as a Service (IaaS) provides virtualized computing resources over the internet. Users can rent IT infrastructure—such as servers,
+storage, and networking—on a pay-as-you-go basis. AWS EC2 is a prime example of IaaS
+Platform as a Service (PaaS) offers a framework for developers to build, deploy, and manage applications without worrying about the underlying infrastructure
+Elastic Beanstalk is an example
+Software as a Service (SaaS)
+Software as a Service (SaaS) delivers software applications over the internet, eliminating the need for installations and maintenance on user devices
+===============================================================================================================================================================
+What is EC2?
+It allows users to run virtual machines, known as instances, on-demand, enabling businesses to scale their computing resources up or down based on demand.
+EC2 instances can be configured with various operating systems, including different distributions of Linux and Windows.
+Key features of EC2 include:
+Scalability: Users can launch multiple instances simultaneously and scale down or up as needed.
+Flexibility: EC2 supports a variety of instance types optimized for different use cases, including compute, memory, and storage-intensive applications.
+Pay-as-you-go pricing: Users are billed based on the actual usage of resources, which helps in managing costs effectively.
+Integration: EC2 integrates with other AWS services, such as Amazon RDS for database management and Amazon S3 for storage.
+===============================================================================================================================================================
+What is S3 and what are its main features?
+Amazon Simple Storage Service (S3) is an object storage service
+S3 is designed to store and retrieve any amount of data from anywhere on the web, making it a popular choice for backup, archiving,
+big data analytics, and static website hosting.
+Key features of S3 include:
+Security: S3 provides multiple layers of security, including bucket policies, IAM roles, and server-side encryption.
+Durability and availability: S3 is designed for 99.999999999% (11 nines) durability, ensuring data is reliably stored and accessible.
+Data Management: S3 offers features like versioning, lifecycle policies, and event notifications, allowing users to manage their data effectively.
+===============================================================================================================================================================
+What is the purpose of an IAM role?
+key component of AWS security and governance. An IAM role is an AWS identity that has specific permissions defined for various AWS services.
+Unlike IAM users, roles do not have permanent credentials (such as a username and password). Instead, they are assumed by trusted entities such as AWS services,
+applications, or IAM users.

@@ -1,0 +1,244 @@
+Java is an object-oriented and platform-independent language.
+
+Features of Java Programming Language
+    1.Simple: First of all, several difficult, clumsy, and confusing features of other programming languages such as C and C++ had been omitted in Java
+    For example, the feature of pointers that is very difficult for both learners and programmers
+    Why Pointer feature is eliminated from Java?->1. The concept of Pointer leads to confusion for a programmer.
+                                                  2. Pointer may break a program easily. For example, when we add two pointers, the program can crash immediately.
+                                                  3. The use of Pointer feature can break security because harmful programs like virus and other hacking programs can be developed using pointer.
+    2.Object-oriented: object has properties and shows certain behavior (action).A class defines the name of a group given to several objects having the same properties and behaviors (actions).
+    The class flower does not exist physically but its objects such as Lily, Rose, Jasmine exist physically in the world.
+    3. Distributed: Java is designed to support the distributed environment of the Internet because it handles TCP/IP and UDP protocols
+    Java also supports Remote Method Invocation (RMI) feature that enable a program to distribute methods across a network.
+    4. Robust: The meaning of Robust is “strong”. This means that Java programs are strong because they do not crash easily like C or C++ programs. There are mainly three reasons to be robust.
+    exception handling, robust memory management feature-> because we do not need to allocate or deallocate the memory in Java. Everything is taken care of by JVM only. For example, JVM allots the required memory by a Java program
+    Third reason is that Java supports an error checking feature at various stages: Early checking at compile-time and dynamic checking at run time.
+    5. Secure:
+    6. System independence (Architecture neutral): Java compiler compiles the source code into byte code that is independent of any machine architecture
+    In other words, the byte code of Java program is not machine-dependent. It can be run on any system machine with any processor and any operating system that implements Java Virtual Machine.
+    write once; run anywhere, any time, forever
+    7. Portability: If a program gives the same result on every system machine, that program is called portable. Java programs are portable.
+    8. Interpreted: During compilation, Java compiler converts the source code of the program into byte code. This byte code can be executed on any system machine with the help of Java interpreter in JVM.
+    If we take any other programming language, only a compiler or an interpreter is used to run programs. But in Java, we use both compiler and interpreter for the execution of the program.
+    9. High Performance:The speed of interpreter inside JVM to execute a program is slow. To overcome this problem, JavaSoft team has introduced JIT (Just In Time) compiler which improves the performance of interpreting byte code by caching interpretations.
+    Due to which the speed of execution of java program is enhanced. So, both interpreter and JIT compiler in JVM work together to run the program.
+    10. Multithreaded:Java supports multi-threading programming that allows to write programs to do several works simultaneously. A thread is an individual process to execute a group of statements.
+    JVM utilizes multiple threads to execute different blocks of code. Creating multiple threads is called ‘multithreaded’ in Java.
+
+Java Platform->
+A platform is a software or hardware environment in which a program executes or runs.
+Some of the most platforms are Microsoft Windows, Linux, Mac, and Solaris.
+Java platform is only a software-based platform that runs on top of other hardware-based platforms such as
+Microsoft Windows, Linux, and Mac.
+
+JDK->1.jre 2.java language specification 3.java development tools
+
+Java Development Kit (JDK) is a software development environment that is developed and distributed by Oracle.
+It is used for building (developing) java software applications and applets.
+JDK is the top layer of stock Java Technology. It contains all programs that are needed to develop and run java programs
+
+Java Development Kit has the following components->
+    a) Java Runtime Environment (JRE): It is an environment that is required for running (executing) a java application.
+    It cannot be used for the development of Java applications.
+    It is used only for executing the application program.
+    Java Runtime Environment is a collection of programs that contain JVM (Java Virtual Machine),
+    Java APIs (Application Programming Interface), and Java Class Libraries that help in the development of Java application programs.
+
+    b) Java Language Specification: The Java language specification is a technical definition of syntax and
+    semantics of the Java programming language.
+
+    c) Java Development Tools: It consists of Java compiler, JAR tool, class file disassembler, debugger, JRE builder, etc.
+    Java Development Tools provides everything for compiling, running, monitoring, debugging, and documenting applications.
+
+
+ Java program run with two parts of JDK. The two most important parts of JDK are: Java compiler (javac) and an interpreter.
+
+ Java compiler->
+    Java compiler is a program that is implemented in C and C++ with the name javac.exe. javac is short for java compiler. It is platform-independent.
+    It is responsible for the following tasks that are as follows:
+    a) Java compiler checks the syntax error.
+    b) It converts source code into byte code with the help of Java Virtual Machine (JVM). Bytecode is just like machine code, but it is not for a specific processor or platform. It cannot be directly executed.
+    c) Java compiler also adds the additional code to your program if required.
+
+ C or C++ programs are compiled only once. But when we execute Java programs, every time Java bytecode is translated.
+ Therefore, Java programs run a little slower than C/C++ programs.
+
+ Java Interpreter->
+    Java interpreter is a program that is implemented in C and C++ with the name java.exe. It is platform-dependent.
+    It is responsible for the following tasks. They are as follows:
+    a) Java interpreter converts the byte code into the native code line by line.
+    b) It executes the program on your system.
+
+Bytecode in Java->
+    Bytecode in Java is a highly optimized set of instructions for the Java Virtual Machine (JVM) that reads and interprets to run the java program.
+    A bytecode is a binary program code that can only run on JVM. In other words, it is a machine language (code) for JVM in the form of .class file,
+     A bytecode in Java is a set of byte-long instructions that Java compiler produces and Java interpreter (JVM) executes.
+    but it is not machine specific because it is not a native code.
+    Byte code acts as an intermediate language that is platform (machine) independent.
+    It is generated by Java interpreter that can be directly run by a real machine.
+
+Characteristics of Java Bytecode->
+    Byte code is independent of processor, i.e., Java program can be executed on any processor architecture.
+    It does not depend on operating systems such as Windows, Linux, and Mac OS
+
+Bytecode work in Java->
+    When we write a java program, the source code (in the form of .java file) is compiled by Java compiler and converted into byte code in the form of a .class file
+    This compiled byte code is platform-independent code that can be run on any different computer machine on which JVM interpreter is installed.
+    These bytecodes are not machine instructions. Therefore, in the second stage, JVM interpreter takes the compiled byte code and converts it into
+    machine code that can be directly executed by any computer system that is running java program source code.
+    Resources required to execute byte code are made available by the JVM that calls the microprocessor to allocate the required resources.
+
+Difference between Bytecode vs Machine code->
+    The main difference between the byte code and machine code is that byte code can be run only on JVM whereas
+    machine code is a set of instructions in machine language that can be directly run by the CPU.
+
+Java Runtime Engine (JRE)->
+    is a software environment in which Java program executes. In other words, JRE is a software environment that is
+    required for executing Java applications on any system regardless of operating system and underlying hardware.
+    It cannot be used for the development of Java application programs, but it is used for executing them.
+    Java Runtime Environment is a collection of programs that contains Java Virtual Machine and
+    many class libraries files that are required to run programs on JVM (via java command).
+
+Components of Java Runtime Environment (JRE)->
+    1)Java API (Application Programming Interface)->In simple words, Java API is a large collection of already defined classes, interfaces,
+    and methods in the form of Java packages.
+    e.g(Java.lang.java.utl)
+    2)Class Loader
+    3)Bytecode verifier
+    4)Java Virtual Machine (Interpreter)
+
+What is Class Loader in Java?->
+    When we write a program in java, the program is placed in memory by the class loader before it can be executed.
+    Java Class loader takes .class file containing bytecode and transfers it to the memory. It loads the .class file from a disk on your system or over a network.
+    After loading of class, it is passed to the bytecode verifier.
+    There are basically three subcomponents of Class loader in Java. They are as follows
+        Bootstrap class loader->The bootstrap class loader loads the core Java libraries located in C:\Program Files\Java\jre1.8.0_181\lib.(e.g charsets.jar, deploy.jar)
+        Extensions class loader->The extensions class loader loads the classes from the extensions directory C:\Program Files\Java\jre1.8.0_181\lib\ext.(e.g access-bridge-64.jar, localedata.jar,)
+        System class loader->The system class loader loads the code from the location specified in the CLASSPATH environment variable
+
+Bytecode Verifier->
+    The bytecode verifier verifies that byte codes are valid or not without breaching any of Java’s security rules.
+    It gives special attention to checking the type of all the variables and expressions in the code.
+    Bytecode verifier ensures that there is no unauthorized access to memory. Once the code is successfully verified, it is transferred to Java Virtual Machine (JVM) for interpretation
+
+Internal Architecture of Java Virtual Machine (JVM)->
+    it is basically a program that provides the runtime environment necessary for Java programs to execute.
+    Since JVM is platform-dependent, therefore, it is available for many hardware and software platforms.
+
+    JVM contains the following main components that are as follows:
+    Class loader sub system
+    Runtime data areas
+    Execution engine
+    Native method interface
+    Java native libraries
+    Operating system
+
+How JVM works Internally?->
+    a) Load the code into memory.
+    b) Verifies the code.
+    c) Executes the code
+    d) Provides runtime environment.
+
+    When we make a program in Java, .java program code is converted into a .class file consisting of byte code instructions by the Java compiler.
+    This Java compiler is outside of JVM.
+    1. This .class file is transferred to the class loader sub system of JVM
+        a) First of all, the class loader sub system loads .class file into the memory.
+        b) Then bytecode verifier verifies whether all byte code instructions are proper or not. If it finds any instruction suspicious, the further execution process is rejected immediately.
+        c) If byte code instructions are proper, it allots the necessary memory to execute the program.
+        This memory is divided into 5 separates parts that is called run-time data areas. It contains the data and results during the execution of the program. These areas are as follows:
+
+        1. Class (Method) Area:
+        Class (Method) area is a block of memory that stores the class code, code of variables, and methods of the Java program.
+        Here methods mean functions declared in the class.
+        2. Heap:
+        This is the runtime data area where objects are created. When JVM loads a class,
+        a method and a heap area are immediately built in it.
+        3. Stacks:
+        Method code is stored in the Method area. But during the execution of a method, it requires some more memory to store the data and results.
+        This memory is allocated on Java stacks.
+        Java stacks are those memory areas where Java methods are executed. In Java stacks, a separate frame is created where the method is executed.
+        Each time a method is called, a new frame is created into the stack. When method invocation is completed, a frame associated with it is destroyed.
+        JVM always creates a separate thread (or process) to execute each method.
+        4. PC Register:
+        PC (Program Counter) registers are those registers (memory areas) that contain the memory address of JVM instructions currently being executed.
+        5. Native Method Stack:
+        Methods of Java program are executed on Java stacks. Similarly, native methods used in the program or application are executed on Native method stacks.
+        Generally, to execute the native methods, Java native method libraries are needed. These header files are located and connected to JVM by a program, known as Native method interface.
+
+Execution Engine->
+    Execution engine consists of two parts: Interpreter and JIT (Just In Time) compiler.
+    They convert the byte code instructions into machine code so that the processor can execute them
+    In Java, JVM implementation uses both interpreter and JIT compiler simultaneously to convert byte code into machine code.
+    This technique is called adaptive optimizer.
+    Generally, any programming language (like C/C++, Fortran, COBOL, etc.) will use either an interpreter or a compiler to convert the source code stream into a machine code.
+
+JIT Compiler->
+    JIT compiler in Java is the part of JVM that is used to increase the speed of execution of a Java program.
+    In other words, it is used to improve the performance of the execution of the program. It helps to reduce the amount of time needed for the execution of the program.
+    Let us understand how does JIT compiler in Java executes the looping instruction.
+    {
+    print x; interpreter
+    print y;interpreter
+    lopping;jit compile
+    }
+    First of all, JIT compiler reads the print z instruction and then converts that into machine code. For this, suppose JIT compiler takes 2 nanoseconds to complete this task.
+    Now, JIT compiler allocates a block of memory and pushes this machine code instruction into that memory. For this, suppose it takes another 2 nanoseconds to complete it. So, the JIT compiler took a total of 4 nanoseconds.
+    Next, the processor will fetch this machine code instruction from memory and executes it 10 times.
+    Now you can observe that JIT compiler took only 4 nanoseconds for complete execution, whereas the interpreter needed 20 nanoseconds to execute the same loop.
+    Thus, JIT compiler increases the speed of the execution process.
+
+    The blocks of code given to the JIT compiler are also called hotspots in Java. This feature in Java language really improves the execution time of the program at runtime, especially when it is to be executed multiple times
+
+Here, we have listed the key differences between an interpreter and a compiler. They are as follows:
+    1. An interpreter translates program line by line whereas, a compiler translates the entire program together.
+    2. Execution process of Interpreter is slower whereas, execution process of the compiler is faster.
+    3. Interpreter takes less compile-time whereas compiler takes more time.
+    4. It will not produce intermediate object code. Compiler produces intermediate object code.
+    5. Interpreter compiles the program until an error is found. Compiler shows all the errors once at the end of the compilation.
+
+C vs Java->
+    Procedural programming language is that language where data is shared among all the functions. It focuses on doing things rather than using data.
+    It is based on the sequence of instructions
+    1)Types of language:
+    C is a structural and procedural programming language.
+    Java is a purely object-oriented programming language because everything in java is an object. All the program code and data remain within classes and objects
+    2)Translation
+    C is considered a compiled language because it converts the code into machine language so that it could be understood by the machine or system.
+    Java is an interpreted language because the source code is first converted into bytecode by the compiler and then that bytecode is then executed by the JVM (Java Virtual Machine).
+    3)Platform Dependency:
+    C is platform-dependent or system-dependent.
+    Java is platform-independent. Program source code can be easily moved from one computer system to another, anywhere, and anytime.
+    4)Variable Declaration:
+    In C programming, variables are declared at the beginning of the block.
+    We can declare variables anywhere in Java programming.
+    5)Overloading
+    C does not support overloading functionality.
+    Java supports method overloading concept that helps in code readability.
+    6). Pointers
+    Pointer concept is supported by the C programming language.
+    Java does not support pointers.
+    7) Call by value and Call by reference:
+    C supports both call by value and call by reference.
+    Java supports only call by value.
+    Exception handling,Inheritance,Threading only in java
+    8)Union and Structure:
+    Union and structure data types are supported by C.
+    Whereas Java does not support union and structure data types.
+    9)Virtual keywords:
+    C language supports virtual keywords.
+    Whereas virtual keywords are not supported by Java.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

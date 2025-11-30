@@ -1,0 +1,251 @@
+A static method can refer to only static variables.
+
+Why cannot Static Method directly Access Non-static Members?->
+    Static members such as static variables, methods, or blocks are linked with the class.
+    Therefore, they get memory only once when the class is loaded in the memory.
+    But non-static members like instance variables, method, or block get memory after the object creation of the class.
+    Since static method cannot access directly the non-static members but if we create the object of the class within the static method,
+    In this case, we can access non-static members within the static method.
+
+1. public: The public modifier makes it accessible from anywhere in the application.
+2. static: The static modifier makes it a class method so that it can be called using the class name without creating an object of the class.
+3. void: The return type of the main method is void, which means that it does not return a value to its caller.
+You must specify void when you declare the main method.
+4. main: It is the name of a method where execution will start. In Java, the main method is called by JVM.
+5. String[ ] args: The main method accepts one argument of type String array (String[ ]).
+The square brackets [ ] represent the array of strings that are passed as an argument to this method.
+“args” is the name of its parameter. You can use any parameter name as you wish.
+
+For example, you can declare the main method like this public static void main(String[] myParameter),
+which is the same as declaring the main method as shown previously.
+
+
+main method is declared as static so that the JVM can call it using the class name which is passed on the command line.
+
+If we do not declare the main method as static, it will be considered as an instance method.
+The code will be compiled successfully without generating any error message.
+But at runtime, the code will generate an exception named: “NoSuchmethodError: main”.
+
+Can We Execute a Program without Main Method in Java?
+Yes, we can execute a program without main() method in Java in the previous version of JDK.
+One of the ways is a static block. But from onwards JDK 1.7 and above, is not possible
+
+Can a Method be Defined inside Another Method in Java?
+Declaring a method inside another method is called inner method in Java but in the entire Java,
+the inner method concept is not allowed.
+
+
+Difference between Arguments and Parameters in Java
+1. A parameter is a variable in the definition of a method,
+whereas an argument is an actual value of this variable that is passed to the method’s parameter.
+2. A parameter is also called a formal parameter, whereas an argument is also called actual parameter.
+3. During the time of call, each argument is always assigned to the parameter in the method definition,
+whereas parameters are local variables that are assigned by the value of arguments when the method is called.
+
+
+“Call by value” in Java means that argument’s value is copied and passed to the parameter list of a method.
+That is, when we call a method with passing argument values to the parameter list,
+these argument values are copied into the small portion of computer memory.
+Then, a copy of each value is passed to the parameters of the called method.
+
+Thus, call by value (or pass by value) involves passing a copy of the actual value of a variable to a method.
+This copy can then be modified within the method, but the original value remains unchanged outside the method.
+This mechanism prevents accidental alterations to the original data or value.
+
+Constructor->
+public is an access modifier that indicates that other classes can access the constructor.
+A constructor can be declared (optionally) as public, protected, and private.
+
+constructor can not be below->
+abstract
+final
+native
+static
+strictfp
+synchronized
+transient
+volatile
+
+Constructor’s name must be exactly the same as the class name in which it is defined.
+It must end with a pair of simple braces.
+2. The constructor should not have any return type even void also because if there is a return type,
+JVM would consider as a method, not a constructor.
+ It is always called and executed only once per object. This means that when an object of a class is created,
+ constructor is called.
+ When we create second object, the constructor is again called during the second time.
+In Java, constructors also provide thread safety,
+meaning no thread can access the object until the execution of constructor is completed.
+
+There are the following ways to call a constructor in Java.
+1. A a = new A(); // Here, A is name of class.
+2. new A(); // It is calling A() constructor.
+3. super();
+4. this();
+5. class.forName(“com.scientecheasy.A”).newInstance();
+
+When Java compiler adds a default constructor,
+it also adds a statement called super() to call the superclass constructor.
+
+
+A non-parameterized constructor has the same signature as that of default constructor,
+except for only one difference between them.
+Using non-parameterized constructor, we can initialize any values for the instance variables.
+
+
+In Java, constructor overloading means to define multiple constructors but with different signatures.
+Constructor overloading is a technique of having more than one constructor in the same class with
+different parameter lists.
+
+
+this Reference in Java->
+All instance methods or constructors accept an implicit argument called “this” which refers to the current object.
+A current object is an object on which the method is called and ‘this’ reference can be used inside any method
+or constructor to refer to the current object.
+Within the body of the method or constructor, ‘this’ reference can be used like any other object
+reference to access instance variables, instance methods, and constructors.
+
+Constructor chaining in Java is a technique of calling one constructor from
+within another constructor by using this and super keywords.
+The keyword “this” is used to call a constructor from within another constructor in the same class.
+The keyword “super” is used to call the parent (super) class constructor from within child (subclass)
+class constructor. It occurs through inheritance.
+
+Order of Execution of Constructor in Inheritance Relationship->
+When we create a subclass object, the subclass constructor first calls its superclass constructor before
+performing its own tasks. If the superclass is derived from another class,
+the superclass constructor calls its superclass constructor before performing its own tasks.
+This process continues until it reaches the last chained constructor and the end of the chain will always
+Object class constructor. This is because every class is inherited from Object class by default.
+This is called constructor chaining in Java. That means if we create an object of subclass,
+all its super classes are also instantiated.
+At last, inside the default constructor, the super() keyword placed by compiler calls its Object class constructor.
+
+How to Call One Constructor from Another Constructor in Java?
+Using this() keyword to call the current class constructor within the “same class”.
+Using super() keyword to call the superclass constructor from the “base class”.
+
+A constructor which is used to copy the data of one object to another object of the same class type
+is called copy constructor in Java.
+Student s1 = new Student();
+Student s2 = new Student(s1);
+
+When a constructor is declared with a private access modifier in a class,
+it is called private constructor in Java. It is visible within the same class where it has been declared.
+1. A class cannot be extended when a constructor is declared as private
+We cannot create an instance of class when we declare constructor private. If we try, a compile-time error will get.
+This feature is useful in several design scenarios, such as implementing singleton patterns, utility classes,
+or controlling the creation of instances in a factory pattern.
+
+
+Abstract keyword cannot be declared simultaneously with final, private, native, static, or synchronized
+
+A native modifier can be used only with a method. It contains only a signature but not a body.
+2. A native method is generally used to merge other programming languages like C and C++  code into Java programming.
+
+A static modifier can be applied with an inner class, variable, method, block, and inner interface.
+It cannot be declared with a top-level class and outer interface.
+
+
+A modifier in Java is a keyword limits the visibility of classes, fields, constructors, or methods in the Java.
+Twelve modifiers in Java can be divided into two categories:
+Access modifiers
+Non-access modifiers
+
+The below table summarizes the visibility of various access modifiers in Java.
+
+Access location	Public	Protected	Default	Private
+Same class	Yes	Yes	Yes	Yes	Yes
+Subclass in same package	Yes	Yes	Yes	Yes	No
+Other classes in same package	Yes	Yes	Yes	No	No
+Subclasses in other package	Yes	Yes	No	Yes	No
+Non-subclasses in other packages	Yes	No	No	No	No
+
+
+Instance initialization block (Non-static initialization block)->
+executed after static methods and before constructors
+we can place common logic in instance block which will be used by all constructor while object creation
+iib can not take arguments..
+public class Test
+{
+// Declare Zero parameter constructor.
+   Test()
+   {
+      System.out.println("0-arg Constructor");
+   }
+// Declaration of an Instance block.
+   {
+      System.out.println("Instance Block");
+   }
+}
+
+We can declare methods, variables, and blocks to be static. The most common example of a static member inside a class is
+The main( ) method is declared as static because it must be called before any objects exist.
+
+static is a keyword that is used for memory management mainly. Static means single copy storage for variables or methods.
+We cannot declare a class with static keyword but the inner class can be declared as static.
+we cannot directly call instance members within the static area because the static members are linked with the class.
+Static members get memory once when the class is loaded into the memory.
+They are stored in a special area called the permanent generation (PermGen) in Java 5 and 6,
+and in MetaSpace in Java 8 and later
+
+A local variable cannot be declared as static. JVM will display modifier error at compile time.
+Static variables can also be accessed by the object reference but an instance variable can only be accessed by the object reference.
+Static variables in a class are initialized before the execution of any static method of the class.
+Therefore, we cannot change the initialized value of the static variable inside the static method.
+
+If any object changes the value of the static variable,
+it will retain its value(changed value) and increments by 1 for every object creation.
+
+We can change the value of the static variable in Java by using a constructor and static block
+
+A static method can call a static method only. It can only access a static data variable inside the static method.
+A static method cannot invoke an instance method or access an instance variable.
+
+We cannot declare a static method and instance method with the same signature in the same class hierarchy
+
+It cannot refer to this or super in any way.
+static Class method cannot be overridden whereas, an instance method can be overridden.
+
+Why Static Initialization Block is Executed before Main method?->
+JVM loads the corresponding dot class file (byte code) into memory.
+ During the dot class file loading into memory, a static block is executed.
+After loading the dot class file, JVM calls the main method to start execution.
+Therefore, static block is executed before the main method.
+
+It is possible to execute static block without a main method inside the class up to Java 1.5 version but
+Java 1.6 version onwards, the main method is mandatory to execute a static block inside the class.
+
+Use of Static Initialization Block in Java->
+The purpose of using a static initialization block is to write that logic inside static block that
+is executed during the class loading.
+It is mostly used for changing default value of static variables.
+It is used to initialize static variables of the class.
+
+we cannot override static method in Java because a static method is resolved at compile time by Java compiler whereas,
+method overriding is resolved at runtime by JVM because objects are only available at runtime.
+
+We can declare static methods with the same signature in the subclass,
+but they are not considered as overriding. They are considered a method hiding.
+
+variable, method, and class where the final keyword can be used.
+
+Blank Final Variable in Java->
+A blank final variable must be initialized in the constructor of the class otherwise,
+we will get a compilation error.
+
+Static Blank Final Variable->
+When a blank final variable is declared as static and not initialized at a time of declaration,
+it can only be initialized in the static block.
+It cannot be initialized in the constructor of the class.
+
+final List<Integer> list = new ArrayList<Integer>();
+list = new ArrayList<Integer>(); // Final local variable 'list' cannot refer to new ArrayList
+
+There are two ways to make a class as final.->
+The first way to make a class final is to use the final keyword
+The second way is to declare all of its constructors as private
+
+
+
+
+

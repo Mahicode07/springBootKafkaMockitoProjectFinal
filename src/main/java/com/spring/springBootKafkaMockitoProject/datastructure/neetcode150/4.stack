@@ -1,0 +1,161 @@
+valid parantheses
+
+class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> charStack = new Stack<Character>();
+        for(char c :s.toCharArray()){
+            if(c == '('){
+                charStack.push(')');
+            }else if(c =='{'){
+                charStack.push('}');
+            }else if(c =='['){
+                charStack.push(']');
+            }
+            else if(charStack.isEmpty() || charStack.pop()!=c){
+                return false;
+            }
+
+        }
+        return charStack.isEmpty();
+
+    }
+}
+
+note->else if(charStack.isEmpty() this codition is important because if we have a closing bracket without a matching opening bracket, we should return false immediately.
+// if we have a closing bracket without a matching opening bracket, we should return false immediately.
+==========================================================================
+Minimum Stack
+
+class MinStack {
+
+    Stack<Integer> stack;
+    Stack<Integer> minstack;
+
+    public MinStack() {
+       stack= new Stack<Integer>();
+       minstack=new Stack<Integer>();
+    }
+
+    // if minstack is empty or new value is less than the already present value from mistack
+    //then push into minstack
+    public void push(int val) {
+        stack.push(val);
+        if(minstack.isEmpty() || minstack.peek()>=val){
+            minstack.push(val);
+        }
+
+    }
+
+    // if poped value is equal to minstack peek()
+    //then pop from minstack as well
+    public void pop() {
+      int poped =  stack.pop();
+      if(!minstack.isEmpty() && poped==minstack.peek()){
+        minstack.pop();
+      }
+
+    }
+
+    public int top() {
+     return stack.peek();
+    }
+
+    public int getMin() {
+     return  minstack.peek();
+    }
+}
+==============================================================================
+Evaluate Reverse Polish Notation
+Input: tokens = ["1","2","+","3","*","4","-"]
+Output: 5
+Explanation: ((1 + 2) * 3) - 4 = 5
+
+class Solution {
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> numstack = new Stack<>();
+        for(String c :tokens){
+            switch(c){
+            case "+":
+                numstack.push(numstack.pop()+numstack.pop());
+                break;
+            case "-":
+                int b=numstack.pop();
+                int a =numstack.pop();
+                numstack.push(a-b);
+                break;
+            case "*":
+                numstack.push(numstack.pop()*numstack.pop());
+                break;
+            case "/":
+                int deno=numstack.pop();
+                int numo =numstack.pop();
+                numstack.push(numo/deno);
+                break;
+            default:
+                numstack.push(Integer.parseInt(c));
+            }
+        }
+
+       return numstack.pop();
+    }
+}
+===============================================================================
+generate parentheses
+input: n = 3
+Output: ["((()))","(()())","(())()","()(())","()()()"]
+
+class Solution {
+    public List<String> generateParenthesis(int n) {
+
+        List<String> result = new ArrayList<>();
+        backtrack(result,n,0,0,"");
+        return result;
+
+    }
+
+    public void backtrack(List<String> result,int max,int open,int close,String unprocessed){
+
+        if(unprocessed.length()==2*max){
+            result.add(unprocessed);
+            return;
+        }
+
+        if(open<max){
+            backtrack(result,max,open+1,close,unprocessed+"(");
+        }
+
+        if(close<open){
+            backtrack(result,max,open,close+1,unprocessed+")");
+        }
+
+    }
+}
+==========================================================================================
+Daily Temperatures
+
+Return an array result where result[i] is the number of days after the ith day before a
+warmer temperature appears on a future day. If there is no day in the future where a warmer
+temperature will appear for the ith day, set result[i] to 0 instead.
+
+Input: temperatures = [30,38,30,36,35,40,28]
+Output: [1,4,1,2,1,0,0]
+
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        int[] res = new int[temperatures.length];
+        Stack<Integer> stack = new Stack<>();
+
+        for(int i=0;i<temperatures.length;i++){
+
+            while(!stack.isEmpty() && temperatures[i]> temperatures[stack.peek()]) {
+                int d = stack.pop();
+                res[d]=i-d;
+
+            }
+            stack.push(i);
+        }
+        return res;
+
+    }
+}
+===========================================================================================

@@ -1,0 +1,43 @@
+parking lot has follwing basic info
+1.multiple slots
+2.diff vehicle occupies diff slots
+3.diff vehicle has diff charges
+4.entry and exit time
+5.each vehicle get ticket on entry
+6.on exit ticket is returned and charges are calculated based on duration of stay and vehicle type
+7.multiple payment options
+8.once payment is done reciept is generated and slot is freed
+
+illegal parking->
+1.vehicle can not park in already occupied slot
+2.vehicle can not park in slot which is not designated for that vehicle type
+3.vehicle can not vacate slot without payment
+
+classes to be created->
+1.abstract class Vehicle{
+    String vehicleNumber;
+    VehicleType vehicleType; // Enum for different vehicle types (CAR, BIKE, TRUCK, etc.)
+    // Constructor, getters, and setters
+}
+2.class Car extends Vehicle{
+    // Additional attributes specific to cars
+    // Constructor, getters, and setters
+}
+// Similarly, create classes for Bike, Truck, etc.
+
+3. class ParkingLot{
+List<ParkingSlot> parkingSlots;
+}
+4. class ParkingSlot{
+    VehicleType slotType; // Enum for different slot types (CAR_SLOT, BIKE_SLOT, TRUCK_SLOT, etc.)
+    boolean isOccupied;
+}
+5.interface PaymentStrategy{
+    void pay(double amount);
+}
+
+approaches->
+factory pattern can be used to create different vehicle types
+strategy pattern can be used for different payment methods
+singleton design pattern can be used for parkingManagement->only one instance of parking management should exist
+observer pattern can be used for notifying when a slot is freed or occupied

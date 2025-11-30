@@ -1,0 +1,282 @@
+Collection Interface in Java->
+    The Collection interface in Java is a core member of the Java Collections Framework located in the java.util package
+    It is one of the root interfaces of the Java Collection Hierarchy
+    The Collection interface is not directly implemented by any class. Instead,
+    it is implemented indirectly through its sub-interfaces like List, Queue, and Set.
+    public interface Collection<E> extends Iterable<E>.E represents the type of elements stored in the collection.
+
+Methods of Collection Interface->
+    add(E e),addAll(Collection<? extends E> c),clear(),contains(Object o),containsAll(Collection<?> c)
+    isEmpty(),iterator(),parallelStream(),remove(Object o),removeAll(Collection<?> c),removeIf(Predicate<? super E> filter)
+    retainAll(Collection<?> c),size(),stream(),toArray()
+
+Java List Interface->
+    The List Interface in Java extends the Collection Interface and is a part of java.util package.
+    It is used to store the ordered collections of elements.
+    a)Maintained the order of elements in which they are added.
+    b)Allows the duplicate elements.
+    c)The implementation classes of the List interface are ArrayList, LinkedList, Stack, and Vector.
+    d)Can add Null values that depend on the implementation.
+    e)The List interface offers methods to access elements by their index and includes the listIterator() method,
+    which returns a ListIterator.
+    f)Using ListIterator, we can traverse the list in both forward and backward directions.
+
+Java List – Operations
+    Since List is an interface, it can be used only with a class that implements this interface. Now, let’s see how
+    to perform a few frequently used operations on the List.
+
+    Operation 1: Adding elements to List using add() method
+    Operation 2: Updating elements in List using set() method ->al.set(1, "For");
+    Operation 3: Searching for elements using indexOf(), lastIndexOf() methods
+    Operation 4: Removing elements using remove() method->remove(Object o): This method is used to simply remove an object from the List. If there are multiple such objects,
+    then the first occurrence of the object is removed.
+    Operation 5: Accessing Elements in List using get() method
+    Operation 6: Checking if an element is present in the List using contains() method
+
+Java List vs Set Interface
+Both the List interface and the Set interface inherits the Collection interface.
+However, there exists some differences between them.
+The List is an ordered sequence./The Set is an unordered sequence.
+List allows duplicate elements/Set doesn’t allow duplicate elements.
+Elements by their position can be accessed./Position access to elements is not allowed.
+Multiple null elements can be stored./The null element can store only once
+List implementations are ArrayList, LinkedList, Vector, Stack/Set implementations are HashSet, LinkedHashSet.
+
+AbstractList in Java->
+AbstractList class in Java is a part of the Java Collection Framework and
+implements the Collection interface and the AbstractCollection class
+Random Access data store.
+For sequential access data (such as a linked list), AbstractSequentialList should be used in preference to this class.
+
+Methods in AbstractList->
+    add(index x,element e)- adding element to specific index
+    addAll(int index, Collection<? extends E> c) -nserts all of the elements in the specified collection into this list at the specified position
+    clear(),get(int index),hashCode()-Returns the hash code value for this list.
+    remove(int index)-Removes the element at the specified position in this list (optional operation).
+
+AbstractSequentialList->extends AbstractList
+    public abstract class AbstractSequentialList<E> extends AbstractList<E>
+
+Diff AbstractList vs  AbstractSequentialList
+Access type: AbstractList is intended for lists with fast random access,
+while AbstractSequentialList is designed for lists that offer more efficient sequential access (like linked lists).
+Performance: With AbstractList, accessing elements by index is O(1),
+while with AbstractSequentialList, it’s typically O(n) because of the traversal needed in linked lists
+    listIterator(int index) method - for get element with index
+
+
+ArrayList in Java->
+    Java ArrayList is a part of collections framework and it is a class of java.util package.
+    It provides us with dynamic sized arrays in Java.
+
+    The main advantage of ArrayList is, unlike normal arrays, we don’t need to mention the size when creating ArrayList.
+    It automatically adjusts its capacity as elements are added or removed.
+    It may be slower than standard arrays, but helpful when size is not known in advance.
+    Note that creating large fixed sized array would cause wastage of space.
+    Since ArrayList is part of collections framework, it has better interoperability with other collections.
+    For example conversion to a HashSet is straightforward.  HashSet<String> hashSet = new HashSet<>(arrayList);
+    With generics, ArrayList<T> ensures type safety at compile-time.
+
+Important Features of ArrayList in Java->
+    ArrayList inherits AbstractList class and implements the List interface.
+    ArrayList is initialized by size. However, the size is increased automatically if the
+    collection grows or shrinks if the objects are removed from the collection.
+    Java ArrayList allows us to randomly access the list.
+    ArrayList can not be used for primitive types, like int, char, etc. We need a wrapper class for such cases.
+    ArrayList is not Synchronized.
+
+Constructors in ArrayList in Java->
+    ArrayList()->This constructor is used to build an empty array list with size=0 and capacity =10
+    ArrayList(Collection c)->ArrayList<String> list = new ArrayList<>(set);
+    ArrayList(int capacity)->This constructor is used to build an array list with the initial capacity being specified.
+
+ArrayList methods-
+    add(E e)	boolean	 Adds an element to the list
+    add(int index, E element)	void	Inserts an element at a specified index
+    remove(Object o)	boolean	Removes the first occurrence of the element
+    remove(int index)	E	Removes the element at the specified index
+    clear()	void	Removes all elements from the list
+    contains(Object o)	boolean	Checks if the list contains the specified element
+    size()	int	Returns the size of the list
+    get(int index)	E	Returns the element at the specified index
+    set(int index, E element)	E	Replaces the element at the specified index
+    indexOf(Object o)	int	Returns the index of the first occurrence of the element
+    lastIndexOf(Object o)	int	Returns the index of the last occurrence of the element
+    isEmpty()	boolean	Checks if the list is empty
+    iterator()	Iterator<E>	Returns an iterator for the list
+    toArray()	Object[]	Converts the list to an array
+    toArray(T[] a)	T[]	Converts the list to an array of type T
+    subList(int fromIndex, int toIndex)	List<E>	Returns a sublist from fromIndex to toIndex
+    ensureCapacity(int minCapacity)	void	Ensures the list can hold at least minCapacity elements
+    trimToSize()	void	Trims the capacity of the list to its size
+    addAll(Collection<? extends E> c)	boolean	Adds all elements from a collection to the list
+    removeAll(Collection<?> c)	boolean	Removes all elements from the list that are contained in a collection
+    retainAll(Collection<?> c)	boolean	Retains elements in the list that are in the specified collection
+    containsAll(Collection<?> c)	boolean	Checks if the list contains all elements from a collection
+    sort(Comparator<? super E> c)	void	Sorts the list using a comparator
+    stream()	Stream<E>	Returns a sequential stream of the list
+    parallelStream()	Stream<E>	Returns a parallel stream of the list
+
+Complexity of Java ArrayList
+Time Complexity
+Space Complexity
+
+Inserting Element in ArrayList
+
+O(1)
+
+O(N)
+
+Removing Element from ArrayList
+
+O(N)
+
+O(1)
+
+Traversing Elements in ArrayList
+
+O(N)
+
+O(N)
+
+Replacing Elements in ArrayList
+
+O(1)
+
+O(1)
+
+Advantages of Java ArrayList
+Dynamic size: ArrayList can dynamically grow and shrink in size, making it easy to add or remove elements as needed.
+Easy to use: ArrayList is simple to use, making it a popular choice for many Java developers.
+Fast access: ArrayList provides fast access to elements, as it is implemented as an array under the hood.
+Ordered collection: ArrayList preserves the order of elements,
+allowing you to access elements in the order they were added.
+Supports null values: ArrayList can store null values,
+making it useful in cases where the absence of a value needs to be represented.
+
+Disadvantages of Java ArrayList
+Slower than arrays: ArrayList is slower than arrays for certain operations,
+such as inserting elements in the middle of the list.
+Increased memory usage: ArrayList requires more memory than arrays,
+as it needs to maintain its dynamic size and handle resizing.
+Not thread-safe: ArrayList is not thread-safe, meaning that multiple threads may access and modify the list concurrently,
+leading to potential race conditions and data corruption.
+Performance degradation: ArrayList’s performance may degrade as the number of elements in the list increases,
+especially for operations such as searching for elements or inserting elements in the middle of the list.
+
+Summary Table:
+Feature	Array	ArrayList
+Size	-Fixed size	/Dynamic size
+Type of Elements=	Can store primitives and objects	/Can only store objects (autoboxing for primitives)
+Performance	=Faster (O(1) access time, no resizing)	/Slower due to resizing and extra overhead
+Methods	=Limited to basic operations (access, modify)	Provides a rich set of methods (add, remove, size, etc.)
+Memory	=More memory efficient	More memory overhead (due to dynamic resizing)
+Use Case=	When size is known or fixed	When size is dynamic or unknown
+Access Time=	O(1)	O(1), but resizing can impact performance
+
+Vector Class in Java->
+    The Vector class implements a growable array of objects.
+    Vectors fall in legacy classes, but now it is fully compatible with collections.
+    It is found in java.util package and implement the List interface.
+    Thread-Safe: All methods are synchronized, making it suitable for multi-threaded environments.
+    However, this can lead to performance overhead in single-threaded scenarios.
+    Allows Nulls: Can store null elements.
+    Enumeration Support: Provides backward compatibility with Enumeration, a legacy way of iterating over elements.
+
+Few more points about Vector are mentioned below:
+They are very similar to ArrayList, but Vector is synchronized and has some legacy methods that the collection
+framework does not contain.
+It also maintains an insertion order like an ArrayList. Still, it is rarely used in a non-thread environment as
+it is synchronized, and due to this, it gives a poor performance in adding, searching, deleting,
+and updating its elements.
+The Iterators returned by the Vector class are fail-fast. In the case of concurrent modification,
+it fails and throws the ConcurrentModificationException.
+
+public class Vector<E> extends AbstractList<E>
+                                          implements List<E>, RandomAccess, Cloneable, Serializable
+
+Common Errors in the declaration of Vectors are as follows:
+
+Vector throws an IllegalArgumentException if the InitialSize of the vector defined is negative.
+If the specified collection is null, It throws NullPointerException.
+
+Constructors
+1. Vector(): Creates a default vector of the initial capacity is 10.
+Vector<E> v = new Vector<E>();
+
+
+2. Vector(int size): Creates a vector whose initial capacity is specified by size.
+Vector<E> v = new Vector<E>(int size);
+
+
+3. Vector(int size, int incr): Creates a vector whose initial capacity is specified by size and increment is specified by incr.
+It specifies the number of elements to allocate each time a vector is resized upward.
+Vector<E> v = new Vector<E>(int size, int incr);
+
+Diff between vector and arraylist
+    Feature	            Vector	                                ArrayList
+    Thread Safety	Synchronized by default (thread-safe)	Not synchronized (not thread-safe by default)
+    Growth Policy	Doubles its size when full	/Grows by 50% of its current capacity
+    Performance	Slower due to synchronization overhead	/Faster in single-threaded scenarios
+    Legacy Status	Legacy class, introduced in Java 1.0	/Part of the modern Java Collections Framework (Java 1.2)
+    Memory Usage	Can waste memory due to doubling size	/More memory-efficient, grows gradually
+    Common Methods	addElement(), insertElementAt(), setElementAt()/	add(), addAll(), set()
+    Use Case	Thread-safe scenarios (although not commonly used today)	/General-purpose, single-threaded environments
+
+Stack Class in Java->
+    The class is based on the basic principle of LIFO(last-in-first-out). In addition to the basic push and pop operations,
+    the class provides three more functions of empty, search, and peek
+    Summary of Stack Methods:
+    Method	Description	Return Type
+    push(E item)	Pushes an item onto the stack	void
+    pop()	Removes and returns the top element of the stack	E
+    peek()	Returns the top element of the stack without removing it	E
+    empty()	Returns true if the stack is empty, otherwise false	boolean
+    search(Object o)	Returns 1-based index of the element, or -1 if not found	int
+
+
+LinkedList in Java->
+        This class is an implementation of the LinkedList data structure which is a linear data structure where the
+        elements are not stored in contiguous locations and every element is a separate object with a data part and address part.
+        The elements are linked using pointers and addresses and each element is known as a node.
+        the LinkedList is implemented using the doubly linked list data structure.
+
+Constructors in the LinkedList->
+     LinkedList():->LinkedList ll = new LinkedList();
+     In other words, the LinkedList does not have a capacity concept, since it doesn’t rely on a contiguous block of
+     memory like an array-based list
+      LinkedList(Collection C):->LinkedList<Integer> linkedList = new LinkedList<>(arrayList);
+
+
+Advantages of using LinkedList in Java
+Dynamic size: As with Vector, the size of a LinkedList can grow or shrink dynamically,
+so you don’t have to worry about setting an initial size.
+Efficient Insertions and Deletions: LinkedList is an efficient data structure for inserting or deleting elements
+in the middle of the list because you only need to change the links between elements,
+rather than shifting all elements after the insertion or deletion point.
+Flexible Iteration: With a linked list, you can efficiently iterate through the list in either direction,
+since each element has a reference to both its predecessor and successor elements.
+
+Disadvantages of using LinkedList in Java
+Performance: LinkedList has a slower performance than ArrayList when it comes to accessing individual elements.
+This is because you need to traverse the list to reach the desired element,
+whereas with ArrayList, you can simply access the desired element using an index.
+Memory overhead: LinkedList requires more memory than ArrayList because each element requires additional memory
+for the links to its predecessor and successor elements.
+
+Differences Between ArrayList and LinkedList:
+Internal Structure	Array-based: Internally uses a dynamic array to store elements.
+    Linked list-based: Internally uses a doubly linked list
+Memory Usage-More compact: Uses a single contiguous block of memory, leading to more compact memory usage
+    Less compact: Each element requires extra memory for the next and previous pointers in addition to the element itself.
+Access Time (Random Access)-Faster: Constant-time (O(1)) for accessing elements by index (e.g., get(index)).
+    Slower: Linear-time (O(n)) for accessing elements by index because you must traverse the list from the start (or end) to find the element.
+Insertion/Deletion-Slower: o(N),Faster: Inserting or deleting elements at the beginning, middle, or end takes O(1)
+Iteration Performance-Faster: Better cache locality due to contiguous memory allocation, making iteration faster (cache-friendly).
+    Slower: Since elements are scattered in memory, there is less cache locality, making iteration less efficient
+Resizing->Expensive/No resizing
+Use Case->	Best used when you need fast random access to elements and infrequent insertions or deletions.
+    Best used when you need frequent insertions and deletions in the middle of the list and less random access.
+Time Complexity for Accessing/Searching	O(1) for accessing an element by index.O(n) for searching an element.
+        O(n) for accessing an element by index.O(n) for searching an element
+

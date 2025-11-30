@@ -1,0 +1,191 @@
+The underlying structure of all Java programs is made up of classes.
+Anything we want to write in a Java program must be encapsulated in a class.
+
+A class is a model to create objects. It means that we write properties and actions of objects in the class
+Properties are represented by variables, and actions are represented by methods. So, a class consists of variables and methods.
+
+Object in Java
+    An object is a basic unit of an object-oriented programming language. It is any real-world thing that has properties and actions
+    In other words, an entity that has state and behavior is known as object in Java. Here, the state represents properties,
+    and behavior represents actions or functionality.
+
+Characteristics of Object
+    State->properties or attributes of an object,Behavior->represents functionality or action,Identity: Identity represents the unique name of an object
+
+Class in Java->
+    a class is a group of objects which are common to all objects of one type
+    A class is basically user-defined data types that act as a template for creating objects of the identical type
+
+Flow of Execution of Program in Java
+    1. Out of five elements declared inside the class body, the static variable, static block, and static method are executed first during the loading of the dot class file.
+    2. The instance variable is executed during object creation.
+    3. When the object is created, first, an instance block is executed before the execution of a constructor.
+    4. After the execution of an instance block, the constructor part will be executed.
+    5. After the execution of the constructor part, the instance method is executed.
+    6. The local variable is executed inside the method, constructor, or block.
+
+College myCollege = new College();
+    College ➝ Name of the class.
+    myCollege ➝ Object reference variable which stores the address of the object in the stack memory.
+    new ➝ keyword that stores the object in the heap memory.
+    College() ➝ Constructor of the class.
+    = ➝ The equal sign (=) is an assignment operator. It simply says to take the object created by a new keyword and assign it to the object reference variable.
+
+Hash Code Number->
+    When an object of class is created, the memory is allocated in the heap area to store instance variables.
+    After the creation of an object, JVM produces a unique reference number (address) for that object. This unique reference number is called hash code number.
+
+    This reference number is unique for all objects, except string objects.
+    The address of the object is stored in the object reference variable in the stack memory.
+    System.out.println(myCollege.hashCode()); // It will display hash code stored in myCollege.
+
+Object Reference in Java->
+    An object reference is a unique hexadecimal number that represents a memory address of the object. It is useful to access members of objects.
+
+There are several ways to create an object of class in Java. They are as follows.
+Using the new keyword
+Using Class.forName
+Using Clone.
+Using Object Deserialization.
+Using ClassLoader.
+
+What is System.out.println()->
+    1.System is a class that is pre-defined by the Sun Microsystem.
+    2. out is a variable declared in System class of type PrintStream.
+    3. println is a method defined in PrintStream class.
+
+Ways to Initialize State(variable) of Object in Java ->
+    By using constructor
+    By using a reference variable
+    By using a method.
+
+The constructor should not have any return type even void also because if there is return type, then JVM would consider as a method, not a constructor.
+
+constructor ->
+Student()
+   {
+// Initialize states of an object, i.e. values of variables.
+     name = "Shubh";
+     rollNo = 05;
+     age = 22;
+   }
+
+Marks mk = new Marks();
+  // Initialize values of variables through object reference variable and dot notation.
+     mk.subject1 = "Science";
+     mk.sub1Marks = 90;
+     mk.subject2 = "Maths";
+     mk.sub2Marks = 99;
+
+Rectangle rt2 = new Rectangle();
+     rt2.perValue(50, 50);
+     rt2.calculate();
+
+      void perValue(int l, int b)
+        {
+     // Here, we are setting the name of parameters different from the name of the variables.
+     // Because we are not using this reference.
+           length = l;
+           breadth = b;
+        }
+
+Life Cycle of Object in Java->
+    Creation of .class file on disk
+    Loading .class file into memory-> Java classloader loads that class into memory and then  Java runtime reads it into the memory.
+    Looking for initialized static members of class
+    Ways to initialize class in java->A class can be initialized in two ways in Java. First, when you access a static field or static method of the class.
+    second way is when object or instance of the class is created using the new keyword, the class is initialized.
+    Allocation of memory for object and reference variable
+    Calling of the constructor of class->After allocating the memory, JVM calls the constructor of the class which is like a method but
+    it is called only once when the object is created.
+    Removing of object and reference variable from memory->When the accessing of field and methods are completed,
+    the object and its reference are removed from the memory by the JVM.
+    At this time the object has died.
+    You don’t have to destroy objects yourself.
+    Actually, when the object is no longer in use, Java runtime calls the garbage collector to destroy all the objects.
+    Thus, objects are born, live, and die.
+
+Anonymous Object in Java->
+    An object which has no reference variable is called anonymous object in Java. Anonymous means nameless.
+    So, an anonymous object is an object without a specific name or reference variable
+    In other words, when we initialize an object, but we do not assign it to any reference variable, it is called an anonymous object. For example:
+    new Student(); // anonymous object
+    We can use an anonymous object at the time of object creation only. If you want to create only one object in a class, then the anonymous object is an excellent approach. Since an anonymous object has no name, we cannot access or reuse later in the code.
+    new Student().display();
+
+Advantages and Usage of Anonymous Objects in Java->
+    An anonymous object simplifies code structure by eliminating the need for explicit object creation.
+    It is especially useful for one-time operation where creating named objects would be unnecessary and cumbersome.
+    It is ideal for scenarios where an object is needed only for a single method call.
+    Usage of anonymous objects can make code more concise and readable because it eliminates the clutter of named object declarations and subsequent method calls.
+
+Differences Between Anonymous and Named Objects
+    Naming Conventions and Scope->
+    Memory Utilization:Anonymous objects are automatically eligible for garbage collection after use
+
+Types of Classes in Java->
+    1. Concrete Class:A class whose object can be created and whose all methods have body is called concrete class.
+    Java object class is a concrete class. A concrete class can have both static and non-static members.
+                      It has no abstract methods.
+    2. Static Class:In Java, static is a keyword that can be applied with variables, methods, inner classes, and blocks.
+    We cannot declare a class with static keyword but inner class can be declared as static.
+    3. Abstract Class:An abstract class is a class which is declared with abstract keyword. It is just like a normal class but has two differences
+                      We cannot create an object of this class. Only objects of its non-abstract (or concrete) sub-classes can be created.
+                      It can have zero or more abstract methods that are not allowed in a non-abstract class (concrete class).
+                      An abstract class is sometimes also known as base class or superclass. It contains undefined and unimplemented abstract method bodies that are implemented and defined by derived classes
+    4. Final Class:When a class is declared with final keyword, it is called final class in Java. Final class means Restricting Inheritance!. It does not allow itself to be inherited by another class.
+    In other words, Java classes declared as a final cannot be extended (inherited). If you do not want to be a subclass, declare it final. A lot of classes in Java API are final.
+    5. Inner Class:A class declared inside another class is known as nested class. The class which is a member of another class can be either static or non-static. When a member class is declared with static, it is known as static nested class.
+    The member class which is non-static is known as inner class in Java
+                   An inner class cannot have any kind of static member. So, the members of an inner class can be:
+                   Instance variables
+                   Instance methods
+                   Constructors
+                   Initializer block
+                   Inner class
+
+
+anonymous class in Java->
+    An anonymous class in Java is a type of inner class that doesn't have a name and is declared and instantiated all at once.
+    It's often used to override methods or provide specific implementations, particularly in situations where you don't want to create a separate class.
+
+    class Animal {
+        public void sound() {
+            System.out.println("Some sound");
+        }
+    }
+
+    public class AnonymousClassExample {
+        public static void main(String[] args) {
+            // Creating an anonymous class that extends the Animal class
+            Animal animal = new Animal() {
+                @Override
+                public void sound() {
+                    System.out.println("Roar");
+                }
+            };
+
+            // Calling the overridden method
+            animal.sound();
+        }
+    }
+
+Based on access modifiers types of class->
+    1.public->A public class is visible and accessible from anywhere. The instance of public class can be created from any other class.
+              When a class is declared as public, any program in any package can use the code or some of the code.
+              But we do not put public with class, it is non-public (default) class.
+    2.Private->An outer class (top-level class) cannot be declared with a private access modifier,
+    but an inner class can be declared as private. An inner class is a member of outer class.
+    3.Singleton Class:A singleton class in Java is a class that allows only one instance to be created.
+    All its variables and methods will belong to just one instance. Singleton class concept is useful when we need to create only one object of class.
+    4.Immutable Classes:Immutable classes are those classes whose instances cannot be modified after creation.
+    They promote thread safety and are widely used in concurrent programming.
+    5.Utility Classes:Utility classes, also known as helper classes, contain static methods that provide utility functions
+    6.Enum Classes:Enum classes define a fixed set of constants that represents a specific type
+
+Predefined Classes in Java->
+    1. Object Class:2. Math Class:3. String Class:4. System Class:5. Random Class:
+
+
+
+

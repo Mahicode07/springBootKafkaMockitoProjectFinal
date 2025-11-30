@@ -1,0 +1,282 @@
+Garbage collection in Java is the process of automatically freeing heap memory by deleting unused
+objects that are no longer accessible in the program.
+The program that performs garbage collection is called a garbage collector or simply a collector in Java.
+It is a part of the Java platform and is one of the major features of the Java Programming language.
+Java garbage collector runs in the background in a low-priority thread and automatically cleans up heap
+memory by destroying unused objects.
+Hello h1 = new Hello();
+Hello h2 = new Hello();
+h1 = h2;
+now first object will be destroyed.
+The best example of garbage collector is Daemon thread that is always running in the background.
+
+Ways for Invoking Garbage Collector (GC)->
+JVM tries its best to clean up the memory of all unused objects before it throws a java.lang.OutOfMemoryError error.
+Therefore, we can only request JVM to run garbage collector. But it has free to ignore the request.
+1. Using Runtime.getRuntime().gc() method:
+2.Using System.gc() method
+
+In general, it is not advisable to call the garbage collector programmatically.
+Invoking arbitrarily the garbage collector may slow down the performance of the application.
+
+If you are storing a large number of objects in static variables,
+these objects will remain in memory until the class itself is unloaded.
+
+Finalization in Java is an action that is automatically performed on an object
+before the memory occupied by the object is freed up by the garbage collector.
+The block of code that contains the action to be performed is called finalizer in Java.
+In Java, the finalizer is just opposite to the constructor.
+A constructor performs initialization for an object, whereas the finalizer
+method performs finalization for the object
+
+But when objects hold other kinds of resources such as opening files, closing files,
+network connection, etc. garbage collection does not free these resources for you.
+In this case, we need to write a finalizer method for an object that performs such tasks as closing files,
+deleting temporary files, terminating network connection, etc.
+
+There can be only one finalize() method per class. A finalizer can throw any kind of error or exception,
+but when a finalizer is automatically called by a garbage collector then any exception or error it throws is ignored.
+
+The finalize() method of Object class can be called by garbage collector only once before object is garbage collected.
+Runtime rt = Runtime.getRuntime();
+  rt.runFinalization();
+System.runFinalization();
+
+Calling of the runFinalization() method is only a request to the JVM to
+call the finalize() method for all objects that are pending for finalization.
+
+Finally or Finalize which is better to use?->
+There is no guarantee when the finalize() method for an unreachable object will be called or it will be called definitely.
+The main objective of a garbage collector in Java is to release programmers from the burden of cleaning up
+the memory of unused objects to avoid the problem of memory leaks and dangling references.
+Its secondary task is to run the finalization on the objects without a guaranty.
+As a programmer, we should not depend much on the finalization process of garbage collection.
+We should write the code inside finalize() method with care.
+
+For instance, we may not want to open a network connection every time we need it.
+We generally open a network connection once, use it, and close it when we no longer need it.
+Sometimes we may not know the exact time in a program from where we will not require that network connection.
+In such situations, we can write the code inside the finalize() method as a backup to free the resources if they
+have not been released yet.
+
+------------------
+object class->
+equals()
+getClass()
+toString()
+hashCode()
+finalize()
+clone()
+notify()
+notifyAll()
+wait()
+
+-------------------------------------------------
+Why do We Need Object Cloning in Java?->
+Java language does not provide an automatic mechanism to clone (make a copy) an object.
+We know that when we assign a reference
+variable to another reference variable, only the reference of the object is copied, not the content of the object.
+Employee original = new Employee("Bob", 60000.0);
+Employee copy = original;
+copy.raiseSalary(10); // It will also change the original.
+
+If you would like to make a copy to be a new object, use clone() method of Object class
+Employee copy = (Employee)original.clone();
+copy.raiseSalary(10);
+
+protected Object clone() throws CloneNotSupportedException
+Since clone() method has declared as protected, therefore, we cannot call it from the client code.
+The following code is not valid:
+Object obj = new Object();
+Object clone = obj.clone(); // Error. cannot access protected clone() method.
+
+Steps to Clone Object of a Class->
+1.Implement the empty cloneable interface. Only a class that implements Cloneable interface can be cloned.
+Cloneable interface is a marker interface declared in java.lang package. This interface has no members.
+It shows that class objects are cloneable.
+If we do not implement Cloneable interface, clone() method produces an exception named
+CloneNotSupportedException and class objects will not clone.
+2.Write your own method with a public access modifier in the class and call the clone()
+method of Object class using super keyword.
+public Object myClone() // user defined method
+{
+   return super.clone(); // create a cloned object and return it.
+}
+3. It is also possible to create a cloned object by overriding clone() method of Object class
+with a public access modifier. The overriding code is something like this:
+protected Object clone() // this method overrides Object's clone() method.
+{
+   return super.clone();
+}
+
+Types of Object Cloning in Java->
+Shallow cloning: When we modify the cloned object,
+and the same modification also affects in the original object, then this type of cloning is called shallow cloning.
+Deep cloning: When we modify the cloned object,
+and the same modification does not affect the original object, then this type of cloning is called deep cloning.
+
+e.g of clonning
+public class Employee implements Cloneable {
+   String name;
+   int id;
+   Employee(String name, int id) {
+	this.name = name;
+	this.id = id;
+   }
+   void getData() {
+	System.out.println("Employee's name: " +name);
+        System.out.println("Employee's id: " +id);
+   }
+   public Object myClone() throws CloneNotSupportedException {//shallow copy
+	return super.clone();
+   }
+}
+
+We can also rewrite the above program by overriding the clone() method of Object class.
+Replace the myClone() method code with the below code: deep copy
+protected Object clone() throws CloneNotSupportedException {
+  return super.clone();
+}
+
+note->If we define clone() method in the subclass, then all of its superclasses should define
+the clone() method in them or inherit it from another parent class. Else, super.clone() chain will fail.
+--------------------------------
+
+The command line arguments in Java allow the programmers to pass arguments (i.e. values)
+to the main() method during the execution of the program from the outside.
+It represents the arguments passed to the main() method.
+To catch and store these arguments, the main() method has a parameter, String args[ ] as:
+
+Example of Command-line Argument in Java->
+C:\> java CommandLine hello 10 world// here hello 10 world is total 3 arguments that we have passed
+and we will get this in main method like args[0]...etc
+
+How does Command Line Arguments Work in Java?->
+1.When we will run CommandLine Java program, the operating system passes the list of arguments to the JVM.
+2.Sometimes, the operating system modifies arguments list by interpreting their
+meanings and may pass a modified list of arguments to the JVM.
+3.The JVM parses a list of arguments using a space as a separator.
+4.It populates an array of string with elements in the arguments list sequentially.
+5.Finally, JVM passes an array of string to the main() method of the CommandLine class that we are running
+6.If we do not provide command line argument, JVM creates a
+string array of length zero and passes it to the main() method.
+7. We can also pass space-separated words as one argument. For it, we will need to enclose them in double quotes.
+We can also avoid the operating system interpretation of special characters by enclosing them in double quotes.
+
+how to pass numeric->
+In a Java program, the main() method only takes data of type string.
+Therefore, we can never pass numeric arguments (i.e. values) via the command line.
+If we pass these numeric arguments to main(), they are converted into string and we can’t use
+them as numbers. So, we can’t perform any numeric operations with them.but later we can do parseInt.
+----------------------------------
+Recursion in Java->
+The term “recursion” means a method calling itself.
+a process in which a method invokes itself directly
+or indirectly is called recursion, and the related method is called a recursive method.
+Recursion in Java should use best when we need to call the same method repeatedly with different parameters.
+
+How to Stop Recursion in Java?->
+We can stop the recursive call by providing some conditions inside the method. While defining recursive method, it is necessary
+to specify a termination condition. If we do not specify such a condition, then the method may call infinite times
+
+public class RecursionExample {
+static int count = 0;
+static void display()
+{
+  count++;
+  if(count <= 5) // base case
+  {
+    System.out.println("Hello world");
+    display(); // recursive call
+  }
+ }
+public static void main(String[] args)
+{
+ display(); // normal method call
+  }
+}
+
+public class Factorial
+{
+ static int fact(int num)
+ {
+  if(num == 1 || num == 0) // base case.
+  {
+    return 1;
+  }
+    return num * fact(num - 1); // recursive call.
+ }
+public static void main(String[] args)
+{
+  System.out.println("The factorial of 6 is " +fact(6));
+  }
+}
+fact(6) returns 6 * fact(5)
+fact(5) returns 6 * 5 * fact(4)
+fact(4) returns 6 * 5 * 4 * fact(3)
+fact(3) returns 6 * 5 * 4 * 3 * fact(2)
+fact(2) returns 6 * 5 * 4 * 3 * 2 * fact(1)
+fact(1) returns 6 * 5 * 4 * 3 * 2 * 1.
+fact(1) or fact(0) returns 1. 1! is equal 1 and 0! is also 1.
+--------------------------------------------------------------
+
+What is Factory Method in Java->
+A factory method in Java is a static method that creates and returns an object to the class to which it belongs.
+For example, getNumberInstance() is a factory method that belongs to the NumberFormat class.
+It returns an object to the NumberFormat class.
+
+When to Use Factory Method in Java?->
+A single factory method can replace many overloaded constructors in the class by accepting different values from the
+programmers, while creating the objects.
+For example, there are 10 different types of values that we need to pass to an object at the time of creating
+objects. Then, we will have to create 10 constructors to accept those 10 types of values in the class.
+
+In how many ways can we create an object in Java?->
+ 1.Using new operator/2.Using factory methods:(NumberFormat obj = NumberFormat.getNumberInstance;)
+ 3.Using newInstance() method:
+ Class c = Class.forName("Student");
+ Student obj = (Student)c.newInstance();
+ 4. By cloning
+
+ ---------------------------------------------------
+
+ Math Class in Java->
+ The java.lang.Math class contains two constants and a collection of methods that we can use
+ to perform basic mathematical operations.
+ Since the class is final, so we cannot extend it. The constructor of Math class is private, so we cannot create an instance of this class.
+ two constants->
+ 1. static double E: This constant represents the value of e, the base of the natural logarithms.
+ 2. static double PI: This constant represents the value of pi,
+
+ Math.abs(x): Returns the absolute value of a number.
+ Math.acos(x): Returns the arc cosine of x, in radians.
+ Math.asin(x): Returns the arc sine of x, in radians.
+ Math.atan(x): Returns the arc tangent of x, in radians.
+ Math.atan2(y, x): Returns the arc tangent of the two arguments (y/x), in radians.
+ Math.ceil(x): Returns the smallest integer greater than or equal to x.
+ Math.cos(x): Returns the cosine of an angle, where x is in radians.
+ Math.cosh(x): Returns the hyperbolic cosine of x.
+ Math.degrees(x): Converts an angle from radians to degrees.
+ Math.exp(x): Returns e raised to the power of x (e^x).
+ Math.floor(x): Returns the largest integer less than or equal to x.
+ Math.hypot(x, y): Returns the square root of the sum of the squares of its arguments (Euclidean distance, sqrt(x² + y²)).
+ Math.log(x): Returns the natural logarithm (base e) of x.
+ Math.log10(x): Returns the base-10 logarithm of x.
+ Math.max(x, y): Returns the larger of the two arguments.
+ Math.min(x, y): Returns the smaller of the two arguments.
+ Math.pow(x, y): Returns x raised to the power of y (x^y).
+ Math.random(): Returns a random double between 0.0 and 1.0.
+ Math.round(x): Returns the closest long to the argument.
+ Math.sin(x): Returns the sine of an angle, where x is in radians.
+ Math.sinh(x): Returns the hyperbolic sine of x.
+ Math.sqrt(x): Returns the square root of x.
+ Math.tan(x): Returns the tangent of an angle, where x is in radians.
+ Math.tanh(x): Returns the hyperbolic tangent of x.
+ Math.toDegrees(x): Converts an angle from radians to degrees.
+ Math.toRadians(x): Converts an angle from degrees to radians.
+ Math.trunc(x): Returns the integer part of x (similar to truncating the decimal part).
+
+
+
+
+

@@ -1,0 +1,72 @@
+functional requirements:
+// 1. The system should allow users to shorten a given long URL.
+// 2. The system should generate a unique short URL for each long URL.
+3.give original url when short url is hit
+support custom url(optional for premium)
+support expiration date(optional for premium user)
+
+non-functional requirements:
+low latency(on redirect as well as on creation of short url-redirect 200ms)
+scale-100m daily requests(based on this we can decide the db we are going to use)
+short url should be unique
+Cap-> u either need to designed distributed system u either need to compromised on
+consistency or availability
+here high availability is required as even if one node is down system should work
+so we can compromised on consistency(eventual consistency is fine)
+
+core entities->
+1.shortUrl
+2.longUrl
+3.User
+
+endpoint->
+Post /createShortUrl
+Request body: { "longUrl": "http://example.com/very/long/url", customURl, custom expiration date}-> return short url
+GET /{shortUrl} -> redirect to long url
+Registering user-> optional
+
+
+database table->userMetaData(id, name, email, isPremium)
+urlTable(id, shortUrl, longUrl, creationDate, expirationDate, customUrl)
+//
+
+low level design->
+1. URLShortenerService:
+- createShortUrl(longUrl, customUrl, expirationDate, userId): Generates a unique short URL for the given long URL.
+- getLongUrl(shortUrl): Retrieves the original long URL for the given short URL.
+- validateCustomUrl(customUrl): Validates if the custom URL is available and meets the criteria.
+- isPremiumUser(userId): Checks if the user is a premium user.
+
+using encryption for generating  short url->encryption library like MD5, SHA-256,Base64->taking hash of long url and
+encoding it to base64 and taking first 6 characters
+
+bt for 100m daily requests we will have collisions
+so we can use map where key is short url and value is long url
+
+another best approach is to use a counter-> no need to check in db bcz it autogenerates unique id
+but issue with this is->
+
+client -> lb-> 3 server instance having counter ->db
+and issue with counter sync across service-> so instead of puting counter in each service we can in redis cache and read from there
+so client -> lb-> 3 server instance -> redis(cache for counter)
+
+what if redis goes down-> we can use primary secondary approach of redis
+instead of using single redis instance we can use redis cluster->
+
+and also we go for separate microservice for encryption and description.
+
+best approach we can go with distributed system cordinator like zookeeper
+client -> lb-> 3 server instance -> zookeeper(cordinator for counter)
+and each server instance will have its own counter which will be sync with zookeeper
+so whenever counter reaches certain limit it will sync with zookeeper
+so that we can avoid single point of failure
+
+also we are going to have snowflake Id for each and every m/c on zookeeper.
+
+301/302 redirect-> temporary or permanent redirect
+301->permanent redirect->search engine will update their index to new url
+302->temporary redirect->search engine will not update their index to new url
+
+
+
+

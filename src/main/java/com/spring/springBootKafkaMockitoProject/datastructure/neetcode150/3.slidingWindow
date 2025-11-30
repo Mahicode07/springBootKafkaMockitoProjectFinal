@@ -1,0 +1,144 @@
+ best time to buy and sell stock
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        int maxProfit =0;
+        int min =prices[0];
+        for(int i=1;i<prices.length;i++){
+            if(prices[i]<min){
+                min=prices[i];
+            }
+            maxProfit=Math.max(maxProfit,prices[i]-min);
+        }
+        return maxProfit;
+
+    }
+}
+=========================================================
+Longest Substring Without Repeating Characters
+// Given a string s, find the length of the longest substring without repeating characters.
+// Input: s = "pwwkew"
+// Output: 3
+// Explanation: The answer is "wke", with the length of 3.
+// Note that the answer must be a substring, "pwke" is a subsequence and
+
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        //s ='pwwkewxpw'
+        Set<Character> charSet = new HashSet<>();
+        int MaxLength =0;
+        int left=0;
+        for(int right=0;right<s.length();right++){
+            while(charSet.contains(s.charAt(right))){
+                charSet.remove(s.charAt(left));
+                left++;
+            }
+            charSet.add(s.charAt(right));
+            MaxLength=Math.max(MaxLength,right-left+1);
+        }
+
+        return MaxLength;
+
+    }
+}
+==========================================================
+Longest Repeating Character Replacement
+// You are given a string s and an integer k. You can replace any character in the string with any other character up to k times.
+// Find the length of the longest substring that can be obtained after performing at most k replacements.
+// Input: s = "AABABBA", k = 1
+// Output: 4    ether AAAA or BBBB
+
+class Solution {
+    public int characterReplacement(String s, int k) {
+        // freq array stores count of each character (A-Z) in the current sliding window
+        int[] freq = new int[26];
+
+        // left pointer of the sliding window
+        int left = 0;
+
+        // maxfreq keeps track of the most frequent character count in the current window
+        // this helps us decide how many characters we need to change to make all same
+        int maxfreq = 0;
+
+        // maxWindow keeps track of the maximum valid window length found so far
+        int maxWindow = 0;
+
+        // Expand the sliding window with the right pointer
+        for (int right = 0; right < s.length(); right++) {
+            // Increase the frequency of the current character
+            freq[s.charAt(right) - 'A']++;
+
+            // Update maxfreq: most frequent character count in the current window
+            // This is crucial because the minimum replacements needed = windowLength - maxfreq
+            maxfreq = Math.max(maxfreq, freq[s.charAt(right) - 'A']);
+
+            // Current window length
+            int windowLength = right - left + 1;
+
+            // If replacements needed exceed k, shrink the window from the left
+            // (replacements needed = windowLength - maxfreq)
+            if (windowLength - maxfreq > k) {
+                // Reduce the frequency of the char going out of the window
+                freq[s.charAt(left) - 'A']--;
+                // Move left pointer ahead
+                left++;
+            }
+
+            // Recalculate current window length after possible shrink
+            windowLength = right - left + 1;
+
+            // Update maximum window size found so far
+            maxWindow = Math.max(maxWindow, windowLength);
+        }
+
+        // Return the maximum valid window length
+        return maxWindow;
+    }
+}
+===========================================================
+Permutation in String
+Return true if s2 contains a permutation of s1, or false otherwise.
+That means if a permutation of s1 exists as a substring of s2, then return true.
+Input: s1 = "abc", s2 = "lecabee"
+Output: true
+
+Input: s1 = "abc", s2 = "lecaabee"
+Output: false
+
+class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+        if(s2.length()<s1.length()){
+            return false;
+        }
+
+        int[] s1Map = new int[26];
+        int[] s2Map = new int[26];
+
+        //intialize freq map for s1 and first window of s2
+        for(int i=0;i<s1.length();i++){
+            s1Map[s1.charAt(i)-'a']++;
+            s2Map[s2.charAt(i)-'a']++;
+        }
+
+        //slide the window through s2
+        for(int i=0;i<s2.length()-s1.length();i++){
+            if(matches(s1Map,s2Map)){
+                return true;
+            }
+            s2Map[s2.charAt(i+s1.length())-'a']++;// add new character to window
+            s2Map[s2.charAt(i)-'a']--;// remove old character from window
+        }
+      //check last window
+        return  matches(s1Map,s2Map);
+    }
+
+    public boolean matches(int[] s1Map,int[]s2Map){
+        for(int i=0;i<26;i++){
+            if(s1Map[i]!=s2Map[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+===========================================================

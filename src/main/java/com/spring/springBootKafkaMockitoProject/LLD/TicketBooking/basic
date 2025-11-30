@@ -1,0 +1,47 @@
+it is platform like bookmyshow , make my trip etc
+
+functional requirements->
+// 1. users should be able to book tickets for different events (movies, concerts, flights, trains, buses, etc.)
+based on title,location,time,date
+user should able to see the available seats, description of event, reviews and ratings.
+user should do the book that ticket of event
+
+non-functional requirements->
+scale of system- 10m daily active users
+cap theorem -> currently required both (highly availabe in case of searching and seeing the events)
+and need consistency in case of booking the tickets.
+
+core entities->
+1.User
+2.Event(movie,concert,flight,train,bus)
+3.Ticket
+4.Payment
+5.Venue
+
+API Designing->
+1. GET-> v1/search/q={searchTerm}-> should return list of eventIds: pagination
+searchTerm can be title,location,time,date
+2. GET-> v1/event/{eventId}-> should return event details,location and seats available
+3. POST-> v1/event/{eventId}/reserve-> should reserve seats temporarily for a user-> return bookingId
+Request body: { "userId": "123", "seats": ["A1", "A2"] }
+5. POST-> v1/bookingId/payment-> based on bookingId should make payment and confirm booking
+Request body: { "paymentMethod": "CREDIT_CARD", "details": { ... } }
+6. GET-> v1/user/{userId}/bookings-> should return list of bookings
+7. DELETE-> v1/booking/{bookingId}/cancel-> should cancel the booking and free up seats
+
+High Level Design->
+based on 10m DAU we need to go with microservice architecture
+and with the help of horizontal scaling we can scale the system
+
+then we need to introduce API Gateway to distribute the load
+and calls the booking service which going to interact with db
+
+but here only one booking service will be there which are doing all operations
+so instead we can go with creating microservice for each of business operation
+1. Search Service
+2. Event Service
+3. Booking Service
+4. Payment Service
+
+
+

@@ -1,0 +1,785 @@
+ SOLID Principles->
+1)single responsibility principle-A class should do one thing, and do it well.
+user service and email service example
+Bank-> transaction,notification,loan service all should be separate class
+2)Open/Closed Principle->
+When you constantly modify existing classes to add new features, you risk breaking old functionality.
+e.g notification service  as an interface and create separate class for handling email and sms and now wants to add whatsapp notification
+so in that case we will create new class for whatsapp notification which will implements notification service
+and implement send method for whatsapp.
+3)Liskov Substitution Principle->
+if a function takes a instance of a class A then that function should also take instance of derived class from A
+its talks above how to inherit classes.
+e.g class social media having diff methods like post,like,share(some features not supported by all social media) that means not an liskov principle
+in such case only common features should be there in base class and rest should be in derived class.
+now we have derived class facebook and twitter from social media class
+now if we have a function which takes social media class object as parameter then that function should also
+take facebook and twitter class object as parameter.
+4)Interface Segregation Principle->
+No client should be forced to depend on methods it does not use.
+Big interfaces force implementing classes to define irrelevant methods,
+which leads to unnecessary code, confusion, and potential bugs.
+e.g.A Printer interface with methods: print(), fax(), scan().
+What if your class only prints? You're forced to stub unused methods.
+✅ Better approach:
+Split interfaces:Printable,Scannable,Faxable
+Now your class only implements what it needs.
+5)Dependency Inversion Principle->
+High-level modules(OrderService) should not depend on low-level modules(MySQLOrderRepository).
+Both should depend on abstractions
+wrong code->
+class MySQLDatabase {
+    void saveData(String data) {
+        System.out.println("Saving data in MySQL: " + data);
+    }
+}
+
+class DataProcessor {
+    private MySQLDatabase database = new MySQLDatabase();
+
+    void process(String data) {
+        // Business logic
+        database.saveData(data);
+    }
+}
+---
+
+interface Database {
+    void saveData(String data);
+}
+
+class MySQLDatabase implements Database {
+    public void saveData(String data) {
+        System.out.println("Saving data in MySQL: " + data);
+    }
+}
+
+class PostgreSQLDatabase implements Database {
+    public void saveData(String data) {
+        System.out.println("Saving data in PostgreSQL: " + data);
+    }
+}
+
+class DataProcessor {
+    private final Database database;
+
+    // Inject dependency via constructor
+    DataProcessor(Database database) {
+        this.database = database;
+    }
+
+    void process(String data) {
+        database.saveData(data);
+    }
+}
+
+
+Database db = new MySQLDatabase(); // or new PostgreSQLDatabase()
+DataProcessor processor = new DataProcessor(db);
+processor.process("Hello DIP");
+=============================================================================================================
+
+
+Design Patterns->
+    These patterns offer reusable, general solutions to common problems encountered in software development,
+    representing established best practices.
+    rather a guideline or model for solving issues.
+
+Types of Software Design Patterns in Java->
+    1. Creational Design Patterns in Java
+            Creational design patterns are a category of design patterns in software development
+            that focus on the process of creating objects.
+
+    A)Factory method Design Pattern->
+        It provides an interface for creating objects in a superclass while allowing subclasses to
+        specify the types of objects they create.
+        Instead of calling a constructor directly to create an object, a Factory Method is used to handle the object creation,
+        which allows for more flexibility and control over the instantiation process.
+
+When to Use the Factory Method Design Pattern->
+    1.If your object creation process is complex or varies under different conditions,
+    using a factory method can make your client code simpler and promote reusability.
+    2.modify or expand the system without affecting existing code.
+    3.If your application needs to create different versions of a product or may introduce new types in the future,
+    the Factory Method Pattern provides a flexible way to handle these variations by defining specific factory methods
+    for each product type.
+
+Components of Factory Method Design Pattern->
+    Creator: This is an abstract class or an interface that declares the factory method. The creator typically contains
+    a method that serves as a factory for creating objects.
+    Concrete Creator: Concrete Creator classes are subclasses of the Creator that implement the factory method to
+    create specific types of objects
+    Product: This is the interface or abstract class for the objects that the factory method creates.
+    The Product defines the common interface for all objects that the factory method can create
+
+
+    abstract class Vehicle {
+        public abstract void printVehicle();
+    }
+
+    class TwoWheeler extends Vehicle {
+        public void printVehicle() {
+            System.out.println("I am two wheeler");
+        }
+    }
+
+    class FourWheeler extends Vehicle {
+        public void printVehicle() {
+            System.out.println("I am four wheeler");
+        }
+    }
+
+    // Factory Interface
+    interface VehicleFactory {
+        Vehicle createVehicle();
+    }
+
+    // Concrete Factory for TwoWheeler
+    class TwoWheelerFactory implements VehicleFactory {
+        public Vehicle createVehicle() {
+            return new TwoWheeler();
+        }
+    }
+
+    // Concrete Factory for FourWheeler
+    class FourWheelerFactory implements VehicleFactory {
+        public Vehicle createVehicle() {
+            return new FourWheeler();
+        }
+    }
+
+    // Client class
+    class Client {
+        private Vehicle pVehicle;
+
+        public Client(VehicleFactory factory) {
+            pVehicle = factory.createVehicle();
+        }
+
+        public Vehicle getVehicle() {
+            return pVehicle;
+        }
+    }
+
+    // Driver program
+    public class GFG {
+        public static void main(String[] args) {
+            VehicleFactory twoWheelerFactory = new TwoWheelerFactory();
+            Client twoWheelerClient = new Client(twoWheelerFactory);
+            Vehicle twoWheeler = twoWheelerClient.getVehicle();
+            twoWheeler.printVehicle();
+
+            VehicleFactory fourWheelerFactory = new FourWheelerFactory();
+            Client fourWheelerClient = new Client(fourWheelerFactory);
+            Vehicle fourWheeler = fourWheelerClient.getVehicle();
+            fourWheeler.printVehicle();
+        }
+    }
+
+====================================================================================
+
+Abstract Design pattern ->
+    Abstract Factory Pattern is a way of organizing how you create groups of things that are related to each other.
+    interface CarFactory {
+        Car createCar();
+        CarSpecification createSpecification();
+    }
+
+    // Concrete Factory for North America Cars
+    class NorthAmericaCarFactory implements CarFactory {
+        public Car createCar() {
+            return new Sedan();
+        }
+
+        public CarSpecification createSpecification() {
+            return new NorthAmericaSpecification();
+        }
+    }
+
+    // Concrete Factory for Europe Cars
+    class EuropeCarFactory implements CarFactory {
+        public Car createCar() {
+            return new Hatchback();
+        }
+
+        public CarSpecification createSpecification() {
+            return new EuropeSpecification();
+        }
+    }
+
+    // Abstract Product Interface for Cars
+    interface Car {
+        void assemble();
+    }
+
+    // Abstract Product Interface for Car Specifications
+    interface CarSpecification {
+        void display();
+    }
+
+    // Concrete Product for Sedan Car
+    class Sedan implements Car {
+        public void assemble() {
+            System.out.println("Assembling Sedan car.");
+        }
+    }
+
+    // Concrete Product for Hatchback Car
+    class Hatchback implements Car {
+        public void assemble() {
+            System.out.println("Assembling Hatchback car.");
+        }
+    }
+
+    // Concrete Product for North America Car Specification
+    class NorthAmericaSpecification implements CarSpecification {
+        public void display() {
+            System.out.println("North America Car Specification: Safety features compliant with local regulations.");
+        }
+    }
+
+    // Concrete Product for Europe Car Specification
+    class EuropeSpecification implements CarSpecification {
+        public void display() {
+            System.out.println("Europe Car Specification: Fuel efficiency and emissions compliant with EU standards.");
+        }
+    }
+
+
+    // Client Code
+    public class CarFactoryClient {
+        public static void main(String[] args) {
+            // Creating cars for North America
+            CarFactory northAmericaFactory = new NorthAmericaCarFactory();
+            Car northAmericaCar = northAmericaFactory.createCar();
+            CarSpecification northAmericaSpec = northAmericaFactory.createSpecification();
+
+            northAmericaCar.assemble();
+            northAmericaSpec.display();
+
+            // Creating cars for Europe
+            CarFactory europeFactory = new EuropeCarFactory();
+            Car europeCar = europeFactory.createCar();
+            CarSpecification europeSpec = europeFactory.createSpecification();
+
+            europeCar.assemble();
+            europeSpec.display();
+        }
+    }
+
+==========================================================================================
+SingleTon design pattern->
+Singleton Design Pattern Principles->
+Single Instance:,Global Access,Lazy or Eager Initialization,Thread Safety,Private Constructor
+
+This pattern is often used in situations like logging, managing connections to hardware or databases,
+caching data, or handling thread pools, where having just one instance makes sense
+
+Key Component of Singleton Method Design Pattern:->
+1. Static Member:This static member ensures that memory is allocated only once,
+preserving the single instance of the Singleton class
+private static Singleton instance;
+2.Private Constructor:which serves as a barricade against external attempts to create instances of the Singleton class
+3. Static Factory Method:
+This method acts as a gateway, providing a global point of access to the Singleton object.
+When someone requests an instance, this method either creates a new instance (if none exists) or returns the existing instance to the caller.
+public static Singleton getInstance()
+{
+    // Check if an instance exists
+    if (instance == null) {
+        // If no instance exists, create one
+        instance = new Singleton();
+    }
+    // Return the existing instance
+    return instance;
+}
+
+
+fullCode->
+    import java.io.*;
+    class Singleton {
+        // static class
+        private static Singleton instance;
+        private Singleton()
+        {
+            System.out.println("Singleton is Instantiated.");
+        }
+        public static Singleton getInstance()
+        {
+            if (instance == null)
+                instance = new Singleton();
+            return instance;
+        }
+        public static void doSomething()
+        {
+            System.out.println("Somethong is Done.");
+        }
+    }
+
+    class GFG {
+        public static void main(String[] args)
+        {
+            Singleton.getInstance().doSomething();
+        }
+    }
+
+ synchronised->
+    // Thread Synchronized Java implementation of
+    // singleton design pattern
+    class Singleton {
+        private static Singleton obj;
+        private Singleton() {}
+
+        // Only one thread can execute this at a time
+        public static synchronized Singleton getInstance()
+        {
+            if (obj == null)
+                obj = new Singleton();
+            return obj;
+        }
+    }
+
+    Method 3 – Eager Instantiation
+        class Singleton {
+            private static Singleton obj = new Singleton();
+            private Singleton() {}
+
+            public static Singleton getInstance() { return obj; }
+        }
+
+ Method 4 – Most Efficient || Use “Double Checked Locking” to implement singleton design pattern->
+    class Singleton {
+        private static volatile Singleton obj = null;
+        private Singleton() {}
+        public static Singleton getInstance()
+        {
+            if (obj == null) {
+                // To make thread safe
+                synchronized (Singleton.class)
+                {
+                    // check again as multiple threads
+                    // can reach above step
+                    if (obj == null)
+                        obj = new Singleton();
+                }
+            }
+            return obj;
+        }
+    }
+
+    We have declared the obj volatile which ensures that multiple threads offer the obj variable
+    correctly when it is being initialized to the Singleton instance
+
+=========================================================================================
+
+Prototype Design pattern->
+    we create objects with the existing object itself to by copying the existing ones.
+    The newly copied object may change the same properties only if required. This approach saves costly resources and time,
+    especially when object creation is a heavy process.
+    best way -clone() method.
+
+    public interface Shape extends Cloneable {
+        void draw();
+        Shape clone();
+    }
+
+    // Circle.java (ConcretePrototype)
+    public class Circle implements Shape {
+        private String color;
+
+        public Circle(String color) {
+            this.color = color;
+        }
+
+        @Override
+        public void draw() {
+            System.out.println("Drawing Circle with color: " + color);
+        }
+
+        @Override
+        public Shape clone() {
+            try {
+                return (Shape) super.clone();
+            } catch (CloneNotSupportedException e) {
+                return null;
+            }
+        }
+    }
+
+    // Rectangle.java (ConcretePrototype)
+    public class Rectangle implements Shape {
+        private String color;
+
+        public Rectangle(String color) {
+            this.color = color;
+        }
+
+        @Override
+        public void draw() {
+            System.out.println("Drawing Rectangle with color: " + color);
+        }
+
+        @Override
+        public Shape clone() {
+            try {
+                return (Shape) super.clone();
+            } catch (CloneNotSupportedException e) {
+                return null;
+            }
+        }
+    }
+
+// Client.java
+public class Client {
+    public static void main(String[] args) {
+        // Create prototype objects
+        Shape circle = new Circle("Red");
+        Shape rectangle = new Rectangle("Blue");
+
+        // Clone objects
+        Shape clonedCircle = circle.clone();
+        Shape clonedRectangle = rectangle.clone();
+
+        // Draw original and cloned shapes
+        circle.draw();
+        clonedCircle.draw();
+
+        rectangle.draw();
+        clonedRectangle.draw();
+    }
+}
+================================================================================
+Builder design pattern->
+    // Pizza.java
+    public class Pizza {
+        private String size;
+        private boolean cheese;
+        private boolean pepperoni;
+        private boolean veggies;
+
+        public Pizza(String size, boolean cheese, boolean pepperoni, boolean veggies) {
+            this.size = size;
+            this.cheese = cheese;
+            this.pepperoni = pepperoni;
+            this.veggies = veggies;
+        }
+
+        @Override
+        public String toString() {
+            return "Pizza [size=" + size + ", cheese=" + cheese + ", pepperoni=" + pepperoni + ", veggies=" + veggies + "]";
+        }
+    }
+// PizzaBuilder.java
+public class PizzaBuilder {
+    private String size;
+    private boolean cheese;
+    private boolean pepperoni;
+    private boolean veggies;
+
+    public PizzaBuilder setSize(String size) {
+        this.size = size;
+        return this;
+    }
+
+    public PizzaBuilder addCheese() {
+        this.cheese = true;
+        return this;
+    }
+
+    public PizzaBuilder addPepperoni() {
+        this.pepperoni = true;
+        return this;
+    }
+
+    public PizzaBuilder addVeggies() {
+        this.veggies = true;
+        return this;
+    }
+
+    public Pizza build() {
+        return new Pizza(size, cheese, pepperoni, veggies);
+    }
+}
+
+// Client.java
+public class Client {
+    public static void main(String[] args) {
+        Pizza pizza = new PizzaBuilder()
+                          .setSize("Large")
+                          .addCheese()
+                          .addPepperoni()
+                          .build();
+
+        System.out.println(pizza);
+    }
+}
+
+Immutable Object Creation: The resulting object (Pizza in this case) can be made immutable since it's fully
+constructed by the builder.
+
+===================================================================================
+Behavioral design pattern->
+Behavioral patterns define how objects communicate with each other in a flexible and decoupled way.
+They help in:
+Reducing tight coupling
+Increasing reusability
+Making your code easier to maintain and extend
+
+1.strategy design patterns->
+    The Strategy Pattern allows you to define a family of algorithms, encapsulate each one, and make them interchangeable at runtime.
+    Think of it as choosing the strategy or behavior of an object dynamically, without modifying its actual class
+
+    Real-Life Analogy:
+    Imagine you're paying for a product on an e-commerce site. The payment method could be:Credit Card,PayPal,Apple Pay
+    Each payment method is a strategy. You can choose it at runtime, but the logic of how they work is separate.
+
+    // Step 1: Strategy Interface
+    interface PaymentStrategy {
+        void pay(int amount);
+    }
+
+    // Step 2: Concrete Strategies
+    class CreditCardPayment implements PaymentStrategy {
+        public void pay(int amount) {
+            System.out.println("Paid " + amount + " using Credit Card");
+        }
+    }
+
+    class PaypalPayment implements PaymentStrategy {
+        public void pay(int amount) {
+            System.out.println("Paid " + amount + " using PayPal");
+        }
+    }
+
+    // Step 3: Context
+    class ShoppingCart {
+        private PaymentStrategy strategy;
+
+        public void setPaymentStrategy(PaymentStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        public void checkout(int amount) {
+            strategy.pay(amount);
+        }
+    }
+
+    // Step 4: Use It
+    public class StrategyPatternDemo {
+        public static void main(String[] args) {
+            ShoppingCart cart = new ShoppingCart();
+
+            cart.setPaymentStrategy(new CreditCardPayment());
+            cart.checkout(500);
+
+            cart.setPaymentStrategy(new PaypalPayment());
+            cart.checkout(300);
+        }
+    }
+
+When to Use Strategy Pattern
+You want to replace if-else or switch-case logic for multiple behaviors.
+You need to change behavior at runtime.
+You want to decouple algorithms from the class using them.
+
+2.chain of responsibility->
+    It lets you pass a request along a chain of handlers, where each handler decides either to handle the request or pass it to the next handler.
+    Think of customer support:
+    First level: Chatbot
+    Then to: Customer Service Agent
+    Then to: Manager
+
+    // Step 1: Abstract Handler
+    abstract class Handler {
+        protected Handler next;
+
+        public void setNext(Handler next) {
+            this.next = next;
+        }
+
+        public abstract void handleRequest(String request);
+    }
+
+    // Step 2: Concrete Handlers
+    class AuthHandler extends Handler {
+        public void handleRequest(String request) {
+            if (request.equals("AUTH")) {
+                System.out.println("AuthHandler: Handling authentication");
+            } else if (next != null) {
+                next.handleRequest(request);
+            }
+        }
+    }
+
+    class LogHandler extends Handler {
+        public void handleRequest(String request) {
+            if (request.equals("LOG")) {
+                System.out.println("LogHandler: Handling logging");
+            } else if (next != null) {
+                next.handleRequest(request);
+            }
+        }
+    }
+
+    class ErrorHandler extends Handler {
+        public void handleRequest(String request) {
+            if (request.equals("ERROR")) {
+                System.out.println("ErrorHandler: Handling error");
+            } else if (next != null) {
+                next.handleRequest(request);
+            } else {
+                System.out.println("Unhandled request: " + request);
+            }
+        }
+    }
+===================
+Structural design patterns->
+    These patterns focus on how classes and objects are composed to form larger structures while keeping the system flexible and efficient.
+    In simple words:
+    They help you build relationships between different parts of your code.
+    They ensure your components are well-organized and easy to scale
+
+1.adapter design pattern->
+   The Adapter Pattern is like a translator. It helps two classes work together even if they speak different "languages" (have different interfaces).
+   It converts one class's interface into another that the other class understands, so they can communicate and work together smoothly.
+   e.g If a person speaks French but you only understand English, a translator (adapter) helps you understand
+
+   interface Target {
+       void request();
+   }
+
+   class Adaptee {
+       public void specialRequest() {
+           System.out.println("Called specialRequest from Adaptee");
+       }
+   }
+
+   class Adapter implements Target {
+       private Adaptee adaptee;
+
+       public Adapter(Adaptee adaptee) {
+           this.adaptee = adaptee;
+       }
+
+       public void request() {
+           // Translate request() to specialRequest()
+           adaptee.specialRequest();
+       }
+   }
+
+   public class Main {
+       public static void main(String[] args) {
+           Adaptee adaptee = new Adaptee(); // incompatible class
+           Target target = new Adapter(adaptee); // adapter in action
+
+           target.request(); // Client uses standard interface
+       }
+   }
+
+2.Proxy design pattern->
+    The Proxy Pattern provides a placeholder or surrogate for another object to control access to it.
+    It’s like a gatekeeper that stands in front of a real object and controls when and how you interact with that object.
+    Imagine you’re a celebrity manager.
+    People can’t directly meet the celebrity (real object).
+    They must go through the manager (proxy) who controls access.
+
+    Use Cases
+    Lazy loading (e.g., load image only when needed)
+    Access control (e.g., security check)
+    Logging or auditing
+    Remote proxies (e.g., for distributed systems)
+    Caching results
+
+    interface Movie {
+        void watchMovie();
+    }
+
+    class MovieTheater implements Movie {
+        public void watchMovie() {
+            System.out.println("Enjoy the movie 🎬🍿");
+        }
+    }
+
+    class TicketChecker implements Movie {
+        private boolean hasTicket;
+        private MovieTheater theater;
+
+        public TicketChecker(boolean hasTicket) {
+            this.hasTicket = hasTicket;
+            this.theater = new MovieTheater();
+        }
+
+        public void watchMovie() {
+            if (hasTicket) {
+                theater.watchMovie();  // Access allowed
+            } else {
+                System.out.println("No ticket! Access denied 🚫");
+            }
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Movie withTicket = new TicketChecker(true);
+            withTicket.watchMovie();  // ✅ allowed
+
+            Movie withoutTicket = new TicketChecker(false);
+            withoutTicket.watchMovie();  // ❌ denied
+        }
+    }
+
+3.facade design pattern
+    The Facade Pattern provides a simplified interface to a complex system of classes, libraries, or frameworks.
+    It acts as a front door — hiding the messy details and exposing just what you need.
+
+    Imagine a universal remote that controls your TV, sound system, and lights.
+    Instead of using 3 different remotes (each complex), you just press one button like "Watch Movie" —
+    and the universal remote does everything behind the scenes.
+
+    class Projector {
+        void on() { System.out.println("Projector ON"); }
+    }
+
+    class Screen {
+        void down() { System.out.println("Screen DOWN"); }
+    }
+
+    class DVDPlayer {
+        void play() { System.out.println("DVD Playing"); }
+    }
+
+    class Lights {
+        void off() { System.out.println("Lights OFF"); }
+    }
+
+    class HomeTheaterFacade {
+        private Projector projector;
+        private Screen screen;
+        private DVDPlayer dvdPlayer;
+        private Lights lights;
+
+        public HomeTheaterFacade() {
+            projector = new Projector();
+            screen = new Screen();
+            dvdPlayer = new DVDPlayer();
+            lights = new Lights();
+        }
+
+        public void watchMovie() {
+            System.out.println("Get ready for movie night...");
+            projector.on();
+            screen.down();
+            dvdPlayer.play();
+            lights.off();
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            HomeTheaterFacade homeTheater = new HomeTheaterFacade();
+            homeTheater.watchMovie(); // Clean, simple call
+        }
+    }
+
+
+

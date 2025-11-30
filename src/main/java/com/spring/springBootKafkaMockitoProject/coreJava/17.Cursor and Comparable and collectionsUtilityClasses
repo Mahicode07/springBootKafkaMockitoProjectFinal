@@ -1,0 +1,475 @@
+Cursor in java->
+1.Enumeration 2.Iterator 3.ListIterator
+
+Feature                | Enumeration                     | Iterator                            | ListIterator
+-----------------------|----------------------------------|--------------------------------------|-------------------------------
+Introduced In          | Java 1.0                         | Java 1.2                             | Java 1.2
+Applicable Collections | Legacy only                     | All Collections                      | Lists only
+Direction              | Forward only                    | Forward only                         | Forward & Backward
+Remove Element         | ❌ No                            | ✅ Yes (remove())                    | ✅ Yes
+Add/Replace            | ❌ No                            | ❌ No                                | ✅ Yes
+Fail-Fast              | ❌ No                            | ✅ Yes                               | ✅ Yes
+Methods                | hasMoreElements(), nextElement()| hasNext(), next(), remove()          | All of Iterator + hasPrevious(), previous(), etc.
+
+
+
+Enumeration->
+Enumeration is an interface in java.util package.
+It provides a way to iterate through a collection (legacy collections like Vector, Stack, Hashtable).
+
+public interface Enumeration<E> {
+    boolean hasMoreElements();
+    E nextElement();
+}
+
+import java.util.*;
+
+public class EnumerationExample {
+    public static void main(String[] args) {
+        Vector<String> vector = new Vector<>();
+        vector.add("Apple");
+        vector.add("Banana");
+        vector.add("Cherry");
+
+        Enumeration<String> e = vector.elements();
+
+        while (e.hasMoreElements()) {
+            System.out.println(e.nextElement());
+        }
+    }
+}
+----------
+Iterator->
+An Iterator is an interface in the java.util package that provides a unified way to traverse
+elements of a collection one at a time.
+
+✅ Key Points:
+Introduced in Java 1.2
+Works with all Collection types
+Fail-fast mechanism
+Can remove elements during iteration
+Replaces the older Enumeration interface
+
+public interface Iterator<E> {
+    boolean hasNext();
+    E next();
+    void remove(); // optional
+}
+
+Method | Description
+hasNext() | Returns true if there are more elements to iterate
+next() | Returns the next element in the collection
+remove() | Removes the current element from the collection (optional)
+
+import java.util.*;
+
+public class IteratorExample {
+    public static void main(String[] args) {
+        List<String> fruits = new ArrayList<>(Arrays.asList("Apple", "Banana", "Cherry"));
+
+        Iterator<String> iterator = fruits.iterator();
+        while (iterator.hasNext()) {
+            String fruit = iterator.next();
+            if (fruit.equals("Banana")) {
+                iterator.remove(); // safe removal
+            }
+        }
+
+        System.out.println(fruits); // Output: [Apple, Cherry]
+    }
+}
+
+Iterator is Fail-Fast->
+If the collection is modified structurally (e.g., add/remove) outside the iterator,
+it throws a ConcurrentModificationException.
+
+List<String> list = new ArrayList<>();
+list.add("A");
+list.add("B");
+
+for (String item : list) {
+    list.remove(item); // ❌ Will throw ConcurrentModificationException
+}
+Iterator<String> it = list.iterator();
+while (it.hasNext()) {
+    it.next();
+    it.remove(); // ✔️ Safe
+}
+
+Internal Working
+✅ hasNext():
+Checks if the iterator's internal pointer (cursor) has not reached the end of the collection.
+✅ next():
+Returns the current element.
+Moves the cursor to the next element.
+
+✅ remove():
+Removes the last returned element from the collection.
+Can only be called once per call to next().
+
+✅ Iterator vs for-each loop
+Feature	Iterator	For-each Loop
+Supports remove	✅ Yes	❌ No
+Index access	❌ No	❌ No
+Fail-fast behavior	✅ Yes	✅ Yes
+Syntax	Verbose	/Clean & concise
+Applicable to	Collections only	Iterable elements
+----------------
+🔰 What is ListIterator?
+ListIterator is an interface in java.util that allows bidirectional traversal,
+modification, and indexed access of elements in a List.
+
+Key Points:
+Introduced in Java 1.2
+Works only with List implementations (e.g., ArrayList, LinkedList)
+Supports forward & backward traversal
+Can add, replace, and remove elements during iteration
+Fail-fast like Iterator
+
+✅ Interface Definition->
+public interface ListIterator<E> extends Iterator<E> {
+    boolean hasNext();
+    E next();
+    boolean hasPrevious();
+    E previous();
+    int nextIndex();
+    int previousIndex();
+    void remove();
+    void set(E e);
+    void add(E e);
+}
+
+Method | Description
+hasNext() | Is there a next element?
+next() | Move cursor forward & return element
+hasPrevious() | Is there a previous element?
+previous() | Move cursor backward & return element
+nextIndex() | Returns index of the element that would be returned by next()
+previousIndex() | Returns index of the element that would be returned by previous()
+remove() | Removes the last element returned by next() or previous()
+set(E e) | Replaces the last element returned
+add(E e) | Inserts element at the current position
+
+import java.util.*;
+
+public class ListIteratorExample {
+    public static void main(String[] args) {
+        List<String> names = new ArrayList<>(List.of("A", "B", "C"));
+        ListIterator<String> it = names.listIterator();
+
+        while (it.hasNext()) {
+            String name = it.next();
+            if (name.equals("B")) {
+                it.set("Beta"); // replaces B with Beta
+                it.add("B2");   // adds B2 after Beta
+            }
+        }
+
+        System.out.println(names); // [A, Beta, B2, C]
+    }
+}
+
+ Forward & Backward Traversal->
+ ListIterator<String> it = list.listIterator();
+ // Forward
+ while (it.hasNext()) {
+     System.out.println(it.next());
+ }
+ // Backward
+ while (it.hasPrevious()) {
+     System.out.println(it.previous());
+ }
+
+ Rules of ListIterator->
+ remove() can only be called after next() or previous().
+ set() can only be called after next() or previous().
+ add() can be called at any time.
+ ListIterator is fail-fast: if list is structurally modified outside of iterator,
+ it throws ConcurrentModificationException.
+
+ 🆚 Iterator vs ListIterator
+
+ Feature	Iterator	ListIterator
+ Direction	Forward only	Forward & backward
+ Add/Set methods	❌ No	✅ Yes
+ Index access	❌ No	✅ Yes (nextIndex())
+ Applicable To	All collections	Only List
+
+What is Fail-Fast?->
+If the collection is structurally modified while iterating (except through the iterator’s own methods),
+the iterator throws ConcurrentModificationException.
+✅ Example: Fail-Fast in ArrayList, HashMap, etc.
+List<String> list = new ArrayList<>(List.of("A", "B", "C"));
+for (String s : list) {
+    if (s.equals("B")) {
+        list.remove(s);  // ❌ ConcurrentModificationException
+    }
+}
+Why does it fail?->
+Internally, collections like ArrayList, HashMap maintain a modCount:
+Iterator keeps its own expectedModCount.
+If during iteration, the collection’s modCount changes directly (not via iterator), expectedModCount != modCount,
+and boom 💣: ConcurrentModificationException.
+
+✅ Correct Way (using iterator):
+Iterator<String> it = list.iterator();
+while (it.hasNext()) {
+    if (it.next().equals("B")) {
+        it.remove();  // ✅ Safe way
+    }
+}
+
+What is Fail-Safe?->
+Iterator does not throw ConcurrentModificationException if the collection is modified during iteration.
+Instead, it works on a clone of the collection.
+✅ Example: ConcurrentHashMap, CopyOnWriteArrayList
+CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>(List.of("A", "B", "C"));
+for (String s : list) {
+    if (s.equals("B")) {
+        list.remove(s); // ✅ No exception
+    }
+}
+
+Why doesn’t it fail?->
+Because it iterates over a snapshot of the collection, not the original.
+Changes affect the original, but the iterator doesn't see them.
+
+
+Feature	Fail-Fast	Fail-Safe
+Throws Exception?	✅ Yes (ConcurrentModificationException)	❌ No
+Works On	Original Collection	Cloned Collection / Snapshot
+Iterator Type	Iterator, ListIterator in most collections	CopyOnWriteArrayList, ConcurrentHashMap
+Performance	Faster	Slower (due to cloning)
+Thread-Safe	❌ No	✅ Yes
+Use Case	Single-threaded or controlled access	Multi-threaded, safe reads during writes
+================================
+
+Comparable->
+Comparable is an interface in java.lang package that allows natural ordering of objects.
+It is used when you want your custom class objects to be sorted automatically
+(e.g., in TreeSet, TreeMap, Collections.sort()).
+
+public interface Comparable<T> {
+    int compareTo(T o);
+}
+
+Think of comparing two players by their score:
+player1.compareTo(player2) will return:
+Positive if player1 has higher score
+Zero if equal
+Negative if lower
+
+
+Example: Implementing Comparable
+class Student implements Comparable<Student> {
+    int id;
+    String name;
+
+    Student(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public int compareTo(Student other) {
+        return this.id - other.id; // sort by id
+    }
+
+    public String toString() {
+        return id + " - " + name;
+    }
+}
+
+List<Student> list = new ArrayList<>();
+list.add(new Student(2, "Alice"));
+list.add(new Student(1, "Bob"));
+list.add(new Student(3, "Charlie"));
+
+Collections.sort(list);  // uses compareTo internally
+System.out.println(list);
+o/p->
+1 - Bob
+2 - Alice
+3 - Charlie
+
+If you want to sort based on name:->
+@Override
+public int compareTo(Student other) {
+    return this.name.compareTo(other.name); // lexicographic
+}
+-----------------
+What is Comparator->
+Comparator is an interface in java.util used to define custom sorting logic externally,
+without modifying the class itself.
+It allows multiple ways of sorting the same objects (unlike Comparable which gives only natural order).
+
+public interface Comparator<T> {
+    int compare(T o1, T o2);
+}
+Return Values of compare(o1, o2)
+
+Return Value	Meaning
+0	            o1 == o2
+< 0	            o1 < o2
+> 0	            o1 > o2
+
+class Student {
+    int id;
+    String name;
+
+    Student(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public String toString() {
+        return id + " - " + name;
+    }
+}
+
+class NameComparator implements Comparator<Student> {
+    public int compare(Student s1, Student s2) {
+        return s1.name.compareTo(s2.name);
+    }
+}
+
+List<Student> list = new ArrayList<>();
+list.add(new Student(3, "Charlie"));
+list.add(new Student(1, "Alice"));
+list.add(new Student(2, "Bob"));
+
+Collections.sort(list, new NameComparator());
+
+System.out.println(list);
+1 - Alice
+2 - Bob
+3 - Charlie
+
+🔄 Comparator with Lambda (Java 8+)
+Collections.sort(list, (a, b) -> a.id - b.id);
+
+Or using Comparator.comparing():
+list.sort(Comparator.comparing(Student::getName));
+
+Chained Comparison (Sort by name, then id)->
+Comparator<Student> comparator = Comparator
+    .comparing(Student::getName)
+    .thenComparing(Student::getId);
+
+list.sort(comparator);
+
+ Null-Safe Comparator->
+ Comparator.nullsFirst(Comparator.naturalOrder())
+ Comparator.nullsLast(Comparator.comparing(Student::getName))
+
+ Custom Order – Reverse, Ignore Case->
+ list.sort(Comparator.comparing(Student::getName).reversed());
+
+Real-Life Use Case->
+Sort a list of employees:
+By salary descending
+If salary is same, by name ascending
+
+list.sort(Comparator.comparing(Employee::getSalary).reversed()
+                    .thenComparing(Employee::getName));
+
+comparable vs comparator->
+
+Feature | Comparable | Comparator
+Package | java.lang | java.util
+Purpose | Defines natural/default ordering of objects | Provides custom/external ordering
+Method to Implement | compareTo(Object o) | compare(Object o1, Object o2)
+Sorting Logic Location | Inside the class being compared | Separate class or anonymous/lambda implementation
+Can Sort By | One field (unless additional logic added manually) | Multiple fields (using chaining or multiple comparators)
+Affects Class Design | Yes (tight coupling to class) | No (keeps logic separate)
+Requires Code Change | Yes – must change class to implement Comparable | No – can be applied externally
+Used With | Collections.sort() / Arrays.sort() | Collections.sort(), Arrays.sort(), TreeSet, TreeMap
+Java 8+ Support | No new features | Yes – supports Lambdas, method references, chaining
+Null Handling | Manual | Supports nullsFirst(), nullsLast()
+Example Usage | class Student implements Comparable<Student> | Collections.sort(list, new CustomComparator())
+Flexibility | Low – only one sort logic per class | High – multiple sorting strategies possible
+======================================
+
+java.util.Collections->
+The Collections class offers static methods that perform various operations on collections, such as sorting, searching,
+and modifying elements. It's a part of the Java Collections Framework and serves as a utility class to ease
+collection manipulation.
+
+e.g List<String> list = Arrays.asList("Banana", "Apple", "Cherry");
+
+1. Sorting and Reversing
+sort(List<T> list): Sorts the specified list into ascending order.
+Collections.sort(list);
+System.out.println(list); // Output: [Apple, Banana, Cherry]
+reverse(List<?> list): Reverses the order of the elements in the specified list.
+Collections.reverse(list);
+System.out.println(list); // Output: [Cherry, Banana, Apple]
+
+2. Shuffling and Swapping
+shuffle(List<?> list): Randomly permutes the elements in the specified list.
+Collections.shuffle(list);
+System.out.println(list); // Output: [Banana, Apple, Cherry] (order may vary)
+swap(List<?> list, int i, int j): Swaps the elements at the specified positions in the specified list.
+Collections.swap(list, 0, 2);
+System.out.println(list); // Output: [Cherry, Apple, Banana]
+
+3. Finding Extremes
+min(Collection<? extends T> coll): Returns the minimum element of the given collection.
+int min = Collections.min(Arrays.asList(3, 1, 4, 2));
+System.out.println(min); // Output: 1
+max(Collection<? extends T> coll): Returns the maximum element of the given collection
+int max = Collections.max(Arrays.asList(3, 1, 4, 2));
+System.out.println(max); // Output: 4
+
+4.Frequency and Disjoint
+frequency(Collection<?> c, Object o): Returns the number of elements in the specified collection equal to
+the specified object
+int freq = Collections.frequency(Arrays.asList("A", "B", "A", "C"), "A");
+System.out.println(freq); // Output: 2
+disjoint(Collection<?> c1, Collection<?> c2): Returns true if the two specified collections have no elements in common.
+boolean isDisjoint = Collections.disjoint(Arrays.asList("A", "B"), Arrays.asList("C", "D"));
+System.out.println(isDisjoint); // Output: true
+
+5. Copying and Filling
+copy(List<? super T> dest, List<? extends T> src): Copies all of the elements from one list into another.
+List<String> src = Arrays.asList("X", "Y", "Z");
+List<String> dest = new ArrayList<>(Arrays.asList("A", "B", "C"));
+Collections.copy(dest, src);
+System.out.println(dest); // Output: [X, Y, Z]
+fill(List<? super T> list, T obj): Replaces all of the elements of the specified list with the specified element.
+Collections.fill(dest, "P");
+System.out.println(dest); // Output: [P, P, P]
+
+6. Replacing Elements
+replaceAll(List<T> list, T oldVal, T newVal): Replaces all occurrences of one specified value in a list with another
+List<String> list = new ArrayList<>(Arrays.asList("A", "B", "A"));
+Collections.replaceAll(list, "A", "C");
+System.out.println(list); // Output: [C, B, C]
+
+7. Creating Singleton and Empty Collections
+singletonList(T o): Returns an immutable list containing only the specified object.
+List<String> singleton = Collections.singletonList("OnlyOne");
+System.out.println(singleton); // Output: [OnlyOne]
+emptyList(), emptySet(), emptyMap(): Return empty immutable collections.
+List<String> emptyList = Collections.emptyList();
+Set<String> emptySet = Collections.emptySet();
+Map<String, String> emptyMap = Collections.emptyMap();
+
+8. Creating Unmodifiable Collections
+unmodifiableList(List<? extends T> list), unmodifiableSet(Set<? extends T> s),
+unmodifiableMap(Map<? extends K, ? extends V> m): Return unmodifiable views of the specified collections
+List<String> modifiableList = new ArrayList<>(Arrays.asList("A", "B"));
+List<String> unmodifiableList = Collections.unmodifiableList(modifiableList);
+
+9. Synchronizing Collection
+synchronizedList(List<T> list), synchronizedSet(Set<T> s), synchronizedMap(Map<K, V> m):
+Return synchronized (thread-safe) collections backed by the specified collections
+List<String> syncList = Collections.synchronizedList(new ArrayList<>());
+
+10.Checked Collections
+checkedList(List<E> list, Class<E> type), checkedSet(Set<E> s, Class<E> type), checkedMap(Map<K, V> m, Class<K> keyType, Class<V> valueType):
+Return dynamically typesafe views of the specified collections.
+Runtime type safety, prevents	Storing elements of the wrong type
+checkedList(new ArrayList<>(), String.class)
+List<String> checkedList = Collections.checkedList(new ArrayList<>)
+

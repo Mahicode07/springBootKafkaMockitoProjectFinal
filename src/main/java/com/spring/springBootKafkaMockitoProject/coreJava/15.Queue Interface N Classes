@@ -1,0 +1,91 @@
+Queue Interface is present in java.util package.
+ It stores and processes the data in FIFO(First In First Out) order. It is an ordered list of objects limited to
+ inserting elements at the end of the list and deleting elements from the start of the list.
+ Being an interface the queue needs a concrete class for the declaration and the most common classes are
+ the PriorityQueue and LinkedList in Java.
+
+ PriorityQueue->
+  implements the Queue interface
+  Unlike regular FIFO queues, elements in a PriorityQueue are ordered based on their priority
+  (natural ordering or a custom comparator).
+
+ Key Characteristics:
+ Not FIFO: Order is determined by priority, not insertion.
+ Null elements not allowed.->Inserting null will throw NullPointerException.
+ Duplicates are allowed.
+ Unbounded, but you can specify an initial capacity.
+ Not thread-safe
+ Backed by a binary heap(min-heap by default)-> Using a binary heap stored in an array.
+ Time complexity for insertion/removal: O(log n).
+
+Constructors->
+PriorityQueue();                             // default capacity (11), natural ordering
+PriorityQueue(int initialCapacity);          // custom capacity
+PriorityQueue(int initialCapacity, Comparator<? super E> comparator);
+PriorityQueue(Collection<? extends E> c);
+
+Common Methods:
+
+Method	Description
+add(E e) / offer(E e)	Inserts an element.
+peek()	Retrieves, but does not remove, the head.
+poll()	Retrieves and removes the head.
+remove()	Removes the head element.
+size()	Returns the size of the queue.
+contains(Object o)	Checks if element exists.
+
+Default Min-Heap Behavior (Natural Order)->
+
+import java.util.*;
+
+public class MinHeapExample {
+    public static void main(String[] args) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        pq.add(10);
+        pq.add(5);
+        pq.add(20);
+
+        while (!pq.isEmpty()) {
+            System.out.println(pq.poll());  // Output: 5, 10, 20
+        }
+    }
+}
+
+Custom Comparator (Max-Heap)->
+PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+maxHeap.add(10);
+maxHeap.add(5);
+maxHeap.add(20);
+
+while (!maxHeap.isEmpty()) {
+    System.out.println(maxHeap.poll());  // Output: 20, 10, 5
+}
+============================
+
+PriorityBlockingQueue->
+PriorityBlockingQueue is a thread-safe priority queue provided in the java.util.concurrent package.
+It implements BlockingQueue and uses natural ordering or a custom comparator to order elements.
+
+Characteristics:
+Unbounded: No fixed size — grows dynamically.
+Uses priority ordering like PriorityQueue (min-heap by default).
+Thread-safe for producer-consumer scenarios.
+Allows multiple threads to insert and remove concurrently.
+Nulls are not allowed.
+Uses locks and condition variables internally for blocking.
+
+Constructor Variants: same as priorityQueue
+
+Method | Behavior
+put(E e) | Inserts element, never blocks (since it's unbounded).
+take() | Retrieves and removes head, blocks if empty.
+offer(E e) | Inserts element immediately.
+poll() | Retrieves and removes head or returns null.
+peek() | Returns head without removal.
+drainTo(Collection<? super E> c) | Moves all elements to another collection.
+
+Limitations:
+Unbounded queue: can lead to OutOfMemoryError if overused.
+No fairness guarantee — higher-priority items may starve lower-priority ones.
+Blocking behavior only applies to take()/poll() when empty, not put() when full (since it never is).

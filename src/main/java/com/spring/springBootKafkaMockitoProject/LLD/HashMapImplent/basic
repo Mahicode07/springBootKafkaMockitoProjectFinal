@@ -1,0 +1,5 @@
+basic understanding of Hashmap implementation
+1. HashMap is a part of Java's collection framework and is used to store data in key-value pairs.
+2. It is implemented as an array of linked lists (or trees in case of high collision)
+ where each index in the array is called a bucket.
+3. When a key

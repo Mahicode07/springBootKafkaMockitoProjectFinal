@@ -1,0 +1,43 @@
+Functional->
+put(key, value): Inserts a key-value pair into the cache.
+If the key already exists, it updates the value and marks it as recently used.
+If the cache exceeds its capacity, it evicts the least recently used item.
+
+get(key): Retrieves the value associated with the key if it exists in the cache.
+It also marks the key as recently used. If the key does not exist, it returns -1.
+
+Non-functional->
+Time Complexity: Both put and get operations should be O(1) on average.
+Space Complexity: O(capacity), where capacity is the maximum number of items the cache can hold.
+scalability: The design should handle a large number of operations efficiently.
+high availability: The cache should be resilient to failures and ensure data integrity.
+high performance: The cache should provide fast access to frequently used data.
+
+Data structure to be used->
+HashTable: To store key-value pairs for O(1) access.
+Doubly Linked List: To maintain the order of usage, allowing O(1) insertion and deletion of nodes.
+
+Understanding of how put and get will work with hashtable and doubly linked list->
+put(key, value):
+Check if the key exists in the HashTable.
+If it exists, update the value and move the corresponding node to the front of the doubly linked list.
+If it does not exist,
+first check if the cache has reached its capacity.
+If it has not reached capacity,
+create a new node and add it to the front of the doubly linked list.
+Add the key and node reference to the HashTable.
+when cache exceeds capacity:
+Remove the tail node from the doubly linked list (the least recently used item).
+Remove the corresponding entry from the HashTable.
+get(key):
+Check if the key exists in the HashTable.
+If it exists, move the corresponding node to the front of the doubly linked list and return its value.
+If it does not exist, return -1.
+========================================================================
+how to make it distributed->
+Use consistent hashing to distribute keys across multiple cache nodes.
+Implement replication to ensure data availability and fault tolerance.
+Use a distributed coordination service (like ZooKeeper) to manage cache nodes and handle failover.
+Implement a cache invalidation strategy to ensure data consistency across nodes.
+
+

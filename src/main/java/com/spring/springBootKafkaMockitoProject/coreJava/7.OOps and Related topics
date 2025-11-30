@@ -1,0 +1,560 @@
+ENCAPSULATION->
+The process of binding data and corresponding methods (behavior) together into a single unit is
+called encapsulation in Java.
+
+In the encapsulation technique, we declare fields as private in the class to prevent other classes from
+accessing them directly.
+The required encapsulated data can be accessed by using public Java getter and setter method.
+
+The major disadvantage of encapsulation in Java is it increases the length of the code and slows shutdown execution.
+
+Encapsulation = Data Hiding + Abstraction
+
+getter and setter method->known as accessor method in Java.
+
+
+INHERITANCE->
+This powerful feature allows to one class to inherit the properties and behaviours of another class.
+Is-A relationship in Java represents inheritance. It is implemented in Java through keywords extends (for class inheritance)
+and implements (for interface implementation).
+
+When we declare a derived class, no memory is allocated, but memory is allocated when you create an object.
+Role of Constructor in Inheritance->
+When the constructor of a subclass is called during the object creation, by default, it calls the default constructor of superclass.
+The superclass constructor can be called using keyword “super” from the subclass constructor.
+It must be the first statement in a constructor.
+We can call other constructors of same class using this keyword,
+but you cannot call a subclass constructor from the superclass constructor
+
+We cannot extend a class having a private constructor, but if we have private constructor as well as public constructor,
+then we can extend superclass to subclass. In this case, the only public constructor will work.
+
+If we assign subclass reference to superclass reference, it is called dynamic method dispatch in java.
+
+Constructor, Static initialization block (SIB), and Instance initialization block (IIB) of the superclass cannot be inherited to its subclass,
+but they are executed while creating an object of the subclass.
+
+If we create an object of the superclass, we can access only the members of the superclass.
+We cannot access the subclass members by creating an object of superclass.
+
+Suppose that superclass and subclass members have the same name. Can we access members of superclass from subclass in this case?
+In this case, by default, only the members of subclass are accessible.
+
+We can access superclass members from the subclass using the keyword “super“. The keyword “super” refers to superclass members from the subclass.
+We can apply it with superclass variables, methods, and constructors.
+Thus, when superclass and subclass members have the same name in any Java program, we can access superclass members from the subclass by using the super keyword.
+
+Types of Relationship among Classes in Java->
+1)When we create an object of a class inside a method of another class,
+this relationship is called dependence relationship in Java, or simply Uses-A relationship.(coupling)
+2)is -a (inheritance)
+3)When an object of one class is created as data member inside another class, it is called association relationship in java or simply Has-A relationship
+e.g  public class Address {
+       // Code goes here.
+     }
+     public class Person {
+     // Person has-a Address.
+        Address addr = new Address();
+
+     // Other codes go here.
+     }
+
+There are two types of Has-A relationship that are as follows:->
+Aggregation-> two aggregated objects have their own life cycle, but one of the objects has an owner
+of Has-A relationship and child object cannot belong to another parent object.
+For example, a library has students. If the library is destroyed, students will exist without library.
+create reference of student in library;
+
+class Professor {
+    String name;
+    Professor(String name) { this.name = name; }
+}
+
+class Department {
+    String name;
+    List<Professor> professors;
+
+    Department(String name, List<Professor> professors) {
+        this.name = name;
+        this.professors = professors;
+    }
+}
+Professor p1 = new Professor("Dr. Smith");
+Professor p2 = new Professor("Dr. Rao");
+
+// Professors exist independently
+List<Professor> profs = Arrays.asList(p1, p2);
+
+// Department just *refers* to them
+Department csDept = new Department("CS", profs);
+=========================================================
+Composition->In other words, two composited objects cannot have their own life cycle. That is, a composite object cannot exist on its own.
+If one composite object is destroyed, all its parts are also be deleted. house and rooms
+class Room {
+    String name;
+    Room(String name) { this.name = name; }
+}
+
+class House {
+    String address;
+    List<Room> rooms = new ArrayList<>();
+
+    House(String address) {
+        this.address = address;
+        // Rooms are created INSIDE the house
+        rooms.add(new Room("Living Room"));
+        rooms.add(new Room("Bedroom"));
+    }
+}
+House house1 = new House("Street 1");
+// Rooms are tightly bound to this specific house
+
+
+Multiple Inheritance using Interface in Java->
+interfaceName.super.methodName();
+
+SUPER & THIS->
+Super keyword in Java is a reference variable that refers to an immediate superclass object.
+In other words, it refers to the superclass of the current object.
+Whenever we create an object of subclass, an object of superclass is created implicitly,
+which is referred by super reference variable.
+The keyword “super” allows users to access members of a superclass in a subclass. In other words,
+if you want to call members of the super class explicitly from a subclass, then use the super keyword.
+We can apply super keyword with variables, methods, constructors of parent class.
+we can also call a constructor of super class explicitly from a constructor of subclass. JVM always
+uses the super keyword to call the default constructor of super class implicitly from the subclass constructor
+
+We can use super keyword in three ways:
+We can use super to call the immediate parent class’s instance variable.
+To call immediate parent class constructor.
+To invoke the immediate superclass method.
+
+Syntax to call Superclass Constructor
+super(), or super(arguments);
+
+ The statement super() or super(arguments) must be the first line of child class constructor.
+ Calling a parent class constructor’s name in the child class causes syntax error.
+
+
+Advantages of Super Keyword in -?
+it allows a subclass to access members (variables and methods) of its superclass.
+When a subclass constructor is invoked, the super() call is automatically added by the Java compiler
+if no explicit constructor call is made. This facilitates constructor chaining.
+When we override a method in a subclass, the super keyword is often used to call the
+overridden method of the superclass. It enables us to leverage the existing functionality of the
+superclass while adding specific functionality in the subclass.
+We can use the super keyword to call specific constructors of the superclass. This is especially helpful when
+ the superclass has multiple constructors with different parameter lists. By using super(arguments),
+we can choose which constructor to call.
+ If a subclass and its superclass have members with the same name, using super helps in resolving
+ ambiguity by explicitly indicating that we want to access the superclass’s member.
+
+ THis->
+ this keyword in Java is a reference variable that refers to the current class object.
+  In other words, it holds the reference to the current class object or the same class object.
+ The current class object can be referred by using this reference anywhere in the class.
+
+ Prove that This Keyword refers to Current Class Object->
+ public class Hi
+ {
+   void msg()
+   {
+     System.out.println(this); // It will print the same reference ID.
+   }
+ public static void main(String[] args)
+ {
+ // Create an object of class Hi.
+    Hi h = new Hi();
+    System.out.println(h); // It will print the reference ID.
+    h.msg();
+  }
+ }
+ Output:
+        thisKeyword.Hi@1db9742
+        thisKeyword.Hi@1db9742
+
+this() keyword in Java can also be used to call another current class constructor from within a constructor
+
+ ABC()
+   {
+     System.out.println("HELLO JOHN");
+   }
+// Declare a parameterized constructor with parameter x. x is a local variable.
+   ABC(int x)
+   {
+  // This statement calls default constructor from parameterized constructor.
+     this(); // Must be the first line in the constructor.
+     System.out.println("WELCOME INDIA");
+   }
+
+   ============
+
+    CD()
+      {
+         this(5); // This statement will call parameterized constructor from default constructor.
+         System.out.println("Hello John");
+      }
+      CD(int x)
+      {
+         System.out.println(x);
+         System.out.println("You are so sweet");
+      }
+
+Advantages of This Keyword in Java->
+prevent confusion and ambiguity between instance variables and method parameter with same name
+chaining methods within the same object, maintaining a consistent reference to the instance and ensuring seamless method calls
+While using multiple constructors in a class, “this” simplifies the process of constructor overloading and
+initialization of different attributes.
+
+
+method overloading technique with caution because java compiler does not consider the
+return type while differentiating the overloaded method.
+exception.access modifier and return type not consider.
+
+The concept of method overloading is also known as compile-time polymorphism in Java.
+
+Implicit Type Casting in Java->
+Automatic conversion (casting) done by Java compiler internally is called implicit conversion or implicit type casting in Java.
+It is performed to convert a lower data type into a higher data type
+
+Type casting performs an explicit conversion between incompatible types.
+Therefore, it is also known as an explicit type casting in Java.
+
+The process of converting a class type into another class type having the relationship
+between them through inheritance is called class casting in Java.
+
+The process of converting subclass type into superclass type is called generalization in Java.
+This is because we are making the subclass to become more general so that its scope can be more widening.
+This conversion is also called widening or upcasting in referenced data types.
+we do not need a cast operator to perform generalization. Java compiler will do the implicit casting in generalization.
+
+public class A {
+ void m1() {
+    System.out.println("Superclass method");
+ }
+}
+public class B extends A{
+ void m2() {
+    System.out.println("Subclass method");
+ }
+}
+public class WideningTest {
+public static void main(String[] args)
+{
+   A a; // a is a superclass reference variable.
+   a = (A)new B(); // generalization (widening) because a is referring to a subclass object.
+   a.m1();
+ }
+}
+
+unable to call m2()
+So, in generalization, we can access all the methods of superclass but not subclass methods.
+if we override same method in subclass then subclass method will be called.
+
+specialization code->
+public class A {
+ void m1() {
+    System.out.println("Superclass method");
+ }
+}
+public class B extends A{
+ void m2() {
+    System.out.println("Subclass method");
+ }
+}
+public class CastingTest {
+public static void main(String[] args)
+{
+   A a; // a is a superclass reference variable.
+   a = new B(); // Superclass reference refers to the subclass object.
+
+   B b = (B)a; // Narrowing because we are converting class A's reference type as class B's type.
+   b.m1();
+   b.m2();
+ }
+}
+
+upcasting->
+When the reference variable of superclass refers to the object of subclass,
+One o = new Two();//one superclass two subclass ,only parent class method accessible else compile time error if
+we try to call child class methods
+
+Downcasting->
+Two t = (Two) new One(); // Downcasting. Here, subclass reference t refers to superclass object.
+     t.m1();
+     t.m2();
+
+     exception-classcast
+
+How Downcasting is Possible?->
+One o = new Two(); // Superclass reference refers to subclass object.
+      Two t = (Two)o; // Converting super class reference type into subclass reference type.
+
+      t.m1(); // Calling m1 method using reference variable of subclass.
+      t.m2(); // Calling m1 method using reference variable of subclass.
+
+Method overriding->
+Method overriding occurs only when the signatures of the super and subclasses methods are identical.
+If they are not, then both methods are simply overloaded methods.
+
+key features ->
+Method overriding technique supports the runtime polymorphism
+Only the instance method can be overridden in Java.
+An instance variable can never be overridden in Java
+The overriding method can not be more restrictive access modifiers than the overridden method of the superclass.
+Overriding concept is not applicable for private, final, static, and main method in Java.
+From Java 5 onwards, method overriding can also be done by changing the covariant return type only.
+Overriding method cannot throw any checked exception.
+
+Rules->
+Subclass method name must be the same as the superclass method name.
+The parameters of the subclass method must be the same as the superclass method parameters.
+i.e. In overriding, method name and argument types must be matched
+ Must be Is-A relationship (Inheritance
+ Subclass method’s return type must be the same as the superclass method return type. But this rule is applicable until the Java 1.4 version only.
+ From the Java 1.5 version onwards, covariant return types are also allowed.
+Subclass method’s access modifier must be the same or less than the superclass method access modifier.
+Overriding method cannot throw new or broader checked exceptions.
+But, it can throw fewer or narrower checked exceptions or any unchecked exception.
+While the overriding method, we can increase the visibility of the overriding method but cannot reduce it.
+For example, if the superclass method is protected, we can override as a public method in the subclass.
+
+In method overriding, Java compiler does not decide which method is to be executed. Because it has to wait till an object of the subclass is created.
+After the creation of the subclass object, JVM binds the method call to the suitable method.
+
+Role of Java Compiler and JVM in Method Overriding->
+Role of Java compiler in overriding:
+During the compile-time in the above program (A a1), a1 is a reference variable of parent class A. i.e. a1
+is of parent type. So, Java compiler will be gone to check that m2() method is available or not.
+If it is available in the parent class, no problem. The code will be happily compiled.
+
+Role of JVM in overriding:
+At runtime, JVM will check that the reference variable is pointing to the which class object?
+parent class object or child class object.
+If it is pointing to the parent class object and m2() method is available in the parent class,
+it will execute the m2() method of the parent class. But if it is pointing to the child class object,
+JVM will immediately check that in the child class, the m2 method is overriding or not.
+If it is not overriding in the child class, JVM will call the default parent m2 method available in the child class.
+
+Can We Stop Method Overriding in Java?-> final mark to the method.except this method rest can be overriden
+
+Covariant Return Types->
+If the return type of overriding method in the subclass is a subtype of the declared return type of overridden method instead
+of being exactly the same type, it is known as covariant return type in Java.
+
+handle the exception while you overriding a method in Java->from notes of exception handling
+
+Difference between Overloading and Overriding->
+1. Definition:
+When a class has more than one method having the same name but different in parameters, it is called method overloading in Java.
+When the method of superclass is overridden in subclass to provide more specific implementation, it is called method overriding in Java.
+2.Argument type-> diff/same
+3.Method signature->diff/same
+4.return type->same or diff/same or covariant
+5.class->sameclass/diff class
+6.Private/static/final Method:->can beoverloaded/ cant overriden
+7.Access modifiers->can be anything/same or higher high visibility
+8.Throws clause:-> can be anything/we have rules
+9.Method resolution:compile/runtime
+10.Polymorphism->compile or static or early binding/runtime or dynamic or late
+
+Method Hiding->
+A static method (class method) cannot be overridden in Java. But if a static method defined in the parent class is redefined in a child class,
+the child class’s method hides the method defined in the parent class.
+Method hiding is also known as compile-time polymorphism because the compiler is
+responsible for resolving method resolution based on the reference type.
+
+ParentClass p = new ChildClass();
+    p.classMethod(); // Calling with reference.
+    in this parent class method will be invoke even if create object of child class
+
+Variable Hiding->
+When a variable defined in the parent class is redefined with the same name in a child class, the child class’s
+variable hides variable defined in the parent class. This mechanism is called variable hiding in Java.
+call parent class variable using super.
+
+When an overridden method is synchronized, the overriding method can be non-synchronized and vice-versa.
+
+Abstraction in Java is another OOPs principle that provides a powerful way to manage complexity.
+The process of hiding complex internal implementation details from users and providing only necessary
+functionality is called abstraction.
+The main purpose of abstraction is to represent the essential features without including the background details
+
+How to Achieve Abstraction in Java?->
+Abstract class (0 to 100%)
+Interface (100%)
+
+Abstract Class->
+which is declared with an abstract keyword. It is just like a normal class but has two differences.
+1.We cannot create an object of this class. Only objects of its non-abstract (or concrete) sub-classes can be created
+2.It can have zero or more abstract methods which are not allowed in a non-abstract class.
+Classloader class is a good example of an abstract class that does not have any abstract methods.
+
+Abstract is a non-access modifier in Java which is applicable for classes, interfaces, methods, and
+inner classes. It represents an incomplete class that depends on subclasses for its implementation.
+Creating subclass is compulsory for abstract class.
+An abstract concept is not applicable to variables.
+
+When to Use Abstract Class in Java?
+An abstract class can be used when we need to share the same method to
+all non-abstract subclasses with their own specific implementations.
+the common member of the abstract class can also be shared by the subclasses
+
+Features of Abstract Class->
+ not a pure abstraction
+ object creation is not possible for an abstract class because it is a partially implemented class
+  It can be abstract even with no abstract method.
+  It can have one or more abstract methods or non-abstract methods (or concrete methods) or a combination of both methods.
+  It can have constructors,Abstract class does not support multiple inheritance in Java but allows in interfaces.
+  If any method is abstract in a class, the class must be declared as abstract.
+  If a new abstract method is added in the abstract class, all non-abstract subclasses which extend that abstract class,
+  must implement the newly added abstract method. If it does not implement all the abstract methods,
+  the class must be declared as abstract.
+
+Abstract method cannot be static or final or private
+
+Why abstract class has constructor even though we cannot create object?->
+We cannot create an object of abstract class but we can create an object of subclass of abstract class.
+When we create an object of subclass of an abstract class, it calls the constructor of subclass.
+This subclass constructor has super in the first line that calls constructor of an abstract class.
+Thus, the constructors of an abstract class are used from constructor of its subclass.
+If the abstract class doesn’t have a constructor, a class that extends that abstract class will not get compiled.
+By executing this superclass constructor, JVM is initializing to non-static variables in the abstract class.
+
+Why should we create reference to superclass (abstract class reference)?->
+We should create a reference of the superclass to access subclass features because superclass reference allows only
+to access those features of subclass which have already declared in superclass.
+If you create an individual method in subclass, the superclass reference cannot access that method.
+Thus, any programmer cannot add their own additional features in subclasses other than whatever is given in superclass.
+
+Interface->
+An interface in Java is syntactically similar to a class but can have only
+abstract methods declaration and constants (i.e. static and final fields) as members.
+Every interface in Java is abstract by default.
+
+Why do We Use Interface?->
+Using interfaces is the best way to expose our project’s API to some other projects.
+In other words, we can provide interface methods to the third-party vendors for their implementation.
+For example, HDFC bank can expose methods or interfaces to various shopping carts.
+Programmers use interface to customize features of software differently for different objects.
+It is used to achieve full abstraction in java.achieve the functionality of multiple inheritance.
+
+Java compiler automatically adds public and abstract keywords before to all interface methods
+it also adds public, static, and final keywords before interface variables.
+To support lambda functions, Java 8 has added a new feature to interface.
+We can also declare default methods and static methods inside interfaces
+From Java 9 onwards, an interface can also declare private methods.
+Java Interface cannot have constructors.
+Interface can extend an interface and can also extend multiple interfaces.
+
+Rules of Interface ->
+An interface cannot be instantiated directly. But we can create a reference
+to an interface that can point to an object of any of its derived types implementing in
+ An interface may not be declared with final keyword.
+ It cannot have instance variables. If we declare a variable in an interface, it must be initialized at the time of declaration.
+We cannot reduce the visibility of an interface method while overriding.
+That is, when we implement an interface method, it must be declared as public.
+If you add any new method in interface, all concrete classes which implement that interface must provide implementations
+for newly added method because all methods in interface are by default abstract.
+
+Can We have an Interface without any Methods or Fields?->
+An interface without any fields or methods is called marker interface in Java. There are several built-in Java interfaces
+that have no method or field definitions. For example, Serializable, Cloneable, and Remote all are marker interfaces
+
+Use of Interface in Java Application-> calc in interface and add,sub,multi are classes
+credit card interface , bank account as class(dollar,pound,rupee)
+
+Abstract Class vs Interface->
+1.To inherit the abstract class, we use the extends keyword/To implement an interface, we can use the implements keyword
+2.Abstract class can have final, non-final, static, and non-static variables/Interface cannot have any instance variables. It can have only static variables.
+3.The abstract class variable does not require performing initialization at the time of declaration/
+Interface variable must be initialized at the time of declaration otherwise we will get compile-time error.
+4.Every method present inside an interface is always public and abstract, whether we are declaring or not.
+That’s why interface is also known as a pure (100%) abstract class.
+b. An abstract class can have both abstract and non-abstract (concrete) methods.
+5.Constructors->
+ Inside an interface, we cannot declare/define a constructor because the purpose of constructor is to perform initialization
+ of instance variable but inside interface every variable is always static.
+ b. Since an abstract class can have instance variables. Therefore, we can define constructors within the abstract
+ class to initialize instance variables.
+6.Static and Instance blocks:not in interface but can present in abstract class
+7.Access modifiers: earlier all by default public in interface/ can have diff in abstract class
+8.Single vs Multiple inheritance: possible in interface but not in abstract class
+9. If you know nothing about the implementation. You have just requirement specification then you should go to use interface.
+  b. If you know about implementation but not completely (i.e. partial implementation) then you should go for using abstract class.
+
+A default method is defined inside an interface with a default implementation.
+We can also override the implementation of default method inside a class if required.
+But we should not require to do so.
+This is because if we do not override the default method,
+the default implementation will be used and the method definition will be concrete, not abstract.
+
+The default access modifier is completely different from the default keyword to define method in the interface.
+
+Why did Java 8 add Default Method to Interface?->
+The purpose of introducing the default method in Java 8 was to improve code development and backward compatibility so that existing interfaces
+can support the lambda expressions without implementing methods in the implementation classes.
+Suppose we have an interface that is implemented by dozens or hundreds of classes. I
+f we add a new method to an existing interface, such addition of a new method would break
+classes implementing interface because they will not have defined that method and forced to update their code.
+In practice, it would be almost impossible to update the code in hundreds of classes.
+But, in Java 8, the default method makes it easy to evolve interfaces. By defining a default implementation of the method,
+the existing interface becomes backward compatible with the existing code without breaking the old code.
+
+rules for default methods->
+A default method may only be defined inside an interface, not within a class or abstract class
+ It must be declared with the default keyword. If a method is declared as default, it must provide a method body.
+ If you declare default method without method body, it will not compile.
+ It cannot be marked with static, final, or abstract, protected or private as it may be used or overridden by a class that implements the interface
+
+Default Methods and Multiple Inheritance->
+ No, the code will not compile successfully. Java compiler will throw compile-time error because of duplicate default method error.
+
+Polymorphism->
+is a concept by which we can perform a single task in different ways.
+e.g water(liquid,solid,vapour)
+
+Static Polymorphism->
+A polymorphism that exhibited during compilation is called static polymorphism in Java.
+Hence, Java compiler binds method calls with method definition/body during compilation.
+Therefore, this type of polymorphism is also called compile-time polymorphism in Java./early binding
+e.g method overloading
+binding method->Java compiler binds the definition of sum(int x, int y) method with sum(20, 10) method during compilation and calls the appropriate method.
+
+Dynamic Polymorphism->
+A polymorphism that is exhibited at runtime is called dynamic polymorphism in java. In dynamic polymorphism,
+the behavior of a method is decided at runtime. Therefore, the JVM (Java Virtual Machine) binds the method call
+with the method definition/body at runtime and invokes the relevant method during runtime when the method is called.
+This happens because objects are created at runtime and the method is called using an object of the class
+e.g method overriding
+As you can observe in the above program, the class Base contains a method named m1. This m1() method is overridden in the derived class named Derived.
+Since m1() method in both Base and Derived classes has the same name and signature, therefore, the Java compiler is unable to bind method calls with method definitions.
+
+The connecting (linking) between a method call and method body/definition is called binding in Java
+The binding that happens during compilation is called static binding in Java.
+This binding is resolved at the compiled time by the compiler.
+
+In static binding, the Java compiler does not check the type of object to which a particular reference variable is pointing to it.
+Java compiler just checks which method is going to be called through reference variable and method definition exists or not.
+This binding is also known as early binding because it takes place before the program actually runs.
+An example of static binding is method overloading.
+
+The binding which occurs during runtime is called dynamic binding in Java. This binding is resolved based on the type
+of object at runtime. In dynamic binding, the actual object is used for binding at runtime.
+example of dynamic binding is method overriding.
+VM resolved the method calls based on the type of object at runtime.
+
+in static binding, the actual object is not used, whereas the actual object is used in the dynamic binding.
+Private, static, and final methods show static binding because they cannot be overridden, whereas except private, static, and final methods,
+other methods show dynamic binding because they can be overridden.
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,20 @@
+what is a test suite in junit and mockito?
+A test suite is a bundle of multiple unit test cases which can be run together.
+We can use @RunWith and @Suite annotations over the test class for running the test suite.
+@RunWith(Suite.class)
+@Suite.SuiteClasses({TestClass1.class, TestClass2.class})
+public class TestSuite {
+}
+In the above example, TestClass1 and TestClass2 are two test classes that will be executed together as part of the TestSuite.
+We can also create nested test suites by including other test suites in the @SuiteClasses annotation.
+We can also use Mockito along with JUnit in a test suite to mock dependencies and verify interactions.
+============================================================================================================================================================
+how to create a test suite in junit and mockito?
+To create a test suite in JUnit and Mockito, follow these steps:
+1. Create multiple test classes that contain your unit test cases.
+Each test class should be annotated with @RunWith(MockitoJUnitRunner.class) if you are using Mockito for mocking dependencies.
+2. Create a new class that will serve as the test suite. Annotate this class with @RunWith(Suite.class) and @Suite.SuiteClasses({TestClass1.class, TestClass2.class})
+where TestClass1 and TestClass2 are the test classes you created in step 1.
+3. In the test suite class, you can also include other test suites by adding them to the @SuiteClasses annotation.
+4. Run the test suite class as a JUnit test to execute all the test cases in the included test classes.
+============================================================================================================================================================

@@ -1,0 +1,660 @@
+Set Interface->
+and it represents a collection of unique elements — no duplicates allowed.
+
+Key Characteristics of Set:
+No duplicates — adds uniqueness to a collection.
+Allows at most one null (depends on implementation).
+Order is not guaranteed (unless you use specific implementations like LinkedHashSet or TreeSet).
+Can store heterogeneous objects (not recommended).
+
+Important Methods (Inherited from Collection):
+add(E e)          // adds element if not already present
+remove(Object o)  // removes specified element
+contains(Object o)// checks for existence
+size()            // returns count
+clear()           // empties the set
+isEmpty()         // true if empty
+iterator()        // iterate through elements
+
+Hashset->
+HashSet is a collection that uses a hash table for storing elements.
+It implements the Set interface and does not allow duplicate elements.
+
+Under the Hood:
+Backed by a HashMap internally.
+Each element added to the HashSet becomes a key in the map with a dummy constant value.
+Ensures uniqueness using hashCode() and equals() methods.
+
+Key Features:
+Feature	Details
+Order	No guarantee of insertion order
+Duplicates	Not allowed
+Null Values	-Allows one null element
+Thread Safety	Not synchronized (use Collections.synchronizedSet() if needed)
+Performance	-Constant-time (O(1)) for add, remove, contains in ideal conditions
+Backed by	HashMap<E, Object>
+
+Constructors-
+HashSet<>();
+HashSet<>(int initialCapacity);
+HashSet<>(int initialCapacity, float loadFactor);
+HashSet<>(Collection<? extends E> c);
+
+methods-same as interface
+
+How it ensures uniqueness:
+HashSet relies on:
+hashCode() — to place elements in buckets
+equals() — to check equality inside a bucket
+➡️ If hashCode() is different → definitely different
+➡️ If hashCode() is same → checks equals() to ensure no duplicate
+
+Gotchas:
+Mutable objects as keys: avoid modifying objects after adding them to HashSet.
+Inconsistent hashCode()/equals() can cause hard-to-debug issues.
+
+
+What is the initial capacity and load factor of a HashSet?
+Default capacity: 16
+Default load factor: 0.75
+Resizes when size exceeds capacity * load factor.
+→ Resizes when more than 12 elements are added
+
+Why does HashSet allow only one null value?
+Answer: Because keys in the backing HashMap can be null — but only one null key is allowed.
+
+Resizing Mechanics in hashtable->
+HashMap (and therefore HashSet) resizes when the number of elements exceeds capacity × loadFactor.
+Defaults:
+Initial Capacity = 16
+Load Factor = 0.75
+→ Resizes when more than 12 elements are added
+When resized:
+A new array of size 2 × current capacity is created.
+All elements are rehashed and reinserted into the new table.
+This ensures the elements are distributed correctly in the new buckets.
+That’s why hashCode() plays a crucial role.
+
+Rehashing Process->
+Each time resizing happens:
+1. Create a new table of double the size.
+2. Recalculate the index: index = hash(key) & (newCapacity - 1)
+3. Move all existing entries to the new table.
+
+Rehashing is costly (O(n)), so frequent resizing can hit performance.
+====
+
+LinkedHashSet-
+Extends HashSet
+LinkedHashSet is a hash table + linked list implementation of the Set interface that preserves
+the insertion order of elements.
+
+Feature	Details
+Ordering	✅ Maintains insertion order
+Duplicates	❌ Not allowed
+Nulls	✅ One null allowed
+Thread-safe	❌ Not synchronized
+Performance	Slightly slower than HashSet due to extra memory for linked list
+Backed by	LinkedHashMap<E, Object> internally
+
+How it Works Internally-
+Backed by a LinkedHashMap
+map.put(element, DUMMY_VALUE);
+LinkedHashMap keeps a doubly-linked list running through all its entries
+This preserves the order of insertion
+
+constructors -> same as hashset
+methods-> same as hashset
+
+When to Use LinkedHashSet
+When you need to maintain order of insertion
+Need fast contains() checks + order
+Parsing tokens from files or APIs in same order as read
+Unique cache where order matters
+
+Always override equals() and hashCode():
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Student)) return false;
+    Student that = (Student) o;
+    return id == that.id;
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}
+======
+
+TreeSet-
+A TreeSet is a NavigableSet implementation based on a Red-Black Tree (self-balancing binary search tree).
+It stores elements in sorted order and ensures no duplicates
+Implements: NavigableSet, SortedSet, Set, Collection, Iterable
+
+Ordering	✅ Yes (natural or custom Comparator)
+Duplicates	❌ Not allowed
+Nulls	❌ No nulls in non-empty sets (throws NPE)
+Thread-safe	❌ Not synchronized
+Time complexity	O(log n) for add, remove, contains
+Backed by	Red-Black Tree (a type of self-balancing BST)
+
+How TreeSet Works Internally->
+Internally, TreeSet uses a TreeMap, specifically a Red-Black Tree.
+
+Whenever you call:
+treeSet.add(element);
+Internally:
+m.put(element, PRESENT); // PRESENT is a dummy Object
+So the elements are stored as keys in a TreeMap, with a dummy value.
+
+Red-Black Tree->
+A Red-Black Tree is a type of self-balancing Binary Search Tree (BST) with the following properties:
+Each node is red or black
+Root is black
+No two red nodes can be adjacent
+Every path from a node to null must have the same number of black nodes
+
+Constructors
+TreeSet<>(); // Natural order
+TreeSet<>(Comparator); // Custom order
+TreeSet<>(Collection); // Elements added in sorted order
+TreeSet<>(SortedSet);  // Cloned
+
+Method	Description
+add(E e)	Adds an element if not present
+remove(E e)	Removes the element
+contains(E e)	Checks if present
+first(), last()	Gets first or last element
+ceiling(E e)	≥ given element
+floor(E e)	≤ given element
+higher(E e)	> given element
+lower(E e)	< given element
+pollFirst() / pollLast()	Removes and returns the first/last element
+descendingSet()	Reverse view of set
+
+Custom Sorting
+TreeSet<String> set = new TreeSet<>((a, b) -> b.compareTo(a)); // descending
+set.add("Banana");
+set.add("Apple");
+set.add("Mango");
+System.out.println(set); // [Mango, Banana, Apple]
+
+Set<String> reversed = new TreeSet<>(Collections.reverseOrder());
+
+TreeSet<String> set = new TreeSet<>();
+set.add(null); // ❌ NullPointerException
+
+| Feature                         | HashSet                            | LinkedHashSet                          | TreeSet                                                | EnumSet                                              |
+|---------------------------------|------------------------------------|----------------------------------------|--------------------------------------------------------|------------------------------------------------------|
+| Ordering                        | ❌ No ordering                      | ✅ Insertion order                      | ✅ Sorted order (natural/custom)                       | ✅ Natural order (of enum declaration)               |
+| Underlying Data Structure       | Hash Table                         | Hash Table + Linked List               | Red-Black Tree (TreeMap)                              | Bit Vector (highly optimized for enums)             |
+| Performance (add, remove, contains) | O(1) average, O(n) worst case     | O(1) average, O(n) worst case          | O(log n)                                               | O(1)                                                 |
+| Allows null                     | ✅ Yes (only one null element)      | ✅ Yes (only one null element)         | ❌ Throws NPE if null used with Comparator            | ❌ No nulls allowed                                  |
+| Thread-safe                     | ❌ No                               | ❌ No                                   | ❌ No                                                  | ❌ No                                                 |
+| Implements                      | Set                                | Set                                    | NavigableSet, SortedSet                               | Set                                                  |
+| Use Case                        | Unordered, fast lookups            | Order-sensitive with fast lookups      | Sorted unique elements, range/range-based operations  | Efficient handling of enum constants as a set       |
+
+
+
+When to Use TreeSet
+When you need elements to be sorted
+You need efficient range-based queries
+You want to frequently access min, max, floor, ceiling, etc.
+Avoid duplicates with automatic sorting
+=======================================================================
+Map->
+key-value pair based data structure.
+Unlike Collection, it does not extend the Collection interface.
+Each key is unique. Values can be duplicated
+It allows constant-time performance for basic operations like get() and put() (in the case of HashMap).
+
+| Implementation        | Ordered? | Sorted? | Thread-Safe | Null Support                     | Usage                      |
+|-----------------------|----------|---------|-------------|----------------------------------|----------------------------|
+| HashMap               | ❌ No    | ❌ No   | ❌ No       | ✅ One null key, many null values| General purpose            |
+| LinkedHashMap         | ✅ Yes   | ❌ No   | ❌ No       | ✅                               | LRU cache, order-sensitive |
+| TreeMap               | ❌ No    | ✅ Yes  | ❌ No       | ❌                               | Sorted data                |
+| Hashtable             | ❌ No    | ❌ No   | ✅ Yes      | ❌                               | Legacy thread-safe         |
+| ConcurrentHashMap     | ❌ No    | ❌ No   | ✅ Yes      | ❌                               | Multi-threaded env         |
+| WeakHashMap           | ❌ No    | ❌ No   | ❌ No       | ✅                               | Memory-sensitive cache     |
+| EnumMap               | ✅ Yes   | ✅ Yes  | ❌ No       | ❌ (No null keys allowed)        | Enum-specific keys         |
+
+Hashmap->
+HashMap is part of the Java Collections Framework and stores key-value pairs, allowing one null key and values.
+Internally, HashMap uses:Array of Node<K, V> (bucket array)
+Each bucket can store a linked list or a balanced tree (Red-Black Tree)
+Hashing-
+When you insert a key, hashCode() is called.
+Hash is processed by a function (e.g., hash = (h >>> 16) ^ h) to reduce collisions.
+Then index = hash % capacity decides which bucket to store it in.
+Collision Handling-
+If multiple keys hash to the same bucket, collision occurs.
+Java 8+: Converts linked list to tree (Red-Black Tree) if a bucket has > 8 entries and capacity ≥ 64.
+Resizing
+Happens when the load factor exceeds a threshold (default 0.75).
+Capacity is doubled.
+All keys are rehashed, which is expensive (O(n)).
+
+Constructor
+HashMap<K, V> map = new HashMap<>();                      // Default (16 capacity, 0.75 load factor)
+HashMap<K, V> map = new HashMap<>(32);                    // With initial capacity
+HashMap<K, V> map = new HashMap<>(32, 0.5f);              // With capacity and load factor
+HashMap<K, V> map = new HashMap<>(existingMap);           // Copy constructor
+
+Complexity
+Operation	Time Complexity (Avg)	Time Complexity (Worst)
+put(K, V)	O(1)	O(n) (when many collisions)
+get(K)	O(1)	O(n)
+containsKey	O(1)	O(n)
+remove(K)	O(1)	O(n)
+
+
+Contract Between hashCode() and equals():
+If two objects are equal (equals returns true), then they must have the same hashCode.
+But if two objects have the same hashCode, they may or may not be equal.
+
+Example (Custom Key):
+class Person {
+    String name;
+    int age;
+
+    // Without these methods overridden
+    // HashMap will use Object's hashCode & equals (by reference)
+}
+If you don't override hashCode() and equals(), different Person objects with same name
+and age will be treated as different keys.
+Correct override:
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Person person = (Person) o;
+    return age == person.age && name.equals(person.name);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(name, age);
+}
+
+PUT->
+Map<String, String> map = new HashMap<>();
+map.put("John", "Developer");
+Step-by-Step Breakdown:
+1. hashCode() of Key is Calculated
+    Key: "John"
+    hash = "John".hashCode() → say it's -23452813
+    Then Java applies a hash spreading function to reduce collisions:
+    int h = key.hashCode();
+    int hash = (h) ^ (h >>> 16);  // Bit manipulation
+2. Index for Bucket is Computed
+    int index = (n - 1) & hash;
+    Where n is capacity (default 16), & ensures it maps within array bounds.
+3. Checks if Bucket is Empty
+    If yes → creates a new Node and adds it.
+    If no (collision) → traverses linked list or tree in that bucket.
+4. Collision? Use equals() to Compare
+    if (existingKey.hash == newKey.hash && existingKey.equals(newKey)) {
+        // Overwrite value
+    }
+    If not equal → new node is added (at end of chain or as tree node).
+🔹 5. Resize (if needed)
+      When size > capacity * load factor (e.g., 12 for default 16 * 0.75)
+      Creates a new array of double size, and rehashes all entries into it.
+
+get()->
+Step-by-Step:
+Calculate hash of the key
+Compute index using (n - 1) & hash
+Go to that index (bucket)
+Traverse the bucket:
+If it's a list, check each node's hash and then equals
+If it's a tree, do a tree search using comparator or key's compareTo
+Return value if found, else return null
+
+Node have-> hash|key|value|nextNodeHash|
+
+What if equals is true but hashCode is different? → They’ll go to different buckets → violates contract →
+leads to duplicate keys.
+====
+
+LinkedHashMap->extends hashmap and implements map
+LinkedHashMap is a subclass of HashMap that maintains a doubly-linked list running through its entries.
+This maintains insertion order (or access order, if configured).
+
+Feature | LinkedHashMap
+Maintains Order | ✅ Yes — insertion or access
+Nulls Allowed | ✅ One null key, multiple null values
+Thread-safe | ❌ No (wrap with Collections.synchronizedMap)
+Load Factor | 0.75 (like HashMap)
+Resizes Internally | Yes, same as HashMap
+
+LinkedHashMap =
+HashMap + Doubly Linked List across entries
+Insertion-order by default
+Access-order if configured
+
+How LinkedHashMap Works Internally->
+The magic lies in this custom Entry<K, V> class, which extends HashMap.Node<K, V> and adds:
+static class Entry<K,V> extends HashMap.Node<K,V> {
+    Entry<K,V> before, after; // for maintaining order
+}
+1. put(K key, V value) — Internal Working->
+ Step 1: Hash Calculation
+ int hash = hash(key);
+ int bucketIndex = (n - 1) & hash; // n = capacity
+ Step 2: Check for existing key
+If key exists → update value
+If key doesn’t exist → create new node
+Step 3: Create a new node
+LinkedHashMap.Entry<K,V> newNode = new Entry<>(hash, key, value, null);
+Step 4: Insert in hash table (same as HashMap)
+table[bucketIndex] = newNode;
+Step 5: Update doubly linked list
+The new node is added to the end of the list
+if (head == null) {
+    head = newNode;
+    tail = newNode;
+} else {
+    tail.after = newNode;
+    newNode.before = tail;
+    tail = newNode;
+}
+If accessOrder = true and the key already exists, the node is moved to the end to reflect recent access.
+Step 6: Check removeEldestEntry()
+If overridden and returns true, the eldest entry (head of linked list) is removed.
+
+2. get(Object key) — Internal Working
+Same as put() — find bucket using:
+int hash = hash(key);
+int bucketIndex = (n - 1) & hash;
+Step 2: Lookup in bucket
+for (Node<K,V> e = table[bucketIndex]; e != null; e = e.next) {
+    if (e.hash == hash && Objects.equals(e.key, key)) {
+        ...
+    }
+}
+If accessOrder = true, move the accessed node to the end:
+This logic is what makes it "access-ordered" — used for LRU Caches.
+and unused entries get first and which can be easily removed
+
+when access order is true and if we do get on particular key then that key will added to end of list
+useful in caching.
+
+Constructor -
+LinkedHashMap<K, V> map = new LinkedHashMap<>();
+LinkedHashMap<K, V> map = new LinkedHashMap<>(32);
+LinkedHashMap<K, V> map = new LinkedHashMap<>(32, 0.5f);
+LinkedHashMap<K, V> map = new LinkedHashMap<>(16, 0.75f, true);
+Map<Integer, String> input = Map.of(1, "A", 2, "B");
+LinkedHashMap<Integer, String> map = new LinkedHashMap<>(input);
+
+LRU Cache->
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LRUCache<K, V> extends LinkedHashMap<K, V> {
+    private final int capacity;
+
+    public LRUCache(int capacity) {
+        super(capacity, 0.75f, true); // accessOrder = true
+        this.capacity = capacity;
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        return size() > capacity;
+    }
+
+    public V get(K key) {
+        return super.getOrDefault(key, null);
+    }
+
+    public void put(K key, V value) {
+        super.put(key, value);
+    }
+
+    public static void main(String[] args) {
+        LRUCache<Integer, String> cache = new LRUCache<>(3);
+
+        cache.put(1, "A");
+        cache.put(2, "B");
+        cache.put(3, "C");
+        System.out.println(cache); // {1=A, 2=B, 3=C}
+
+        cache.get(2);              // Access 2 → most recently used
+        cache.put(4, "D");         // Evicts 1 (least recently used)
+        System.out.println(cache); // {3=C, 2=B, 4=D}
+    }
+}
+
+removeEldestEntry-> when size becomes more than initial capacity then its removes the least recently used entry from map
+===========
+
+TreeMap->
+A TreeMap is a Map implementation that stores its keys in sorted order.
+It is based on a Red-Black Tree, which is a self-balancing binary search tree
+
+Feature	TreeMap
+Order	✅ Sorted order (natural or custom comparator)
+Null Keys	❌ Not allowed (throws NullPointerException)
+Null Values	✅ Allowed
+Thread Safe	❌ No (must synchronize externally if needed)
+Performance	O(log n) for get, put, remove
+Duplicates	❌ Keys must be unique
+Underlying DS	Red-Black Tree
+Comparator Support	✅ Yes
+
+Internal Working->
+TreeMap uses a Red-Black Tree to maintain the order of keys.
+Each put() or remove() operation rebalances the tree.
+Keys must be comparable (Comparable) or must use a custom Comparator.
+It uses compareTo() or compare() to decide placement.
+🔄 put(K key, V value)
+Uses compareTo() or compare() to traverse the tree.
+Inserts node in correct position.
+Rebalances tree if needed to maintain red-black properties.
+🔍 get(Object key)
+Traverse using compareTo() or compare().
+Returns the associated value if the key exists.
+
+TreeMap Constructors->
+TreeMap<K, V> map = new TreeMap<>();
+// Uses natural ordering of keys (must implement Comparable)
+TreeMap<K, V> map = new TreeMap<>(Comparator<? super K> comparator);
+// Uses custom comparator
+TreeMap<K, V> map = new TreeMap<>(Map<? extends K, ? extends V> m);
+// Copies from another map
+TreeMap<K, V> map = new TreeMap<>(SortedMap<K, ? extends V> m);
+// Copies from another SortedMap
+
+Common Methods
+
+Method	Description
+put(K key, V value)	Adds or replaces a mapping
+get(Object key)	Gets value for the key
+remove(Object key)	Removes key and value
+containsKey(Object key)	Checks for key
+containsValue(Object value)	Checks for value
+firstKey()	Returns the lowest key
+lastKey()	Returns the highest key
+ceilingKey(K key)	Smallest ≥ key
+floorKey(K key)	Largest ≤ key
+higherKey(K key)	Strictly greater
+lowerKey(K key)	Strictly smaller
+headMap(K toKey)	Returns portion with keys < toKey
+tailMap(K fromKey)	Portion with keys ≥ fromKey
+subMap(K fromKey, K toKey)	Between range
+descendingMap()	Reversed view
+keySet()	Keys in sorted order
+entrySet()	Sorted entry set
+values()	Collection of values
+clear()	Clears map
+
+TreeMap<Integer, String> map = new TreeMap<>();
+map.put(3, "C");
+map.put(1, "A");
+map.put(2, "B");
+System.out.println(map); // {1=A, 2=B, 3=C}
+System.out.println(map.firstKey()); // 1
+System.out.println(map.higherKey(2)); // 3
+System.out.println(map.descendingMap()); // {3=C, 2=B, 1=A}
+
+Use Cases of TreeMap
+Sorted dictionaries
+Range queries
+Auto-suggestion (prefix trees with range filters)
+LRU Cache with sorting needs
+Time-series data with efficient range filters
+==========
+WeakHashMap->
+WeakHashMap is a hash table-based Map implementation with weak keys.
+When a key is no longer in ordinary use, the GC can reclaim it even if it is still present in the map.
+It allows memory-sensitive applications to automatically remove entries when keys are not in use anymore.
+
+Internal Working->
+It stores keys as WeakReferences (unlike HashMap which stores strong references).
+When the key is no longer referenced anywhere else (no strong refs), the GC will reclaim it
+When GC clears the key, the entry is removed from the map lazily during the next read/write
+operation (like get(), put(), containsKey()).
+Uses a ReferenceQueue internally to track entries ready for cleanup.
+
+Constructor
+WeakHashMap<K, V> map = new WeakHashMap<>();
+// Default constructor
+WeakHashMap<K, V> map = new WeakHashMap<>(int initialCapacity);
+// With custom capacity
+WeakHashMap<K, V> map = new WeakHashMap<>(Map<? extends K, ? extends V> m);
+// Constructs and copies from another map
+
+
+import java.util.*;
+
+public class WeakHashMapDemo {
+    public static void main(String[] args) {
+        Map<Object, String> map = new WeakHashMap<>();
+
+        Object key1 = new String("key1"); // Not interned (eligible for GC)
+        Object key2 = new String("key2");
+
+        map.put(key1, "value1");
+        map.put(key2, "value2");
+
+        key1 = null; // Remove strong reference
+
+        System.gc(); // Hint GC to collect
+
+        try { Thread.sleep(1000); } catch (Exception e) {}
+
+        System.out.println("Map after GC: " + map);
+    }
+}
+
+ Characteristics->
+ Feature | Description
+ Ordering | ❌ No order guarantee
+ Sorting | ❌ Not sorted
+ Null Keys | ✅ Allows one null key
+ Null Values | ✅ Allows null values
+ Thread-Safe | ❌ Not thread-safe
+ Performance | Comparable to HashMap (but slower due to GC work)
+ GC Integration | ✅ Removes entry when key is GC'ed
+ Underlying Structure | Hash table + WeakReferences
+ ---------------
+
+ Hashtable->
+ Hashtable is a legacy class (from JDK 1.0) that implements the Map interface
+ It stores key-value pairs and does not allow null keys or values
+ It is thread-safe by default: all public methods are synchronized.
+ It has been largely replaced by HashMap and ConcurrentHashMap in modern code.
+
+Internal Working->
+➤ Storage:
+Internally uses array of buckets (like HashMap).
+Each bucket holds a linked list of Entry objects to handle collisions (pre-Java 8).
+➤ Collision Resolution:
+Uses chaining: collisions are handled via linked lists.
+➤ Synchronization:
+All methods are synchronized, which means:
+Only one thread can operate on it at a time.
+Safe for multi-threaded environments, but less performant due to high lock contention.
+
+Constructors->
+Hashtable<K, V> table1 = new Hashtable<>();
+// Default constructor
+Hashtable<K, V> table2 = new Hashtable<>(int initialCapacity);
+// With initial capacity
+Hashtable<K, V> table3 = new Hashtable<>(int initialCapacity, float loadFactor);
+// With capacity & load factor
+Hashtable<K, V> table4 = new Hashtable<>(Map<? extends K, ? extends V> m);
+// Copy from another map
+
+Feature | Value
+Null keys/values | ❌ Not allowed (throws NullPointerException)
+Thread-safe | ✅ Yes (synchronized methods)
+Ordering | ❌ No guaranteed order
+Sorting | ❌ No
+Internal structure | Hash table with linked list chaining
+Initial Capacity | Default: 11
+Load Factor | Default: 0.75
+
+Method	Description
+put(K, V)	Adds key-value
+get(Object key)	Retrieves value
+remove(Object key)	Deletes mapping
+containsKey(Object key)	Checks if key exists
+containsValue(Object value)	Checks if value exists
+isEmpty()	Checks if empty
+size()	Total entries
+clear()	Removes all entries
+elements() / keys()	Returns Enumeration of values/keys
+entrySet() / keySet()	Views as a Set
+clone()	Shallow copy
+
+🔍 Internal Put & Get Logic
+put(K key, V value):
+Validate: key and value must not be null.
+Hash the key → get index.
+Traverse the linked list at that index:
+If key exists: replace value.
+Else: insert a new Entry at the beginning.
+If size exceeds threshold (capacity * loadFactor), rehash.
+get(Object key):
+Validate: key must not be null.
+Hash key → get index.
+Traverse list at that index to find key.
+Return value if found, else null.
+
+Hashtable vs HashMap
+Feature	Hashtable	HashMap
+Null keys/values	❌ Not allowed	✅ One null key, many null values
+Thread-safe	✅ Yes (synchronized)	❌ No (use Collections.synchronizedMap)
+Performance	❌ Slower (synchronized)	✅ Faster (non-synced)
+Legacy	✅ Yes	❌ No (modern)
+Enumeration support	✅ Yes	❌ No (uses Iterator)
+Fail-fast iterator	❌ No	✅ Yes
+-------------------
+
+SortedMap->
+SortedMap<K, V> is a subinterface of Map, introduced in Java 1.2.
+It maintains its keys in ascending sorted order, either by:
+Natural ordering (via Comparable)
+Or using a custom Comparator provided at map creation.
+✅ Main Implementation: TreeMap
+
+Feature | Description
+Ordering | Keys are sorted (ascending)
+Comparator | Can define custom comparator
+Null Keys | ❌ Not allowed if using natural order
+Duplicates | ❌ Keys must be unique
+Thread-safe | ❌ Not thread-safe
+Underlying DS | Red-Black Tree (in TreeMap)
+Time Complexity | O(log n) for get(), put(), remove()
+
+Difference: Map vs SortedMap
+
+Feature	Map	SortedMap
+Order of keys	No guarantee	Maintained (ascending)
+Comparator support	❌	✅
+Range views	❌	✅ (headMap, tailMap, subMap)
+Methods	Basic map methods	Extended with sorted capabilities

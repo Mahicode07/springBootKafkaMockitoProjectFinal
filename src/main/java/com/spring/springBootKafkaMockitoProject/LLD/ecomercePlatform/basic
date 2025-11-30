@@ -1,0 +1,38 @@
+ecommerce platform like amazon,flipkart etc
+
+functional requirements->
+1. user should be able to search product based on name,category.
+2. user should be able to see the product details, reviews and ratings.
+3.user should select quantity of product and add to cart.
+4. user should be able to checkout the product in cart and make payment.
+5. user should be able to see the order details and status of order.
+6.manage purchase of items which are in limited stock in high sale to avoid race condition
+
+non-functional requirements->
+scale of system- 50m daily active users
+cap theorem -> currently required both (highly available in case of searching and seeing the products)
+and need consistency in case of payment and inventory management.
+latency- on search as well as on checkout.
+
+core entities->
+1.User
+2.Product
+3.Cart
+4.Order
+5.checkout
+
+Api Designing->
+1. GET-> v1/product/search/q={searchTerm}-> should return list of productIds: pagination
+searchTerm can be name,category
+2. GET-> v1/product/{productId}-> should return product details,price,availability
+3. POST-> v1/user/{userId}/cart-> should add product to cart
+Request body: { "productId": "123", "quantity": 2 }
+4. GET-> v1/user/{userId}/cart-> should return cart details
+5. POST-> v1/user/{userId}/checkout-> return orderId
+Request body: { all products in cart with quantity}
+v1/payment-> should make payment and confirm order
+Request body: { "orderId": "123", "paymentMethod": "CREDIT_CARD", "details": { ... } }
+6. GET-> v1/user/{userId}/orders-> should return list of orders
+7. GET-> v1/order/{orderId}-> should return order details and status
+
+

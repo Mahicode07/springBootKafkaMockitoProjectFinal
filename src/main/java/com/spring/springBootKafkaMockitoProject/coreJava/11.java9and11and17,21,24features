@@ -1,0 +1,276 @@
+Java 9 features ->
+
+1)Process API->
+  Process Information->
+  ProcessHandle self = ProcessHandle.current();
+  long PID = self.getPid();
+  ProcessHandle.Info procInfo = self.info();
+  Destroying Processes->
+  childProc = ProcessHandle.current().children();
+  childProc.forEach(procHandle -> {
+      assertTrue("Could not kill process " + procHandle.getPid(), procHandle.destroy());
+  });
+
+  New onExit Method->
+  Process process = builder.start();
+  process.onExit().thenRun(() -> System.out.println("Process finished!"));
+
+  Improved waitFor Methods:->
+  boolean finished = process.waitFor(5, TimeUnit.SECONDS);
+
+2)Try-With-Resources->
+  In earlier versions of Java, the Try-With-Resources statement could only be
+  used with resources that implement the java.io.Closeable interface
+  Java 9 improved this by making AutoCloseable more versatile for different types of resources.
+  Try-With-Resources works with any class that implements the AutoCloseable interface
+
+3) Interface Private Method->
+   Interfaces in the upcoming JVM version can have private methods,
+   which can be used to split lengthy default methods:
+   if multiple default methods in an interface needed to share common logic,
+   Private methods in interfaces allow for better encapsulation. They can be used for helper methods
+   that should not be exposed to the implementing classes or users of the interface.
+
+4)Optional to Stream->
+    ifPresentOrElse() methods
+      Optional<String> optional = Optional.of("Hello");
+      optional.ifPresentOrElse(
+          value -> System.out.println("Present: " + value), // Action when present
+          () -> System.out.println("Absent") // Action when absent
+      );
+    or()-> method
+        Optional<String> optional = Optional.empty();
+        Optional<String> alternative = Optional.of("Default Value");
+        // If 'optional' is empty, it will return 'alternative'
+        Optional<String> result = optional.or(() -> alternative);
+        result.ifPresent(System.out::println);  // Output: Default Value
+
+5)Introduced java.util.ImmutableCollections-> all taking 10 values
+    List, Set, and Map->
+    List<String> list1 = List.of("apple", "banana", "cherry");
+    Set<String> set1 = Set.of("apple", "banana", "cherry");
+    Map<String, Integer> map1 = Map.of("apple", 1, "banana", 2, "cherry", 3);
+    copyOf() Methods for Immutable Copies->
+    List<String> originalList = Arrays.asList("apple", "banana", "cherry");
+    List<String> immutableList = List.copyOf(originalList);
+
+    Any operation that would modify the collection (such as add(), remove(),
+    or clear()) will throw an UnsupportedOperationException.
+
+=================================================================================================
+
+Java 11 features->
+    Java 11 is the first long-term support (LTS) release after Java 8. with fees.
+
+1)New String Methods->
+    isBlank()->
+    String str1 = "   ";
+    String str2 = "Hello";
+    System.out.println(str1.isBlank()); // Output: true
+    System.out.println(str2.isBlank()); // Output: false
+    This method is similar to isEmpty(), but isEmpty() only checks for an empty string (i.e., length 0),
+    while isBlank() also returns true for strings that contain only whitespace.
+
+    lines()->
+    String text = "Hello\nWorld\nJava";
+    text.lines().forEach(System.out::println);
+    // Output:
+    // Hello
+    // World
+    // Java
+
+    strip()->
+    The strip() method removes leading and trailing whitespace from a string, but it uses Unicode-aware trimming.
+    This means that it properly handles all types of whitespace, not just space characters.
+    String str1 = "   Hello   ";
+    String str2 = "\tJava\n";
+    System.out.println(str1.strip()); // Output: "Hello"
+    System.out.println(str2.strip()); // Output: "Java"
+
+    same stripLeading() and stripTrailing()
+
+    repeat(int count)->
+    String str = "Java ";
+    System.out.println(str.repeat(3)); // Output: "Java Java Java "
+
+    toArray()->
+    String str = "Java";
+    Character[] charArray = str.toArray();
+    System.out.println(Arrays.toString(charArray)); // Output: [J, a, v, a]
+    String.toCharArray()-> is primitive/Cannot store null values in char[]
+
+2)Collection to an Array->
+    String[] stringArray = list.toArray(new String[0]);
+
+3)The Not Predicate Method->
+    List withoutBlanks = sampleList.stream().filter(Predicate.not(String::isBlank))
+      .collect(Collectors.toList());
+
+4)Local-Variable Syntax for Lambda->
+    String resultString = sampleList.stream()
+      .map((@Nonnull var x) -> x.toUpperCase())
+      .collect(Collectors.joining(", "));
+
+5)Running Java Files->
+    we don’t need to compile the Java source files with javac explicitly anymore:
+    //before
+    $ javac HelloWorld.java
+    $ java HelloWorld
+    Hello Java 8!
+    //after
+    $ java HelloWorld.java
+    Hello Java 11!
+
+=================================================================================
+
+Java 17 features ->
+
+1)Sealed Classes and Interfaces->
+    Sealed classes and interfaces restrict which other classes or interfaces can extend or
+    implement them. This feature provides more control over the inheritance hierarchy
+    You can specify which classes or interfaces are allowed to subclass a sealed class using the permits keyword.
+    public sealed class Shape permits Circle, Square { }
+    public final class Circle extends Shape { }
+    public final class Square extends Shape { }
+
+2)Pattern Matching for switch
+    Pattern Matching for switch is a preview feature in Java 17,
+    enabling more flexible and readable switch expressions and statements.
+    static String getColorName(Object obj) {
+        return switch (obj) {
+            case String s -> "String: " + s;
+            case Integer i -> "Integer: " + i;
+            case null -> "Null";
+            default -> "Unknown";
+        };
+    }
+
+3)JVM Constants API->
+    This API simplifies the process of dealing with constants, making it easier to
+    access and manipulate the constant pool, which is a key part of the Java Virtual Machine (JVM).
+    The JVM Constant Pool is a table used by the JVM to store constants used by the program,
+    such as string literals, method references, and class references
+
+    ConstantDesc Interface->
+        the root interface for the JVM constants.
+        All constant descriptors (e.g., ConstantClassDesc, ConstantMethodHandleDesc)
+        implement this interface.
+
+4)Foreign Function & Memory API (Incubator)->
+    This incubator feature allows Java programs to interoperate with code
+    and data outside of the Java heap (e.g., native code, memory buffers).
+    his API simplifies the interaction with native code and memory, providing better performance
+    and safer memory management compared to traditional JNI (Java Native Interface).
+
+5)Context-Specific Deserialization Filters->
+     to improve the security of Java's deserialization process. Deserialization is the process of
+     converting a stream of bytes into objects in memory.
+     While it is a common and essential operation in Java (e.g., when reading from files or network
+     communication), it has long been a security vulnerability, especially when it comes to handling untrusted input.
+     Java's ObjectInputStream API has been prone to deserialization vulnerabilities where attackers can send specially
+     crafted input to cause arbitrary code execution or denial of service (DoS)
+     context-specific deserialization filters, which allow developers to define filters on a per-deserialization basis.
+     This provides more flexibility and granular control over the deserialization process.
+
+     ObjectInputFilter filter = ObjectInputFilter.Config.createFilter("com.example.MyClass;maxDepth=10");
+     ObjectInputStream ois = new ObjectInputStream(inputStream);
+     ois.setObjectInputFilter(filter);
+     In this example, only objects of type com.example.MyClass are allowed, and they must be deserialized with a maximum depth of 10.
+
+6)Deprecate the Security Manager for Removal
+
+7)Remove the Experimental AOT and JIT Compiler->from GraalVM (JEP-317) were features with a high cost of maintenance.
+
+8)Strongly Encapsulate JDK Internals->
+    preventing access to them from outside the JDK,
+    especially through reflection or other non-public mechanisms.
+    internal APIs, such as those in the sun.* and com.sun.* packages, have still been accessible by external
+    applications and libraries,
+    either through reflection or by using tools like --add-opens and --add-exports.
+    These internal APIs were never meant to be part of the public API and were originally
+    designed to be used only by the JDK itself.
+    Accessing JDK internals can bypass security restrictions and protections built into the Java platform.
+    Internal APIs were not subject to the same maintenance and versioning standards as public APIs.
+
+================================================================================================================
+Java 21 features->
+
+1.Pattern Matching for switch->
+    static String formatter(Object obj) {
+        return switch (obj) {
+            case Integer i -> "Integer: " + i;
+            case String s -> "String: " + s.toUpperCase();
+            case null -> "Null!";
+            default -> "Unknown type";
+        };
+    }
+ Type-safe and powerful matching — no casting needed
+
+2. Virtual Threads->Lightweight threads managed by the JVM — enabling massive concurrency.
+Runnable task = () -> System.out.println("Thread: " + Thread.currentThread());
+Thread thread = Thread.ofVirtual().start(task);
+
+3. Sequenced Collections->New interfaces: SequencedCollection, SequencedSet, SequencedMap for consistent ordering APIs.
+    List<String> list = new ArrayList<>();
+    list.add("A");
+    list.add("B");
+    System.out.println(list.getFirst()); // A
+    System.out.println(list.getLast());  // B
+
+4.Unnamed Classes and Instance main Methods->no more boilerplate!
+void main() {
+    System.out.println("Hello from Java 21!");
+}
+ No public class, no static void main needed — super clean.
+
+5.Scoped Values->
+Goal: Thread-safe, faster alternative to ThreadLocal for passing context data.
+ScopedValue<String> USERNAME = ScopedValue.newInstance();
+ScopedValue.where(USERNAME, "admin").run(() -> {
+    System.out.println("Running as: " + USERNAME.get());
+});
+
+===============================================================================
+Java 24->
+
+1.Primitive Types in instanceof, Patterns, and switch
+No need for auto-boxing/unboxing,Avoids type casting confusion
+Object val = 10;
+if (val instanceof int i) {
+    System.out.println("It’s an int: " + i);
+}
+
+switch (val) {
+    case int i -> System.out.println("Switch int: " + i);
+    default -> System.out.println("Not an int.");
+}
+
+2. Flexible Record Constructors
+Java records now allow more custom logic in constructors, like validations or
+transforming values before assigning them.
+Encourages immutability with validations,Avoids additional factory methods or utility classes
+record Product(String name, double price) {
+    Product {
+        if (price < 0) throw new IllegalArgumentException("Price can't be negative");
+        name = name.strip(); // clean input
+    }
+}
+
+3.Stream Gatherers->
+think of them like advanced collectors for intermediate steps, not just at the end.
+You can now transform streams mid-way with reusable logic
+Helps create pipelines without breaking stream flow
+Stream<String> names = List.of("amy", "bob", "anna").stream();
+Stream<String> capitalized = names.gather(Gatherer.ofSequential(
+    (s, downstream) -> downstream.push(s.toUpperCase())
+));
+
+4.AOT (Ahead-of-Time) Class Loading->
+A way to precompile and cache class loading information to boost JVM startup.
+Faster app startup
+=================================================================================
+
+
+
+
+

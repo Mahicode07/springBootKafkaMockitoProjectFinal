@@ -1,0 +1,240 @@
+Spring Security is a powerful authentication and authorization framework used to secure Java-based web applications.
+protection against common vulnerabilities like CSRF, session fixation, and brute-force attacks.
+
+Spring Security is built on four core concepts:
+Authorization: Determines user permissions and access control.
+Password Storage: Securely manages password encoding and storage.
+Authentication: Verifies the user’s identity.
+Servlet Filters: Manages security filters to control requests.
+
+dependency:spring-boot-starter-security
+
+Latest Features in Spring Security 6.4 ->(2025)->
+OAuth 2.0 Enhancements: Allows easy integration with third-party login providers like Google, GitHub, and Microsoft.
+Improved Reactive Security: Enhanced support for Spring WebFlux and non-blocking security handling.
+Advanced Password Encoding: Utilizes DelegatingPasswordEncoder with multiple encoding formats
+Unified Request Matchers API: Methods like antMatchers(), mvcMatchers(), and regexMatchers()
+are deprecated in favor of requestMatchers().
+Enhanced Authorization Rules: More flexible security configurations for role-based and method-level security.
+Security Context Propagation: Improved support for security context sharing across different execution models,
+including reactive and asynchronous flows.
+
+Spring Security Architecture->
+Spring Security framework adds two important capabilities to web applications, which are listed below:
+1.Authentication->
+Authentication is the process of verifying the identity of the computer user. It is the process of verifying the
+user and devices before allowing them to access the resources.
+In Java, the AuthenticationManager interface is responsible for handling authentication events.
+The AuthenticationManager interface method “authenticate()” returns authentication (i.e if authentication= true )
+if it verifies the identity.
+The AuthenticationException is thrown if it identifies an invalid identity or principal.
+It returns null if he cannot decide the identity.
+2.Authorization/Access Control->
+    authority to perform certain tasks or operations.
+    In Java, AccessDecisionManager and AccessDecsionVoter classes help in the authorization process.
+
+
+// Configuration Java File
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableMethodSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableMethodSecurity
+public class SecurityConfig {
+    // Bean for UserDetailsService to manage user authentication details
+    @Bean
+    public UserDetailsService userDetailsService(BCryptPasswordEncoder passwordEncoder) {
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        manager.createUser(User.withUsername("AbhijeetRathore")
+                .password(passwordEncoder.encode("Abhijeet123"))
+                .roles("USER")
+                .build());
+        return manager;
+    }
+    // Bean for configuring HTTP security settings
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/").hasRole("ADMIN")
+                .anyRequest().authenticated())
+            .httpBasic();
+        return http.build();
+    }
+     // Bean for customizing web security
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers("/resources/**");
+    }
+    // Bean to provide a BCryptPasswordEncoder for securely encoding passwords
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+
+
+Spring Security Annotations->
+1. @Secured-is used to specify a list of roles that are allowed to access a method or class.
+@Secured({ "ROLE_ADMIN", "ROLE_SUPER_ADMIN" })
+public void createUser(User user)
+{
+    // ... logic for create User
+}
+
+2.@PreAuthorize-
+The @PreAuthorize annotation is used to specify an expression that must be evaluated to be true in order for
+a method or class to be accessible. The expression is written in Spring Expression Language (SpEL).
+The @PreAuthorize annotation can be used to control access to methods, classes, and even entire applications.
+@PreAuthorize("hasRole('ROLE_ADMIN')")
+public void deleteAdminUser(Long userId)
+{
+    // ... logic for delete User
+}
+
+3.@PostAuthorize
+The @PostAuthorize annotation is used to specify an expression that must be evaluated to true after a method or
+class has been executed. The expression is written in SpEL.
+The @PostAuthorize annotation can be used to control the results of a method or class.
+@PostAuthorize(
+    "hasRole('ROLE_ADMIN') and hasPermission(returnObject, 'read:courses')")
+public List<Course>
+findAllCourses()
+{
+    // ... logic for find all courses
+}
+
+4. @PreFilter
+The @PreFilter annotation is used to specify an expression that must be evaluated to true in order for a method or class
+to be included in a security filter chain. The expression is written in SpEL
+@PreFilter(
+    "hasRole('ROLE_ADMIN') and hasPermission(filterObject, 'read:courses')")
+public void
+deleteCourses(List<Course> courses)
+{
+    // ... logic for delete Courses
+}
+
+5. @PostFilter
+The @PostFilter annotation is used to specify an expression that must evaluate to true after a method or class
+has been executed in order for it to be included in a security filter chain.
+@PostFilter(
+    "hasRole('ROLE_ADMIN') and hasPermission(filterObject, 'read:classes')")
+public List<Class>
+findAllClasses()
+{
+    // ...logic for find all classes
+}
+
+6. @RolesAllowed
+The @RolesAllowed annotation is more flexible than the @Secured annotation because it allows you to specify an
+expression that evaluates to a list of roles. This expression can be written in Spring Expression Language (SpEL).
+@RolesAllowed("ROLE_ADMIN")
+public void deleteCourse(Long courseId)
+{
+    // ... logic for delete course
+}
+
+7.@AuthenticationPrincipal->
+that is used to inject the current authenticated user into a method or class.
+The user is injected as a Spring Security Authentication object.
+@GetMapping("/username")
+public String getUsername(@AuthenticationPrincipal String username) {
+  // ...
+}
+
+8.@RoleHierarchy
+can be used to simplify the security configuration of your Spring application. By defining a role hierarchy,
+you can reduce the number of @RolesAllowed or @PreAuthorize annotations that you need to write.
+@RoleHierarchy(value = { "ROLE_ADMIN > ROLE_USER",
+                         "ROLE_SUPER_ADMIN > ROLE_ADMIN" })
+
+Spring Security Expressions->
+Method Security: Securing methods using annotations like @PreAuthorize, @PostAuthorize, @PreFilter, and @PostFilter.
+Web Security: Configuring HTTP security in the security configuration file using expressions like hasRole(),
+hasAnyRole(), hasAuthority(), and permitAll().
+
+Web Security:
+In web applications, these expressions are used to secure HTTP requests. Developers can specify which roles or
+conditions are required to access certain URL patterns directly in the security configuration.
+For example, role-based permissions for the application
+
+Dynamic Data Access:
+Security expressions can enable dynamic filtering of data, ensuring that users only access data for which they have
+permission. For example, a user may be allowed to view or modify only their own data, not data belonging to other users.
+
+
+SecurityFilterChainExample->
+ @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/restricted/**").authenticated()
+                .anyRequest().denyAll()
+            )
+            .formLogin(form -> form
+                .loginProcessingUrl("/api/signin")
+                .failureHandler(authenticationFailureHandler())
+            )
+            .csrf(csrf -> csrf.disable());
+        return http.build();
+    }
+
+Authentication check->
+ @PostMapping("/signin")
+    public ResponseEntity<String> signIn(@RequestBody SigninRequest signInRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(signInRequest.getUsername(), signInRequest.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return ResponseEntity.ok("User authenticated successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
+        }
+    }
+
+ springSecuritySessionManagement-
+
+ @Configuration
+ @EnableWebSecurity
+ public class SecurityConfig  {
+
+     protected void configure(HttpSecurity http) throws Exception {
+         http
+                 .authorizeRequests()
+                 .anyRequest().authenticated()
+                 .and()
+                 .formLogin()
+                 .loginPage("/login").permitAll()
+                 .defaultSuccessUrl("/home", true)
+                 .and()
+                 .logout()
+                 .logoutSuccessUrl("/login?logout")
+                 .and()
+                 .sessionManagement()
+                 .maximumSessions(1)// only one session
+                 .maxSessionsPreventsLogin(true);
+     }
+ }
+
+UserDetailsService->
+UserDetailsService interface is a core component used for loading user-specific data
+It is responsible for retrieving user information from a backend data source, such as a database or an external service,
+and returning an instance of the UserDetails interface.
+The UserDetailsService interface has a single method called loadUserByUsername(),
+which takes a username as a parameter and returns a fully populated UserDetails object.
+InMemoryUserDetailsManager class, which is an implementation of the UserDetailsService interface that stores user
+details in memory.
+
+User class->User class, which is a convenient builder class provided by the framework for creating instances of UserDetails.
+The User class provides a fluent API for constructing UserDetails objects with various attributes.

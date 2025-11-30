@@ -1,0 +1,294 @@
+a string is a sequence of characters/string object is immutable
+public final class String
+     extends Object
+         implements Serializable, Comparable<String>, CharSequence
+
+The CharSequence is an interface that is used to represent the sequence of characters.
+String, StringBuffer, and StringBuilder class implement it.
+
+To handle string data in Java, we need an object of string class.
+Basically, there are three ways to create a string object in Java.
+By string literal.
+By new keyword.
+By converting character arrays into strings
+
+String s = "Hello";->stored in scp
+This SCP area is part of the method area (Permgen) until Java 1.6 version.
+From Java 1.7 onwards, SCP area is moved in the heap memory because SCP is a
+fixed size in the method area but in the heap memory, SCP can be expandable.
+Therefore, the string constant pool has been moved to heap area for memory utilization only.
+
+Whenever we create a string literal in Java, JVM checks string constant pool first. If the string already exists in string constant
+pool, no new string object will be created in the string pool by JVM.
+
+String s = new String("Hello");
+
+Whenever we will create an object of string class using the new operator, JVM will create two objects.
+First, it will create an object in the heap area and store string “Hello” into the object.
+Now JVM will create the second object as a copy for literal “Hello” in string constant pool for future purposes.
+There is no explicit reference variable pointing to the copy object in the pool but internally,
+JVM maintains the reference variable implicitly.
+Remember that the object created in the SCP area is not eligible for garbage collection because implicitly,
+the reference variable will be maintained by JVM itself.
+
+char arr[ ] = {'j','a','v','a'};
+String s = new String(arr);
+
+how many objects created?->
+
+String s1 = new String("Scientech");
+String s2 = new String("Scientech");
+String s3 = "Scientech";
+String s4 = "Scientech";
+
+first statement two objects one in heap and another in scp as copy
+second statement one object only in heap no copy because already present
+third and fourth statement..no object..direct return the already created copied object
+Thus, three objects are created, two in the heap area and one in string constant pool.
+
+
+String class in Java is immutable->
+we cannot modify the value of the string. But if you try to change with a new value,
+a new string object will be created by storing a new value.
+public class ImmutabilityTest {
+public static void main(String[] args)
+{
+    String s = "hello";
+    s.concat("world");
+    System.out.println(s); // It will print "hello" because string is an immutable object.
+ }
+
+ one object by literal, one in heap and same heap objectcopy in scp
+
+Java provides us three general ways by which we can compare between two strings->
+By equals() method
+By = = operator (double equal operators)
+By compareTo() method.
+
+The string class overrides the equals() method of the Object class./content check
+= = Operator-> both references pointing to same object or not
+
+public int compareTo(String str)->s1.compareTo(s2); where s1 and s2 are two reference variables of string literals.
+both strings is converted into a Unicode value for comparison. basically checking content if same return 0/else positive or negative number
+
+Concatenate String-> concat/+
+concat objects stored in heap area
+
+
+public static void main(String[] args)
+{
+   String s1 = new String("Java");
+   s1.concat(" Core");
+   s1 = s1.concat(" Programming");
+   System.out.println(s1);
+ }
+ how many objects are created?->
+ java in heap/java core in heap and core in scp/java programming on heap and programming on core
+
+note-> At least, one of the operands must be a string for concatenation. If none of the operands is a string,
+the plus sign (+) will work as an addition operator that adds two numbers.
+
+String Concatenation by using StringBuilder Class->
+append() method to perform string concatenation operation
+The append() method can take arguments of different types, such as int, char, CharSequence, boolean, float, double, Objects, and StringBuilder
+StringBuilder is mutable class, which means values stored in StringBuilder objects can be updated or changed once they are created
+public static void main(String[] args)
+{
+    StringBuilder sb = new StringBuilder();
+    sb.append("Hello, "); // Appending a string
+    sb.append("Java!"); // Appending another string
+    sb.append(2023); // Appending an integer
+    String result = sb.toString();
+    System.out.println(result);
+  }-> Hello, Java!2023
+
+String Concatenation using format()->
+{
+  String s1 = "Scientech";
+  String s2 = " Easy";
+
+  String s = String.format("%s%s",s1,s2);
+  System.out.println(s.toString());
+  }
+
+String concatenation using String.join() method in Java 8 and Beyond->
+{
+  String s1 = "Scientech";
+  String s2 = " Easy";
+
+  String s = String.join(" ",s1,s2);
+  System.out.println(s.toString());
+  }
+
+using StringJoiner class->
+StringJoiner joiner = new StringJoiner(", ");
+joiner.add("Apple");
+joiner.add("Banana");
+joiner.add("Cherry");
+
+String concatenation using Collectors.joining()->
+Stream stringStream = Stream.of("Apple", "Banana", "Orange");
+String result = stringStream.collect(Collectors.joining(", "));
+
+Substring in Java is a subset of the main string specified by start and end indices->
+String str = "Hello, World";
+String sub = str.substring(0, 5); // sub is "Hello". // 0 to 5th index string
+String s = "India";
+s.substring(3);// only one argument-> then from that index to end of string
+Note that if the startIndex is larger than the length of string or less than zero,
+the substring() method will throw an exception named IndexOutOfBoundsException.
+
+split();->
+String text = "My name is Deepak. I am 26 years old. I live in Dhanbad.";
+String[] str = text.split("\\.");
+
+
+The most important and commonly used methods of the String class in Java programming are as follows:
+
+isEmpty()
+length()
+replace()
+toUpperCase()
+toLowerCase()
+charAt()
+trim()
+substring()
+contains()
+compareTo()
+compareToIgnoreCase()
+equals()
+equalsIgnoreCase()
+startsWith()
+endsWith()
+indexOf()
+lastIndexOf()
+String[] split()
+--------------------------
+replace(char old, char new);
+s1.startsWith(s2);str.startsWith("c");
+String str = new String(char chars[ ], int startIndex, int count);
+For example:
+   char chars[] = { 'w', 'i', 'n', 'd', 'o', 'w', 's'  };
+   String str = new String(chars, 2, 3);
+   of the value ”ndo” stored in the heap area because the starting index is 2 and the total number of characters to be copied is 3.
+
+That’s why StringBuffer class objects are mutable in Java->
+public final class StringBuffer
+   extends Object
+      implements Serializable, CharSequence
+
+Difference between Length and Capacity in Java StringBuffer->
+Capacity: The total number of characters hold in the StringBuffer object is called capacity.
+StringBuffer(): This constructor creates an empty string buffer object with an initial capacity of 16 characters.
+StringBuffer(int size): This constructor creates an empty string buffer object and accepts an integer value that specifies the size or length of the string object.
+3. StringBuffer(String str): This constructor creates a string buffer object with the specified string whose size is equal to the string specified in this constructor.
+4. StringBuffer(CharSequence seq): This form of constructor creates a string buffer that contains the same characters as the specified CharSequence.
+
+Can we add 17th character in the existing StringBuffer object?
+Yes, if the StringBuffer object is full, still we can add 17th character to it.
+Once the capacity of StringBuffer object is filled, a new StringBuffer object will be created with bigger capacity.
+All the 16th characters will be copied plus 17th character will be added. The reference variable sb will point to the new object and the old object by
+default will be gone to the garbage collector. But these total things will happen internally
+new capacity= (old capacity +1) * 2 = 34
+
+stringBuffer methods->
+append()
+capacity()
+charAt()
+delete()
+ensureCapacity()
+getChars()
+indexOf()
+insert()
+length()
+reverse() and many more.
+
+{
+    StringBuffer sb1 = new StringBuffer("Java");
+    StringBuffer sb2 = sb1.append(" Programming");
+    StringBuffer sb3 = sb2.appendCodePoint(66);
+    System.out.println(sb3);
+ } ->Java ProgrammingB
+
+ In Java, StringBuilder class is identical to StringBuffer class, except for one important difference:
+ StringBuffer is thread-safe and StringBuilder is not thread-safe. Methods provided by StringBuffer for modifying the buffer are synchronized,
+ which means that only one thread is allowed to access StringBuffer object at a time.
+ The main advantage of using StringBuilder is faster performance because multiple threads have not to wait
+ to access the same string builder object at a time. That’s why, performance is relatively high.
+ StringBuilder sb = new StringBuilder(); // Initial capacity 16 characters.
+
+ string builder methods->
+ append(String str)
+ insert(int offset, String str)
+ delete(int start, int end)
+ deleteCharAt(int index)
+ replace(int start, int end, String str)
+ reverse()
+ capacity()
+ ensureCapacity(int minimumCapacity)
+ setLength(int newLength)
+ charAt(int index)
+ setCharAt(int index, char ch)
+ substring(int start)
+ substring(int start, int end)
+ toString()
+
+ Difference Between String, StringBuffer, and StringBuilder
+Immutable and Mutable,object creation,scp,uses,memory,speed,
+Override equals() and hashCode() Methods of Object Class: string does/ buffer builder no,Thread-safe
+
+StringBuilder was added in Java 5 version, whereas StringBuffer was added in Java 1 version.
+
+How to Create Immutable Class in Java->
+immutable class in Java is a class whose state of an object cannot be changed or modified after it is created
+All the wrapper classes in Java like Integer, Long, Short, Byte, Boolean, Float, and Double are immutable class.
+In java.time package, several classes like LocalDate, LocalDateTime,
+LocalTime, MonthDay, Year, YearMonth, ZonedDateTime, OffsetDateTime, and OffsetTime are immutable classes in Java.
+
+
+1. All the fields should be declared final and private so that these fields cannot be accessed from outside the class.
+2. Create only getter method to access the fields inside the class.
+Do not provide setter method inside the class so that no one can set any value to the field.
+3. Restrict inheritance. Declare the class itself as final so that the derived classes do not make it mutable.
+4. You should initialize all the values at the time of object construction.
+5. Do not allow any method to modify any object
+6.If a mutable object (like arrays, collections, StringBuffer, etc.) is passed to the parameterized constructor,
+the immutable class should make a defensive copy of mutable object before storing its reference.
+
+explanation of point 6->
+public final class Student
+{
+ // Declare data members as final and private.
+    private final String name;
+    private final int rollNo;
+    private final School sc; // School class.
+
+    public Student(String name, int id, School sc)
+    {
+       this.name = name;
+       this.rollNo = id;
+       this.sc = new School();
+       this.sc.setSchoolName(sc.getSchoolName());
+    }
+ // Declare getter methods for each private variable.
+    public String getName() {
+	return name;
+    }
+    public int getRollNo() {
+	return rollNo;
+    }
+    public School getSc() {
+	return sc;
+    }
+}
+
+Advantage of Immutable Object over Mutable Object->
+An immutable object can be passed to different areas of a program in the same Java application without
+worrying about its value change.
+It is inherently thread-safe that helps to write multithreading program code without much worries
+because its state cannot be changed.
+Immutable objects are good for hash keys, as their hash code can be cached and reused for better performance.
+
+
+
+

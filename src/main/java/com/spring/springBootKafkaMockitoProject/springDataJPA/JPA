@@ -1,0 +1,295 @@
+What is Java Persistence API (JPA) and what are its primary components?
+JPA is a Java specification for managing persistent objects in relational databases.
+The primary components of JPA include:
+// 1. Entity: A lightweight, persistent domain object that represents a table in a database.
+// 2. EntityManager: The primary interface used to interact with the persistence context.
+allowing CRUD operations on persistent objects.
+// 3. Persistence Unit: A set of all entity classes that are managed by EntityManager instances in an application.
+// 4. JPQL (Java Persistence Query Language): A query language similar to SQL but operates on entity objects
+rather than database tables.
+// 5. Annotations: Used to map Java classes to database tables and define relationships between entities.
+====================================================================================================================
+How does JPA differ from JDBC in terms of database interaction?
+JPA differs from JDBC in terms of database interaction through its object-relational mapping (ORM) capabilities.
+JDBC involves manual SQL queries and result set handling, whereas JPA provides a higher-level, abstraction-based approach.
+With JPA, developers work with Java objects (entities) and use JPQL for queries, which simplifies database operations and reduces boilerplate code.
+Additionally, JPA manages the persistence context, caching, and transaction management, making it easier to handle complex data relationships and operations.
+====================================================================================================================
+What is the role of the EntityManager interface in JPA?
+The role of the EntityManager interface in JPA is to manage the lifecycle of entities, facilitating their persistence, retrieval, and removal.
+It acts as a bridge between the application and the underlying database, providing a set of APIs for CRUD operations on the main entity.
+The EntityManager is responsible for:
+1. Persisting new entities to the database.
+2. Finding entities by their primary key.
+3. Merging detached entities back into the persistence context.
+4. Removing entities from the database.
+5. Creating and executing JPQL queries.
+6. Managing transactions and the persistence context.
+Overall, the EntityManager is a crucial component for interacting with the database in a JPA-based application.
+====================================================================================================================
+How would you define and use a primary key in JPA?
+A primary key in JPA is a unique identifier assigned to each entity, ensuring distinct records within a table.
+It is defined using the @Id annotation and is associated with the @GeneratedValue annotation to auto-generate unique values.
+====================================================================================================================
+how to define composite primary key?
+To define a composite primary key in JPA, you can use the @Embeddable and @EmbeddedId annotations. Here’s how to do it:
+1. Create an embeddable class that represents the composite key:
+```java
+import java.io.Serializable;
+import javax.persistence.Embeddable;
+import java.util.Objects;
+@Embeddable
+@Data
+public class CompositeKey implements Serializable {
+    private Long part1;
+    private Long part2;
+    // Default constructor
+    public CompositeKey() {}
+    public CompositeKey(Long part1, Long part2) {
+        this.part1 = part1;
+        this.part2 = part2;
+
+    }
+}
+
+```2. Use the embeddable class in your entity:
+```java
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.EmbeddedId;
+@Entity
+@Data
+public class MyEntity {
+
+    @EmbeddedId
+    private CompositeKey id;
+    private String someField;
+    // Other fields, getters, setters, etc.
+}
+====================================================================================================
+What is a persistence context in JPA and why is it important?
+A persistence context in JPA is a defined scope where entities are managed, allowing for entity state
+tracking and synchronization with the database. It is important as it enables efficient database interactions,
+ensures data consistency, and facilitates automatic dirty checking and cascading of changes.
+The persistence context optimizes database transactions and enhances the overall performance of the application.
+====================================================================================================================
+Can you explain the different states of an entity in JPA (transient, persistent, detached, removed)?
+In JPA, an entity can exist in one of four states:
+1. Transient: The entity is newly created and not yet associated with a persistence context. It is not stored in the database.
+2. Persistent: The entity is associated with a persistence context and is managed by the EntityManager.
+Changes to the entity will be synchronized with the database.
+3. Detached: The entity was once persistent but is no longer associated with a persistence context.
+Changes to the entity will not be synchronized with the database unless it is reattached.
+4. Removed: The entity is marked for deletion from the database. It will be removed when the transaction is committed.
+Understanding these states is crucial for managing entity lifecycles and ensuring proper database operations.
+====================================================================================================================
+What is an EntityTransaction in JPA and how is it used?
+An EntityTransaction in JPA is an interface that provides methods to manage transactions for entity operations.
+It is used to begin, commit, and roll back transactions, ensuring data integrity during database operations.
+To use EntityTransaction, you typically obtain it from the EntityManager and then call its methods as follows:
+1. Begin a transaction using `entityManager.getTransaction().begin()`.
+2. Perform entity operations (e.g., persist, merge, remove).
+3. Commit the transaction using `entityManager.getTransaction().commit()`.
+4. If an error occurs, roll back the transaction using `entityManager.getTransaction().rollback()`.
+Using EntityTransaction is essential for managing the atomicity of database operations in JPA.
+====================================================================================================================
+How do you map relationships in JPA (One-to-One, One-to-Many, Many-to-One, Many-to-Many)?
+In JPA, relationships between entities are mapped using specific annotations:
+1. One-to-One: Use the @OneToOne annotation to define a one-to-one relationship. You can also use @JoinColumn to specify the foreign key column.
+2. One-to-Many: Use the @OneToMany annotation on the parent entity and @ManyToOne on the child entity. The parent entity can have a collection of child entities.
+3. Many-to-One: Use the @ManyToOne annotation on the child entity to define a many-to-one relationship with the parent entity.
+4. Many-to-Many: Use the @ManyToMany annotation on both entities. You can also use @JoinTable to define the join table that holds the foreign keys of both entities.
+These annotations help establish the relationships and manage the associated data in the database effectively.
+====================================================================================================================
+What is JPQL (Java Persistence Query Language) and how is it different from SQL?
+JPQL (Java Persistence Query Language) is a query language used in JPA to perform database operations on entity objects.
+It is similar to SQL but operates on the entity model rather than directly on database tables.
+The key differences between JPQL and SQL are:
+1. JPQL queries are written in terms of entity classes and their attributes, while SQL queries are written in terms of database tables and columns.
+2. JPQL supports object-oriented features such as inheritance and polymorphism, while SQL does not.
+3. JPQL allows for navigation through entity relationships using dot notation, whereas SQL requires explicit joins.
+4. JPQL is database-agnostic, while SQL is specific to the underlying database.
+Overall, JPQL provides a higher-level abstraction for querying persistent data in a more object-oriented manner.
+====================================================================================================================
+How does JPA handle lazy and eager loading?
+JPA handles lazy and eager loading through the use of fetch types defined in entity relationships.
+1. Lazy Loading: When a relationship is marked as LAZY (using FetchType.LAZY), the related entities are not loaded from the database until they are explicitly accessed.
+This can improve performance by reducing the amount of data retrieved initially.
+2. Eager Loading: When a relationship is marked as EAGER (using FetchType.EAGER), the related entities are loaded immediately along with the parent entity.
+This ensures that all necessary data is available upfront but can lead to performance issues if not managed carefully.
+By default, @ManyToOne and @OneToOne relationships are EAGER, while @OneToMany and @ManyToMany are LAZY.
+Developers can override these defaults based on their application's requirements.
+====================================================================================================================
+What are some common annotations used in JPA and their purposes?
+Some common annotations used in JPA and their purposes include:
+1. @Entity: Marks a class as a JPA entity, representing a table in the database.
+2. @Table: Specifies the table name and schema for the entity.
+3. @Id: Denotes the primary key of the entity.
+4. @GeneratedValue: Specifies the strategy for generating primary key values (e.g., AUTO, IDENTITY).
+5. @Column: Maps a class field to a database column and allows customization of column properties.
+6. @OneToOne, @OneToMany, @ManyToOne, @ManyToMany: Define relationships between entities.
+7. @JoinColumn: Specifies the foreign key column for a relationship.
+8. @Embeddable: Marks a class as embeddable, allowing it to be used as a composite key or embedded object.
+9. @EmbeddedId: Marks a field as a composite primary key using an embeddable class.
+10. @NamedQuery: Defines a static, named JPQL query for reuse.
+These annotations facilitate the mapping of Java objects to database tables and manage entity relationships effectively.
+====================================================================================================================
+Can you explain how inheritance is mapped in JPA?
+Inheritance in JPA is mapped using the @Inheritance annotation. This annotation allows entities to inherit properties from a common superclass.
+The strategy attribute of @Inheritance defines the inheritance mapping strategy, which can be TABLE_PER_CLASS, JOINED, or SINGLE_TABLE.
+1. TABLE_PER_CLASS: Each class in the inheritance hierarchy is mapped to its own table. This strategy can lead to data redundancy.
+2. JOINED: Each class has its own table, but the tables are joined using foreign keys. This strategy normalizes the data and reduces redundancy.
+3. SINGLE_TABLE: All classes in the hierarchy are mapped to a single table, with a discriminator column to differentiate between entity types.
+This strategy can improve performance but may lead to sparse tables.
+Additionally, the @DiscriminatorColumn and @DiscriminatorValue annotations can be used to customize the discriminator column and values for entity types.
+code->
+```java
+import javax.persistence.*;
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public class ParentEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String commonField;
+    // Getters and setters
+}
+
+@Entity
+public class ChildEntity extends ParentEntity {
+    private String specificField;
+    // Getters and setters
+}
+====================================================================================================================
+What is the CascadeType in JPA and what are its different types?
+CascadeType in JPA is an enumeration that defines the set of operations that should be
+cascaded (means refers to how operations on a parent entity (like persist, merge, remove, etc.) should propagate to its child entities.)
+from a parent entity to its related child entities.
+The different types of CascadeType are:
+1. ALL: Cascades all operations (persist, merge, remove, refresh, detach).
+2. PERSIST: Cascades the persist operation, meaning when the parent entity is persisted, its child entities are also persisted.
+3. MERGE: Cascades the merge operation, meaning when the parent entity is merged, its child entities are also merged.
+4. REMOVE: Cascades the remove operation, meaning when the parent entity is removed, its child entities are also removed.
+5. REFRESH: Cascades the refresh operation, meaning when the parent entity is refreshed, its child entities are also refreshed.
+6. DETACH: Cascades the detach operation, meaning when the parent entity is detached, its child entities are also detached.
+Using CascadeType helps manage the lifecycle of related entities and ensures data integrity in the database.
+====================================================================================================================
+What is the purpose of the EntityManagerFactory in Spring Data JPA?
+The EntityManagerFactory in Spring Data JPA is responsible for creating EntityManager instances.
+It reads the persistence configuration and creates EntityManager instances based on that configuration.
+The purpose of EntityManagerFactory is to provide a thread-safe way to create and manage EntityManager instances,
+It is responsible for managing the connection to the database and can be configured with various properties to control the behavior
+of the EntityManager instances it creates
+====================================================================================================================
+Difference between JpaRepository.save() and JpaRepository.saveAndFlush() methods?
+JpaRepository.save()->
+The changes made to the entity are not immediately persisted in the database.
+They are persisted when the current transaction is committed.
+Use this method when you want to save an entity and continue working with it in the same transaction.
+JpaRepository.saveAndFlush()->
+The changes made to the entity are immediately persisted to the database, regardless of whether the current
+transaction is committed or not.
+Use this method when you want to save an entity and immediately see the changes reflected in the database.
+====================================================================================================================
+What is the purpose of the @Transactional annotation in JPA?
+When a method annotated with @Transactional is called, a transaction will be started before the method is executed,
+and any changes made to the database within the method will be persisted to the database when the transaction is committed.
+If an exception is thrown within the method, the transaction will be rolled back,
+and any changes made to the database within the method will be discarded.
+====================================================================================================================
+What is the purpose of EntityManager in JPA?
+The EntityManager in JPA is the primary interface through which an application interacts with the Persistence Context,
+which is responsible for managing the lifecycle of entity objects and their persistence in the database.
+The EntityManager is responsible for the following tasks:
+Creating and removing entity objects.
+Retrieving entity objects from the database.
+Updating and persisting changes made to entity objects
+Managing the association between entities.
+Managing the lifecycle of entity objects.
+Executing queries on the database using JPQL
+Caching entity objects for improved performance
+====================================================================================================================
+Describe in detail about the Persistence Unit in JPA?
+A Persistence Unit in JPA is a set of one or more entity classes that are managed together as a unit for the purpose of data persistence.
+It is a logical grouping of entity classes and their associated metadata, including their mappings to database tables,
+relationships between entities, and any other configuration information required to persist and retrieve data.
+A Persistence Unit is defined in a persistence.xml file, which is typically located in the META-INF directory of a Java project.
+This file contains metadata that describes the properties and configuration of the Persistence Unit, including the database connection details,
+the list of entity classes to be managed, and any additional configuration options.
+When an application is deployed, the JPA provider reads the persistence.xml file and creates a Persistence Unit that is used to manage the entities within it.
+The application can then use the entity classes and the ‘EntityManager’ API to perform CRUD (Create, Read, Update, Delete) operations on the database.
+====================================================================================================================
+What is a Named Query in JPA? How is it used? And what are the benefits of using this?
+In JPA, a named query is a pre-defined query that is given a name and can be used in multiple places in an application.
+It is defined in the entity class using the @NamedQuery annotation and can be used to retrieve entities based on specific criteria.
+====================================================================================================================
+Difference between JPA Repository and CRUD Repository? Explain with the help of an example
+In Spring Data JPA, both JpaRepository and CrudRepository are interfaces that provide methods for performing CRUD (Create, Read, Update, Delete) operations on entities.
+However, there are some differences between the two:
+1. JpaRepository extends PagingAndSortingRepository, which in turn extends CrudRepository. This means that JpaRepository provides additional methods for pagination and sorting of results.
+2. JpaRepository provides more advanced methods for querying the database, such as findAll(Specification spec) and findAll(Example<S> example).
+3. JpaRepository also provides methods for batch operations, such as saveAll(Iterable<S> entities) and deleteInBatch(Iterable<T> entities).
+4. CrudRepository provides only basic CRUD operations, such as save(), findById(), findAll(), deleteById(), and deleteAll().
+====================================================================================================================
+ Can you tell the difference between JPA and Hibernate?
+ JPA (Java Persistence API) is a specification for ORM (Object-Relational Mapping) in Java, while Hibernate is an implementation of JPA
+ In other words, JPA provides a standard set of interfaces and annotations for ORM, while Hibernate is a concrete implementation of those interfaces and annotations.
+ ====================================================================================================================
+What are some benefits of using an ORM framework like JPA?
+Increased Productivity: JPA provides a high level of abstraction that allows developers to focus on business logic instead of writing SQL queries.
+This can lead to faster development cycles and fewer errors.
+Portability: JPA abstracts away the details of the underlying database, which makes it possible to switch databases without changing the application code.
+This can save a lot of time and effort when porting applications between different databases.
+Scalability: JPA provides a caching mechanism that can help improve application performance by reducing the number of database queries needed to access data.
+This can help an application scale better as the number of users and amount of data grows.
+Maintainability: JPA provides a clear separation between application logic and persistence logic.
+This makes it easier to maintain and modify an application over time.
+Standardization: JPA is a Java EE standard, which means that it is widely adopted and supported by many different vendors.
+This helps ensure that the application code is portable and compatible with a wide range of different platforms.
+====================================================================================================================
+What is ORM Framework and how is JPA related to that?
+An Object-Relational Mapping (ORM) framework is a software tool that allows developers to map object-oriented programming language
+constructs to relational database constructs. It provides a layer of abstraction between the application code and the database,
+allowing developers to work with objects and classes rather than SQL queries.
+JPA is built on top of the Java Persistence Architecture (JPA), which is a standard for managing persistence in Java applications.
+JPA provides a set of standard interfaces and annotations that can be used with any JPA-compliant ORM framework.
+====================================================================================================================
+Explain the difference between a shared cache mode and a local cache mode in JPA? What are the advantages and disadvantages of each?
+Shared cache mode allows multiple ‘EntityManager’ instances to share the same cache. This means that if one ‘EntityManager’ instance
+loads an entity from the database and stores it in the cache, another ‘EntityManager’ instance can retrieve the same entity from the cache
+without having to hit the database. The shared cache is managed by the JPA provider and is typically implemented using a second-level cache
+
+Local cache mode, on the other hand, is specific to a single ‘EntityManager’ instance. When an entity is loaded from the database using an ‘EntityManager’ in
+local cache mode, it is stored in the local cache of that ‘EntityManager’ instance. Subsequent requests for the same entity within that ‘EntityManager’
+instance will be retrieved from the local cache instead of hitting the database.
+====================================================================================================================
+Can you explain how JPA handles entity state transitions (e.g. from new to managed, managed to remove, etc.)?
+What are some best practices for managing entity states in JPA?
+New: When an entity is first created using the new operator, it's in a new state.
+Managed: Once an entity is persisted using the EntityManager.persist() method, it enters the managed state.
+Entities in this state are managed by the persistence context, and any changes made to the entity are tracked and automatically synchronized with the database.
+Detached: Entities become detached when they are removed from the persistence context or when the persistence context is closed.
+In this state, changes made to the entity are not tracked or synchronized with the database.
+However, they can be re-attached to the persistence context later using the EntityManager.merge() method.
+Removed: When an entity is removed using the EntityManager.remove() method, it enters the removed state.
+Entities in this state are scheduled for deletion from the database when the transaction is committed.
+====================================================================================================================
+Explain in detail the JPA application life cycle?
+Entity Class Creation: The first stage in the lifecycle of a JPA application is the creation of entity classes.
+Entity classes are Java classes that represent database tables and have properties that correspond to columns in those tables.
+Entity Mapping: The next stage is entity mapping, which involves defining the mapping between the entity classes and the database tables.
+This is typically done using annotations or XML configuration files, and it specifies how the properties of the entity classes correspond to the columns
+in the database tables.
+Persistence Unit Creation: The third stage is the creation of a Persistence Unit, which is a logical grouping of one or more entity classes and
+their associated metadata. This is typically done using a persistence.xml file, which specifies the database connection details,
+the list of entity classes to be managed, and any additional configuration option
+EntityManagerFactory Creation: The next stage is the creation of an EntityManagerFactory, which is responsible for creating EntityManager instances.
+The EntityManagerFactory is typically created once at the start of the application and is used to create EntityManager instances throughout the application.
+EntityManager Creation: The next stage is the creation of an EntityManager, which provides the primary interface for interacting with the Persistence Context.
+The EntityManager is responsible for managing the lifecycle of entity objects, executing queries, and performing CRUD operations on the database.
+Transaction Management: The next stage is transaction management, which involves defining the boundaries of transactions and managing their lifecycle.
+Transactions are used to ensure data consistency and integrity, and they are typically managed using annotations or programmatic APIs.
+Entity Lifecycle Management: The next stage is entity lifecycle management, which involves managing the lifecycle of entity objects within the Persistence Context.
+Entity objects can be in one of several states, including New, Managed, Detached, and Removed, and their state can be changed using the EntityManager API.
+Query Execution: The final stage is query execution, which involves executing JPQL queries to retrieve data from the database. JPQL is a query language that is similar to SQL but is specific to JPA.
+====================================================================================================================

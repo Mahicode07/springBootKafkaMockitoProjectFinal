@@ -1,0 +1,210 @@
+ConcurrentHashMap->
+ConcurrentHashMap is part of java.util.concurrent package.
+It is a thread-safe, highly scalable, and lock-efficient implementation of the Map interface.
+
+Feature | Details
+Thread-safe | ✅ Yes
+Null keys/values | ❌ No null keys or null values allowed
+Locking Mechanism | Segment-based (JDK 7) / Bucket-level (JDK 8)
+Performance | Much better than synchronized HashMap
+Fail-fast/fail-safe | Fail-safe (uses internal structural changes without throwing CME)
+Ordering | ❌ Unordered
+Backed By | Array of nodes + fine-grained locking (JDK 8)
+Introduced In | Java 1.5
+
+Internal Working (JDK 8)
+It uses Node<K, V>[] table, like HashMap, but handles concurrency using bucket-level locking.
+It divides the map into bins (buckets) and only locks the bin where the operation is happening.
+Uses CAS (Compare-And-Swap) operations to update values safely without full locking.
+Rehashing is supported but performed safely with threads cooperating.
+
+🔁 How put() works internally
+map.put("apple", 1);
+Hash is computed for the key.
+Determines which bin (bucket) to place the key in.
+If no contention, inserts using CAS.
+If contention occurs or linked list/tree exists, uses synchronized block on that bin.
+Prevents other threads from modifying that bin during the operation.
+
+How get() works internally
+map.get("apple");
+Hash is computed.
+Directly accesses the correct bin.
+No lock is acquired for read operations unless resizing is happening.
+Very efficient for high-concurrency read-heavy operations
+
+📚 Constructors
+Constructor | Description
+ConcurrentHashMap() | Default initial capacity (16)
+ConcurrentHashMap(int initialCapacity) | Set initial capacity
+ConcurrentHashMap(int initialCapacity, float loadFactor) | With load factor
+ConcurrentHashMap(Map<? extends K, ? extends V>) | Copy entries from another map
+
+Method | Description
+put(K key, V value) | Add entry
+get(Object key) | Get value
+remove(Object key) | Remove entry
+containsKey(Object key) | Check key presence
+putIfAbsent(K key, V val) | Add if key is absent
+replace(K key, V val) | Replace value
+compute(), merge() | Atomic operations
+forEach(), search(), etc | Parallel bulk operations
+
+❗ Nulls Not Allowed
+map.put(null, "value"); // NullPointerException
+map.put("key", null);   // NullPointerException
+
+✅ When to Use
+When you need high-performance concurrent access.
+In multi-threaded caches, counters, frequency maps.
+When you want non-blocking reads and low-latency writes.
+
+
+✅ Difference Between ConcurrentHashMap, HashMap, and SynchronizedMap
+
+| Feature / Behavior                      | HashMap                        | SynchronizedMap (Collections.synchronizedMap) | ConcurrentHashMap                     |
+|----------------------------------------|--------------------------------|------------------------------------------------|---------------------------------------|
+| Thread-Safe                             | ❌ No                          | ✅ Yes (whole map locked)                       | ✅ Yes (segment locking)               |
+| Null Keys Allowed?                      | ✅ Yes (one null key)          | ✅ Yes (one null key)                           | ❌ No                                  |
+| Null Values Allowed?                   | ✅ Yes                         | ✅ Yes                                          | ❌ No                                  |
+| Locking Mechanism                       | None                           | Entire map (coarse-grained)                    | Bucket-level (fine-grained)           |
+| Read Performance (Multi-threaded)       | ❌ Poor                        | ❌ Poor (lock acquired even for read)           | ✅ Excellent (non-blocking reads)      |
+| Write Performance (Multi-threaded)      | ❌ Poor                        | ❌ Poor (entire map locked)                     | ✅ Excellent (only locks portion)      |
+| Fail-Fast Iterator                      | ✅ Yes                         | ✅ Yes                                          | ❌ No (weakly consistent)              |
+| Safe Iteration During Update            | ❌ No                          | ❌ No                                           | ✅ Yes                                 |
+| Atomic Methods (putIfAbsent, etc.)      | ❌ No                          | ❌ No                                           | ✅ Yes                                 |
+| Use Case                                | Single-threaded apps          | Legacy thread-safe usage                       | High-concurrency scenarios            |
+| Introduced In                           | Java 1.2                       | Java 1.2                                        | Java 1.5                               |
+---------------------------------------------
+
+CopyOnWriteArrayList->
+CopyOnWriteArrayList is a thread-safe variant of ArrayList where all mutative operations (like add, set, remove, etc.)
+are implemented by making a fresh copy of the underlying array.
+
+🔧 Internal Working
+Internally uses a volatile array (Object[]).
+Read operations (like get(), size()) access the array directly → fast and non-blocking.
+Write operations (like add(), remove()) create a new array copy with updated content and
+then replace the reference atomically.
+Ensures thread safety without locks for reads.
+Write operations are expensive (O(n)) due to copying.
+
+📦 Constructors
+CopyOnWriteArrayList<E> list = new CopyOnWriteArrayList<>();               // Empty list
+CopyOnWriteArrayList<E> list2 = new CopyOnWriteArrayList<>(collection);    // From another collection
+CopyOnWriteArrayList<E> list3 = new CopyOnWriteArrayList<>(array);         // From an array
+
+Method | Description
+add(E e) | Adds element to the end (creates new array)
+addAll(Collection<? extends E> c) | Adds all elements from given collection
+get(int index) | Returns element at given index
+remove(int index) | Removes element at index (creates new array)
+remove(Object o) | Removes first occurrence (creates new array)
+set(int index, E element) | Replaces element at index (creates new array)
+iterator() | Returns a snapshot iterator (not affected by later updates)
+contains(Object o) | Checks if the object exists
+size() | Returns current size
+clear() | Empties the list
+toArray() | Returns snapshot array
+
+Feature | Value
+Thread-Safe | ✅ Yes
+Read Performance | ✅ Fast (no locking)
+Write Performance | ❌ Slower (due to copying)
+Allows Null | ✅ Yes
+Fail-Safe Iterator | ✅ Yes (snapshot-based)
+Use Case | Many Reads, Few Writes
+
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class Demo {
+    public static void main(String[] args) {
+        CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
+
+        list.add("Java");
+        list.add("Python");
+
+        // Snapshot iterator
+        for (String lang : list) {
+            System.out.println(lang);
+            list.add("C++"); // Will not reflect during iteration
+        }
+
+        System.out.println("After iteration: " + list);
+    }
+}
+
+output->
+Java
+Python
+After iteration: [Java, Python, C++, C++]
+
+
+| Feature                     | ArrayList                  | CopyOnWriteArrayList                     | Collections.synchronizedList()       |
+|----------------------------|----------------------------|------------------------------------------|--------------------------------------|
+| Thread-Safe                | ❌ No                      | ✅ Yes (internally)                      | ✅ Yes (externally synchronized)      |
+| Performance (Read)         | ✅ Fast                   | ✅ Very Fast                             | ⚠️ Slower due to synchronization      |
+| Performance (Write)        | ✅ Fast                   | ❌ Slower (due to copying)              | ⚠️ Slower (due to locking)           |
+| Underlying Structure       | Dynamic Array              | Volatile Array (copied on write)         | Wrapped ArrayList                    |
+| Iterator Type              | Fail-Fast                  | Fail-Safe (snapshot)                     | Fail-Fast                            |
+| Suitable For               | Single-threaded            | Multi-threaded (read-heavy)              | Multi-threaded (balanced ops)        |
+| Allows Null Elements       | ✅ Yes                   | ✅ Yes                                   | ✅ Yes                               |
+| Read Without Lock          | ❌ No                      | ✅ Yes                                   | ❌ No                                |
+| Modifications During Iteration | ❌ Throws Exception     | ✅ Safe (no ConcurrentModificationException) | ❌ Throws Exception              |
+| Synchronization Mechanism  | Not Synchronized           | Internal Copy Mechanism                  | External Locking (manual/automatic)  |
+----------------------------
+
+ConcurrentSkipListMap->
+ConcurrentSkipListMap<K,V> is a concurrent, sorted, thread-safe map introduced in Java 6.
+It implements ConcurrentNavigableMap, which in turn extends NavigableMap
+It provides log(n) time complexity for most operations and maintains elements in sorted order
+using a skip list internally.
+
+Feature | Description
+Thread-Safe | Yes, without locking the entire map (fine-grained concurrency)
+Ordering | Maintains natural ordering or via custom Comparator
+Null Keys/Values | ❌ Does not allow null keys or values
+Underlying DS | Skip List — a probabilistic, layered linked list
+Performance | O(log n) for get(), put(), remove()
+Fail-Safe | ✅ Iterators are weakly consistent, won’t throw ConcurrentModificationException
+
+ConcurrentSkipListMap<K, V> map1 = new ConcurrentSkipListMap<>();
+ConcurrentSkipListMap<K, V> map2 = new ConcurrentSkipListMap<>(Comparator.reverseOrder());
+ConcurrentSkipListMap<K, V> map3 = new ConcurrentSkipListMap<>(existingMap);
+
+Method | Description
+put(K key, V value) | Adds a key-value pair
+get(K key) | Retrieves value for given key
+remove(K key) | Removes the entry
+firstKey(), lastKey() | Retrieves smallest/largest key
+ceilingKey(K key) | Least key ≥ given key
+floorKey(K key) | Greatest key ≤ given key
+higherKey(K key) | Least key > given key
+lowerKey(K key) | Greatest key < given key
+subMap(), headMap(), tailMap() | Returns views of portions of the map
+
+🔄 Internal Working (Skip List)->
+A skip list is a layered, probabilistic data structure.
+Think of it as multiple linked lists stacked on top of each other.
+Higher levels "skip" over elements, providing fast access.
+This gives logarithmic search time, and concurrent reads/writes via lock-free traversal with CAS (Compare-And-Swap).
+
+Why Use It?
+You want a sorted concurrent map.
+Better scalability than Collections.synchronizedSortedMap() or using TreeMap with manual synchronization.
+
+| Feature / Map Type            | TreeMap                               | SynchronizedMap (Collections.synchronizedMap(new TreeMap<>())) | ConcurrentSkipListMap                  |
+|--------------------------------|---------------------------------------|----------------------------------------------------------------|-----------------------------------------|
+| Thread-Safe                   | ❌ No                                 | ✅ Yes (external synchronization)                              | ✅ Yes (internal fine-grained locking)  |
+| Ordering                      | ✅ Sorted (natural or custom order)   | ✅ Sorted (inherits TreeMap order)                             | ✅ Sorted (natural or custom order)     |
+| Null Keys                     | ❌ No (throws NullPointerException)   | ❌ No (same as TreeMap)                                        | ❌ No (not allowed)                     |
+| Null Values                   | ✅ Allowed                            | ✅ Allowed                                                     | ❌ Not allowed                          |
+| Iterator Behavior             | ❌ Fail-fast                          | ❌ Fail-fast                                                   | ✅ Weakly consistent (fail-safe)        |
+| Performance (Single Thread)   | ✅ Fast                               | ❌ Slower (synchronized overhead)                              | ⚠️ Slightly slower (due to concurrency) |
+| Performance (Multi-thread)    | ❌ Not Safe                           | ⚠️ Safe but less scalable                                      | ✅ Highly scalable                      |
+| Use Case                      | Single-threaded, sorted map           | Basic thread-safe sorted map                                  | High-concurrency, sorted map            |
+| Underlying Data Structure     | Red-Black Tree                        | Red-Black Tree + synchronized wrapper                         | Skip List (multi-level linked list)     |
+| SubMap, HeadMap, TailMap       | ✅ Yes                                | ✅ Yes                                                         | ✅ Yes (with concurrent views)           |
+| Fail-Fast Behavior            | ✅ Yes                                | ✅ Yes                                                         | ❌ No                                   |
+------------------------------------------------
+

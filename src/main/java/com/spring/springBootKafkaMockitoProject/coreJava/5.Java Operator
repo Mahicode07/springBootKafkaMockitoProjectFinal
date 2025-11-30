@@ -1,0 +1,24 @@
+In Java, an expression has two parts: operand and operator. The variables or constants that operators act upon are called operands.
+
+1. Unary operator: The operator that acts on a single operand is called unary operator. It uses a single variable.
+
+2. Binary operator: The operator that acts on two operands is called binary operator. It uses two variables.
+
+3. Ternary operator: The operator that acts on three operands is called ternary operator. It uses three variables.
+
+If a symbol like +, -, *, etc. is used as an operator, it is called symbolic operator.
+If a keyword is used as an operator, it is called named operator.
+
+1. Symbolic operators
+
+Arithmetic operators:       +, -, *, /, etc.
+Relational operators:       <, >, <=, >=, = =, !=.
+Logical operators:            &&, ||, !.
+Assignment operators:     =,
+Increment and decrement operators: + +, – –
+Conditional operators:     ?:
+Bitwise operators:           &, !, ^, ~, <<, >>, >>>
+Shift operators:               <<, >>, >>>.
+2. Named operators
+
+Instanceof operator
