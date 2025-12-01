@@ -129,6 +129,74 @@ We can use super to call the immediate parent class’s instance variable.
 To call immediate parent class constructor.
 To invoke the immediate superclass method.
 
+// Parent class
+class Vehicle {
+    String color = "White";
+    int maxSpeed = 120;
+
+    // Parent class constructor
+    Vehicle(String color, int maxSpeed) {
+        this.color = color;
+        this.maxSpeed = maxSpeed;
+        System.out.println("Vehicle constructor called");
+    }
+
+    // Parent class method
+    void display() {
+        System.out.println("This is a vehicle");
+    }
+
+    void showSpeed() {
+        System.out.println("Max Speed: " + maxSpeed + " km/h");
+    }
+}
+
+// Child class
+class Car extends Vehicle {
+    String color = "Red";
+    int maxSpeed = 200;
+    String model;
+
+    // Child class constructor
+    Car(String color, int maxSpeed, String model) {
+        // 1. Using super to call parent class constructor
+        super(color, maxSpeed);
+        this.model = model;
+        System.out.println("Car constructor called");
+    }
+
+    void display() {
+        // 2. Using super to call parent class method
+        super.display();
+        System.out.println("This is a car");
+    }
+
+    void showDetails() {
+        // 3. Using super to access parent class instance variable
+        System.out.println("Parent class color: " + super.color);
+        System.out.println("Child class color: " + this.color);
+        System.out.println("\nParent class maxSpeed: " + super.maxSpeed);
+        System.out.println("Child class maxSpeed: " + this.maxSpeed);
+        System.out.println("\nModel: " + model);
+    }
+}
+
+// Main class
+public class SuperKeywordDemo {
+    public static void main(String[] args) {
+        System.out.println("Creating Car object...\n");
+        Car myCar = new Car("Blue", 150, "Tesla Model S");
+
+        System.out.println("\n--- Calling display() method ---");
+        myCar.display();
+
+        System.out.println("\n--- Calling showDetails() method ---");
+        myCar.showDetails();
+    }
+}
+
+
+
 Syntax to call Superclass Constructor
 super(), or super(arguments);
 

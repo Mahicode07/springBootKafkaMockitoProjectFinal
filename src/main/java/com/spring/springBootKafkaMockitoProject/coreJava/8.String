@@ -233,9 +233,37 @@ reverse() and many more.
  substring(int start, int end)
  toString()
 
- Difference Between String, StringBuffer, and StringBuilder
-Immutable and Mutable,object creation,scp,uses,memory,speed,
-Override equals() and hashCode() Methods of Object Class: string does/ buffer builder no,Thread-safe
+Difference Between String, StringBuffer, and StringBuilder
+
+1. MUTABILITY:
+   - String: IMMUTABLE (cannot be changed)
+   - StringBuffer: MUTABLE (can be changed)
+   - StringBuilder: MUTABLE (can be changed)
+
+2. THREAD SAFETY:
+   - String: Immutable, so thread-safe
+   - StringBuffer: SYNCHRONIZED (thread-safe, slower)
+   - StringBuilder: NOT SYNCHRONIZED (not thread-safe, faster)
+
+3. PERFORMANCE:
+   - String: SLOW (creates new object on each modification)
+   - StringBuffer: MODERATE (mutable but synchronized)
+   - StringBuilder: FAST (mutable and not synchronized)
+
+4. WHEN TO USE:
+   - String: When value won't change frequently
+   - StringBuffer: When value changes frequently in multi-threaded environment
+   - StringBuilder: When value changes frequently in single-threaded environment
+
+5. STORAGE:
+   - String: Stored in String Constant Pool
+   - StringBuffer: Stored in Heap memory
+   - StringBuilder: Stored in Heap memory
+
+6. METHODS:
+   - String: concat(), substring(), replace(), etc. (returns new String)
+   - StringBuffer: append(), insert(), delete(), reverse() (modifies same object)
+   - StringBuilder: Same methods as StringBuffer
 
 StringBuilder was added in Java 5 version, whereas StringBuffer was added in Java 1 version.
 

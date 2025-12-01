@@ -57,7 +57,8 @@ Java Development Kit has the following components->
     Java compiler is a program that is implemented in C and C++ with the name javac.exe. javac is short for java compiler. It is platform-independent.
     It is responsible for the following tasks that are as follows:
     a) Java compiler checks the syntax error.
-    b) It converts source code into byte code with the help of Java Virtual Machine (JVM). Bytecode is just like machine code, but it is not for a specific processor or platform. It cannot be directly executed.
+    b) It converts source code into byte code with the help of Java Virtual Machine (JVM).
+    Bytecode is just like machine code, but it is not for a specific processor or platform. It cannot be directly executed.
     c) Java compiler also adds the additional code to your program if required.
 
  C or C++ programs are compiled only once. But when we execute Java programs, every time Java bytecode is translated.

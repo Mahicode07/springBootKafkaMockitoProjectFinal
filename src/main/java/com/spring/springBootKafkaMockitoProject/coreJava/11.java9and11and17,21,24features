@@ -57,6 +57,8 @@ Java 9 features ->
     Any operation that would modify the collection (such as add(), remove(),
     or clear()) will throw an UnsupportedOperationException.
 
+    shortcut->popi
+
 =================================================================================================
 
 Java 11 features->
@@ -121,6 +123,7 @@ Java 11 features->
     $ java HelloWorld.java
     Hello Java 11!
 
+shortcut->sanja
 =================================================================================
 
 Java 17 features ->
@@ -192,6 +195,7 @@ Java 17 features ->
     Accessing JDK internals can bypass security restrictions and protections built into the Java platform.
     Internal APIs were not subject to the same maintenance and versioning standards as public APIs.
 
+short form-spj fd j
 ================================================================================================================
 Java 21 features->
 
@@ -230,6 +234,7 @@ ScopedValue.where(USERNAME, "admin").run(() -> {
     System.out.println("Running as: " + USERNAME.get());
 });
 
+shortform-pvs s
 ===============================================================================
 Java 24->
 
@@ -268,6 +273,8 @@ Stream<String> capitalized = names.gather(Gatherer.ofSequential(
 4.AOT (Ahead-of-Time) Class Loading->
 A way to precompile and cache class loading information to boost JVM startup.
 Faster app startup
+
+shortcut->prg
 =================================================================================
 
 

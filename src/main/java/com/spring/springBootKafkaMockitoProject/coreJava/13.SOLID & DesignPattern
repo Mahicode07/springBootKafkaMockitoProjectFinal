@@ -517,6 +517,7 @@ public class Client {
 Immutable Object Creation: The resulting object (Pizza in this case) can be made immutable since it's fully
 constructed by the builder.
 
+shortcut-fas pb
 ===================================================================================
 Behavioral design pattern->
 Behavioral patterns define how objects communicate with each other in a flexible and decoupled way.
@@ -783,3 +784,4 @@ Structural design patterns->
 
 
 
+apf
