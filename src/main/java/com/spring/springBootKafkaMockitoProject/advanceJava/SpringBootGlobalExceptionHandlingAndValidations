@@ -1,0 +1,329 @@
+What is Global Exception Handling?
+Global exception handling in Spring Boot is a centralized mechanism to handle exceptions across the entire application.
+Instead of handling exceptions in each controller method using try-catch blocks, we define exception handlers in one place
+that automatically intercept and process exceptions thrown from any layer of the application.
+=============================================================================================================================
+@RestControllerAdvice
+Combination of @ControllerAdvice + @ResponseBody
+Specifically designed for REST APIs
+Automatically serializes return values to JSON/XML
+No need to add @ResponseBody on each exception handler method
+Most commonly used in modern Spring Boot REST applications
+=============================================================================================================================
+@ExceptionHandler
+Method-level annotation used to handle specific exceptions
+Can handle single or multiple exception types
+Method parameters can include the exception object, HttpServletRequest, WebRequest, etc.
+Return type can be ResponseEntity, String, ModelAndView, or custom objects
+=============================================================================================================================
+Exception Handling Flow (End-to-End)
+Request Arrives → DispatcherServlet receives the HTTP request
+Handler Mapping → Request mapped to appropriate controller method
+Controller Execution → Business logic executes
+Exception Thrown → Any layer (Controller/Service/Repository) throws an exception
+Exception Propagation → Exception bubbles up to DispatcherServlet
+HandlerExceptionResolver → Spring searches for an appropriate exception handler
+@ControllerAdvice/@RestControllerAdvice → Global exception handler intercepts
+@ExceptionHandler Method → Matching handler method processes the exception
+Response Creation → Handler method creates ResponseEntity with error details
+HTTP Response → Client receives formatted error response with appropriate HTTP status
+=============================================================================================================================
+example Code for Global Exception Handling in Spring Boot
+package com.example.demo.exception;
+public class ResourceNotFoundException extends RuntimeException {
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+
+
+@Service
+public class UserService {
+    public String getUserById(Long id) {
+        // fake logic: only id = 1 exists
+        if (id != 1L) {
+            throw new ResourceNotFoundException("User with id " + id + " not found");
+        }
+
+        // normally you'd return a User DTO or entity
+        return "Mahendra";
+    }
+}
+
+@Data
+public class ErrorResponse {
+
+    private LocalDateTime timestamp;
+    private int status;
+    private String error;
+    private String message;
+    private String path;
+}
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(
+            ResourceNotFoundException ex, WebRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGenericException(
+            Exception ex, WebRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+==============================================================================================================================
+Exception Handling in @Async Methods
+1️⃣ @Async with void return type
+➤ How exceptions behave
+Executes in a different thread → no return channel.
+Exception cannot reach controller → therefore cannot go to @RestControllerAdvice.
+Spring handles uncaught exceptions using AsyncUncaughtExceptionHandler.
+➤ When to use
+Fire-and-forget tasks (email sending, cleanup jobs, audit logging).
+⭐ Key Interview Line
+Void @Async method exceptions never reach @RestControllerAdvice; they must be handled using AsyncUncaughtExceptionHandler.
+
+2️⃣ @Async returning CompletableFuture<T>
+➤ How exceptions behave
+Exception completes the CompletableFuture exceptionally.
+The caller (controller or service) can handle it using .exceptionally() or .handle().
+When the controller returns a CompletableFuture,
+Spring unwraps the exception and sends it to @RestControllerAdvice.
+➤ When to use
+Asynchronous endpoints
+Async service calls where caller needs success/error result.
+⭐ Key Interview Line
+CompletableFuture async exceptions CAN be handled by @RestControllerAdvice because Spring unwraps them from the future.
+AsyncUncaughtExceptionHandler is NOT used.
+==============================================================================================================================
+Exceptions from filters/interceptors/servlet that bypass controllers
+Concept:
+Some exceptions thrown before controller are not seen by @RestControllerAdvice.
+Options:
+Custom Filter with try/catch + manual JSON error.
+Implement ErrorController / customize /error endpoint.
+Custom HandlerExceptionResolver.
+==============================================================================================================================
+priority of Exception Handlers in Spring Boot
+1️⃣ Method-Level @ExceptionHandler
+Defined within the same controller where the exception occurs.
+Highest priority; handles exceptions specific to that controller.
+2️⃣ @ControllerAdvice / @RestControllerAdvice
+Global exception handlers for the entire application.
+Handles exceptions not caught by method-level handlers.
+3️⃣ Default Spring Boot Error Handling
+If no custom handlers are found, Spring Boot's default error handling takes over.
+Provides a generic error response.
+
+example of of priority of Exception Handlers in Spring Boot
+@RestController
+public class SampleController {
+    @GetMapping("/sample")
+    public String sampleEndpoint() {
+        throw new IllegalArgumentException("Sample exception from controller");
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Handled in Controller: " + ex.getMessage());
+    }
+}
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentGlobally(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Handled Globally: " + ex.getMessage());
+    }
+}
+in above example, if /sample endpoint is called, the exception will be handled by the method-level @ExceptionHandler in SampleController,
+not the global handler in GlobalExceptionHandler.
+==============================================================================================================================
+1. What is Spring Validation?
+Spring Validation is built on top of Jakarta Bean Validation (JSR-380).
+It allows you to validate:
+Request bodies (@RequestBody)
+Query params (@RequestParam)
+Path variables (@PathVariable)
+Service-level DTOs
+
+Using annotations like:
+@NotNull, @NotBlank, @Email, @Size, @Pattern
+@Min, @Max, @Positive, @Negative
+Custom validations (@ValidPassword, @ValidAge, etc.)
+==============================================================================================================================
+2. Validating Request Bodies (@Valid @RequestBody)
+DTO
+public class UserRequest {
+    @NotBlank(message = "Name must not be blank")
+    private String name;
+
+    @Email(message = "Invalid email")
+    private String email;
+
+    @Min(value = 18, message = "Age must be 18 or above")
+    private int age;
+
+    // getters/setters
+}
+Controller
+@PostMapping("/users")
+public ResponseEntity<String> createUser(@Valid @RequestBody UserRequest request) {
+    return ResponseEntity.ok("User created");
+}
+If validation fails, Spring throws MethodArgumentNotValidException, which can be handled in @RestControllerAdvice.
+==============================================================================================================================
+3. Validate Path Variables & Request Params (@Validated)
+
+Spring does NOT validate method parameters without @Validated.
+Example
+@RestController
+@Validated
+public class UserController {
+
+    @GetMapping("/users/{id}")
+    public String getUser(@PathVariable @Min(1) long id) {
+        return "User " + id;
+    }
+
+    @GetMapping("/search")
+    public String search(@RequestParam @NotBlank String keyword) {
+        return "Searching " + keyword;
+    }
+}
+
+Exception Thrown:
+ConstraintViolationException if validation fails.
+==============================================================================================================================
+4. Global Exception Handling for Validation
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    // 1️⃣ Handle @Valid @RequestBody
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleInvalidBody(MethodArgumentNotValidException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    // 2️⃣ Handle @Validated on params
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintViolation(ConstraintViolationException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations()
+                .forEach(v -> errors.put(v.getPropertyPath().toString(), v.getMessage()));
+
+        return ResponseEntity.badRequest().body(errors);
+    }
+}
+==============================================================================================================================
+5. Custom Validation Annotations
+
+Step 1: Create Annotation
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = ValidPasswordValidator.class)
+public @interface ValidPassword {
+    String message() default "Password is too weak";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
+}
+
+Step 2: Create Validator
+public class ValidPasswordValidator implements ConstraintValidator<ValidPassword, String> {
+
+    @Override
+    public boolean isValid(String password, ConstraintValidatorContext ctx) {
+        if (password == null) return false;
+        return password.matches("^(?=.*[A-Z])(?=.*\\d).{6,}$");
+    }
+}
+
+Step 3: Use in DTO
+public class RegisterRequest {
+
+    @ValidPassword
+    private String password;
+}
+==============================================================================================================================
+🔥 6. Nested Object Validation (@Valid inside a DTO)
+Parent DTO
+public class OrderRequest {
+
+    @NotNull
+    private String orderId;
+
+    @Valid       // 👈 required for nested validation
+    @NotNull
+    private Address address;
+}
+
+Child DTO
+public class Address {
+
+    @NotBlank
+    private String city;
+
+    @NotBlank
+    private String pin;
+}
+==============================================================================================================================
+9. Validate List Inputs
+DTO:
+public class BatchUserRequest {
+    @Valid
+    private List<UserRequest> users;
+}
+==============================================================================================================================
+Grouped Validations
+public class UserRequest {
+    @NotBlank(groups = BasicInfo.class)
+    private String name;
+
+    @Email(groups = BasicInfo.class)
+    private String email;
+
+    @Min(value = 18, groups = AdvancedInfo.class)
+    private int age;
+
+    public interface BasicInfo {}
+    public interface AdvancedInfo {}
+}
+@PostMapping("/users/basic")
+public ResponseEntity<String> createBasicUser(
+        @Validated(UserRequest.BasicInfo.class) @RequestBody UserRequest request) {
+    return ResponseEntity.ok("Basic User created");
+}
+@PostMapping("/users/advanced")
+public ResponseEntity<String> createAdvancedUser(
+        @Validated(UserRequest.AdvancedInfo.class) @RequestBody UserRequest request) {
+    return ResponseEntity.ok("Advanced User created");
+}
+==============================================================================================================================
