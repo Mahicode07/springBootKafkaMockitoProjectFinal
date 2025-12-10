@@ -274,7 +274,7 @@ Stream<String> capitalized = names.gather(Gatherer.ofSequential(
 A way to precompile and cache class loading information to boost JVM startup.
 Faster app startup
 
-shortcut->prg
+shortcut->prgA
 =================================================================================
 
 

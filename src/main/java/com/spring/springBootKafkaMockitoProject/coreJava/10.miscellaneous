@@ -275,8 +275,89 @@ In how many ways can we create an object in Java?->
  Math.toDegrees(x): Converts an angle from radians to degrees.
  Math.toRadians(x): Converts an angle from degrees to radians.
  Math.trunc(x): Returns the integer part of x (similar to truncating the decimal part).
+=================================================================
+
+Java memory management->
+in stack memory variable within the scope is only visible and as soon as the scope is over it is destroyed in stack memory
+in lifo manner.
+
+we store reference variable in stack memory and actual object in heap memory
+1.strong reference-> normal reference variable
+2.soft reference-> used in caching memory sensitive data, when memory is low jvm will clear soft reference objects
+3.weak reference-> used in map like weakhashmap where if no strong reference is there object will be gc
+4.phantom reference-> used in special cases where we need to perform some action after object is gc like cleaning up native resources
+
+creating WeakReference->
+WeakReference<MyObject> weakRef = new WeakReference<>(myObject);
+
+creating SoftReference->
+SoftReference<MyObject> softRef = new SoftReference<>(myObject);
+
+creating PhantomReference->
+PhantomReference<MyObject> phantomRef = new PhantomReference<>(myObject, referenceQueue);
 
 
+Heap memory Classification->
+1.Young Generation(eden+2 survivor space)-> most of the object are created here and
+when eden space is full minor gc is triggered and live objects are moved to survivor space
+and after some time they are moved to old generation
+
+young gen-> eden space + survivor space1 + survivor space2
+eden space-> new object are created here
+survivor space1-> after minor gc live objects from eden are moved here(mark and sweep algo is used) and age is incremented.
+survivor space2-> after next minor gc live objects from survivor space1 are moved here
+and this swapping continues
+2.Old Generation-> long lived object are stored here and when full major gc is triggered
+3.PermGen/Metaspace-> class metadata is stored here like class structure,method data,class variables,constant etc
+in permgen we have fixed size but in metaspace it is dynamic and can grow as per requirement.
+earlier in jdk8 and below permgen was there but from jdk9 onwards metaspace is used.
 
 
+Different garbage collectors algorithms in Java->
+1.mark and sweep-> marking the live objects and sweeping the dead objects
+2.mark and compact-> marking the live objects and compacting them to one side and free up the other side
+3.copying-> copying live objects to another space and free up the entire space
 
+Versions of Garbage Collectors in Java->
+1.Serial Garbage Collector-> it is single threaded and used in small applications with low memory footprint
+2.Parallel Garbage Collector-> it is multi-threaded and used in applications with high throughput requirement(default in jdk8)
+3.Concurrent Mark Sweep(CMS) Garbage Collector-> it is low latency garbage collector and used in applications
+with low pause time requirement..work along with application threads
+4.G1 Garbage Collector-> it is also low latency garbage collector and used in applications with large heap memory
+work along with application threads..default in jdk9 and above and divide heap memory into regions
+also do compaction to reduce fragmentation.
+
+
+if gc is taking more time we can do tuning by-
+what is memory tuning in java?
+Memory tuning in Java refers to the process of optimizing the memory usage of Java applications
+to improve performance and reduce memory-related issues such as OutOfMemoryErrors.
+Memory tuning involves analyzing the memory usage patterns of the application, identifying memory leaks,
+and adjusting various memory-related settings to optimize the application's memory usage.
+Some common techniques for memory tuning in Java include:
+1.adjusting heap size
+2.adjusting young gen and old gen size
+3.changing garbage collector algorithm
+4.monitoring and analyzing gc logs
+5.using profiling tools like visualvm,jconsole etc
+
+Causes of Memory Leaks in Java Applications->
+1.Unintentional Object References: Holding references to objects that are no longer needed, preventing them from being garbage collected.
+2.Static Collections: Storing objects in static collections (e.g., static lists or maps) without proper cleanup.
+3.Event Listeners: Failing to unregister event listeners, leading to references being held longer than necessary.
+4.ThreadLocal Variables: Not removing ThreadLocal variables when they are no longer needed.
+5.Caches: Implementing caches without eviction policies, causing objects to accumulate over time.
+6.Inner Classes: Non-static inner classes holding implicit references to their outer class instances.
+7.Native Memory Leaks: Issues in native code (e.g., JNI) that lead to memory not being released properly.
+8.Third-Party Libraries: Using libraries that have memory leaks or improper resource management.
+9.Poorly Designed Data Structures: Using data structures that grow indefinitely without bounds.
+10.Long-Lived Sessions: Maintaining long-lived sessions or connections that hold onto resources longer than necessary.
+
+How to Avoid Memory Leaks in Java Applications->
+1.Use Weak References: Utilize WeakReference or SoftReference for objects that can be garbage collected when memory is low.
+2.Clean Up Static Collections: Regularly clear or remove unused objects from static collections.
+3.Unregister Event Listeners: Ensure that event listeners are unregistered when they are no longer needed.
+4.Remove ThreadLocal Variables: Clean up ThreadLocal variables after use to prevent memory retention.
+5.Implement Cache Eviction Policies: Use appropriate eviction strategies (e.g., LRU, TTL) for caches to limit their size.
+6.Use Static Inner Classes: Prefer static inner classes to avoid implicit references to outer class instances.
+7.use transient keyword for fields that should not be cached or serialized.
