@@ -361,3 +361,25 @@ How to Avoid Memory Leaks in Java Applications->
 5.Implement Cache Eviction Policies: Use appropriate eviction strategies (e.g., LRU, TTL) for caches to limit their size.
 6.Use Static Inner Classes: Prefer static inner classes to avoid implicit references to outer class instances.
 7.use transient keyword for fields that should not be cached or serialized.
+================================================================================================
+
+Virtual Threads in Java->
+Virtual threads are lightweight threads that are managed by the Java Virtual Machine (JVM) rather than
+the underlying operating system. They are designed to be more efficient than traditional threads,
+allowing for a larger number of concurrent threads to be created and managed with lower overhead.
+Virtual threads are implemented using a technique called "fibers", which allows multiple virtual threads
+to be scheduled on a single operating system thread. This allows for more efficient use of system resources
+and can lead to improved performance for applications that require a large number of concurrent threads.
+Virtual threads were introduced in Java 19 as a preview feature and are expected to become a standard
+feature in future versions of Java.
+To create a virtual thread in Java, we can use the Thread.ofVirtual() method, which returns a Thread.Builder object that can be used to configure and create the virtual thread.
+Here is an example of how to create and start a virtual thread in Java:
+Runnable task = () -> {
+    System.out.println("Hello from virtual thread!");
+};
+Thread virtualThread = Thread.ofVirtual().unstarted(task);
+virtualThread.start();
+
+Virtual threads maps to platforms threads when it does real work
+and os thread are not allocated to platform thread until real works needs to be executed.
+virtual thread resides in java heap memory.
