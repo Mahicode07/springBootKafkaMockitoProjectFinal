@@ -133,6 +133,7 @@ Java 17 features ->
     implement them. This feature provides more control over the inheritance hierarchy
     You can specify which classes or interfaces are allowed to subclass a sealed class using the permits keyword.
     public sealed class Shape permits Circle, Square { }
+    public sealed interface Vehicle permits Car, Truck, Bike { }
     public final class Circle extends Shape { }
     public final class Square extends Shape { }
 
