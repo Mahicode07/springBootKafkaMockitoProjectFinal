@@ -1,0 +1,1315 @@
+Convert a string to uppercase using streams
+String str = "hello";
+String result = str.chars()
+    .mapToObj(c -> (char) c)
+    .map(Character::toUpperCase)
+    .map(String::valueOf)
+    .collect(Collectors.joining());
+System.out.println(result);// Output: HELLO
+===================================================
+Count the number of characters in a string
+String str = "hello";
+long count = str.chars().count();
+System.out.println(count);// Output: 5
+===================================================
+Find all vowels in a string
+String str = "hello world";
+List<Character> vowels = str.chars()
+    .mapToObj(c -> (char) c)
+    .filter(c -> "aeiouAEIOU".indexOf(c) != -1)
+    .collect(Collectors.toList());
+System.out.println(vowels);// Output: [e, o, o]
+===================================================
+Remove all spaces from a string
+String str = "h e l l o";
+String result = str.chars()
+    .mapToObj(c -> (char) c)
+    .filter(c -> c != ' ')
+    .map(String::valueOf)
+    .collect(Collectors.joining());
+System.out.println(result);// Output: hello
+===================================================
+Check if a string is palindrome
+String str = "madam";
+boolean isPalindrome = str.chars()
+    .mapToObj(c -> (char) c)
+    .collect(Collectors.toList())
+    .equals(str.chars()
+        .mapToObj(c -> (char) c)
+        .collect(Collectors.toList()).stream()
+        .sorted(Comparator.reverseOrder())
+        .collect(Collectors.toList()));
+System.out.println(isPalindrome);// Output: true
+===================================================
+Count occurrence of each character in a string
+String str = "hello";
+Map<Character, Long> charCount = str.chars()
+    .mapToObj(c -> (char) c)
+    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+System.out.println(charCount);// Output: {e=1, h=1, l=2, o=1}
+===================================================
+Find duplicate characters in a string
+String str = "hello";
+Set<Character> duplicates = str.chars()
+    .mapToObj(c -> (char) c)
+    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+    .entrySet().stream()
+    .filter(entry -> entry.getValue() > 1)
+    .map(Map.Entry::getKey)
+    .collect(Collectors.toSet());
+System.out.println(duplicates);// Output: [l]
+===================================================
+Find first non-repeated character in a string
+String str = "swiss";
+Optional<Character> firstNonRepeated = str.chars()
+    .mapToObj(c -> (char) c)
+    .collect(Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting()))
+    .entrySet().stream()
+    .filter(entry -> entry.getValue() == 1)
+    .map(Map.Entry::getKey)
+    .findFirst();
+System.out.println(firstNonRepeated.orElse(null));// Output: w
+===================================================
+Sort characters in a string
+String str = "dcba";
+String sortedStr = str.chars()
+    .mapToObj(c -> (char) c)
+    .sorted()
+    .map(String::valueOf)
+    .collect(Collectors.joining());
+System.out.println(sortedStr);// Output: abcd
+===================================================
+Remove duplicate characters from a string
+String str = "hello";
+String result = str.chars()
+    .mapToObj(c -> (char) c)
+    .distinct()
+    .map(String::valueOf)
+    .collect(Collectors.joining());
+System.out.println(result);// Output: helo
+===================================================
+Split a sentence into words and count them
+String sentence = "hello world welcome to java";
+long wordCount = Arrays.stream(sentence.split(" "))
+    .count();
+System.out.println(wordCount);// Output: 5
+===================================================
+Convert all words in a sentence to uppercase
+String sentence = "hello world";
+String result = Arrays.stream(sentence.split(" "))
+    .map(String::toUpperCase)
+    .collect(Collectors.joining(" "));
+System.out.println(result); // Output: HELLO WORLD
+===================================================
+Find the longest word in a sentence
+String sentence = "find the longest word in this sentence";
+Optional<String> longestWord = Arrays.stream(sentence.split(" "))
+    .max(Comparator.comparingInt(String::length));
+System.out.println(longestWord.orElse("")); // Output: sentence
+===================================================
+Filter words starting with a specific letter
+String sentence = "Java is awesome and amazing";
+List<String> words = Arrays.stream(sentence.split(" "))
+    .filter(w -> w.startsWith("a"))
+    .collect(Collectors.toList());
+System.out.println(words); // Output: [awesome, and, amazing]
+===================================================
+Count words starting with each letter
+String sentence = "apple banana apricot cherry";
+Map<Character, Long> wordCount = Arrays.stream(sentence.split(" "))
+    .collect(Collectors.groupingBy(w -> w.charAt(0), Collectors.counting()));
+System.out.println(wordCount); // Output: {a=2, b=1, c=1}
+===================================================
+Reverse each word in a sentence
+String sentence = "hello world";
+String result = Arrays.stream(sentence.split(" "))
+    .map(w -> new StringBuilder(w).reverse().toString())
+    .collect(Collectors.joining(" "));
+System.out.println(result); // Output: olleh dlrow
+===================================================
+Find words with length greater than n
+String sentence = "find words with length greater than three";
+int n = 4;
+List<String> longWords = Arrays.stream(sentence.split(" "))
+    .filter(w -> w.length() > n)
+    .collect(Collectors.toList());
+System.out.println(longWords); // Output: [words, length, greater, three]
+===================================================
+Sort words by length
+String sentence = "sort words by their length";
+List<String> sortedWords = Arrays.stream(sentence.split(" "))
+    .sorted(Comparator.comparingInt(String::length))
+    .collect(Collectors.toList());
+System.out.println(sortedWords); // Output: [by, sort, words, their, length]
+===================================================
+Join list of strings with delimiter
+List<String> words = Arrays.asList("Java", "is", "fun");
+String result = words.stream()
+    .collect(Collectors.joining("-"));
+System.out.println(result); // Output: Java-is-fun
+===================================================
+Count total characters in all words (excluding spaces)
+String sentence = "count total characters";
+long totalChars = Arrays.stream(sentence.split(" "))
+    .mapToInt(String::length)
+    .sum();
+System.out.println(totalChars); // Output: 20
+===================================================
+ Group words by their length
+String sentence = "group words by their length";
+Map<Integer, List<String>> groupedWords = Arrays.stream(sentence.split(" "))
+    .collect(Collectors.groupingBy(String::length));
+System.out.println(groupedWords); // Output: {2=[by], 4=[words, their], 5=[group, length]}
+===================================================
+Find the most frequent word in a sentence
+String sentence = "find the most frequent word in the sentence the";
+Optional<String> mostFrequentWord = Arrays.stream(sentence.split(" "))
+    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+    .entrySet().stream()
+    .max(Map.Entry.comparingByValue())
+    .map(Map.Entry::getKey);
+System.out.println(mostFrequentWord.orElse("")); // Output: the
+===================================================
+Find all anagrams in a list of words
+List<String> words = Arrays.asList("listen", "silent", "enlist", "hello", "world");
+Map<String, List<String>> anagrams = words.stream()
+    .collect(Collectors.groupingBy(w -> {
+        char[] chars = w.toCharArray();
+        Arrays.sort(chars);
+        return new String(chars);
+    }));
+List<List<String>> anagramGroups = anagrams.values().stream()
+    .filter(group -> group.size() > 1)
+    .collect(Collectors.toList());
+System.out.println(anagramGroups); // Output: [[listen, silent, enlist]]
+===================================================
+Check if all words start with uppercase
+List<String> words = Arrays.asList("Hello", "World", "Java");
+boolean allStartWithUppercase = words.stream()
+    .allMatch(w -> Character.isUpperCase(w.charAt(0)));
+System.out.println(allStartWithUppercase); // Output: true
+===================================================
+Partition words into two groups based on length
+List<String> words = Arrays.asList("short", "tiny", "lengthy", "big", "enormous");
+Map<Boolean, List<String>> partitionedWords = words.stream()
+    .collect(Collectors.partitioningBy(w -> w.length() > 4));
+System.out.println(partitionedWords); // Output: {false=[big, tiny], true=[short, lengthy, enormous]}
+===================================================
+Find words containing specific substring
+String sentence = "Java JavaScript Python";
+String substring = "Java";
+List<String> filtered = Arrays.stream(sentence.split(" "))
+    .filter(w -> w.contains(substring))
+    .collect(Collectors.toList());
+System.out.println(filtered); // Output: [Java, JavaScript]
+===================================================
+Sum of all numbers in a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sum = numbers.stream()
+    .mapToInt(Integer::intValue)
+    .sum();
+System.out.println(sum); // Output: 15
+===================================================
+ Find maximum number in a list
+List<Integer> numbers = Arrays.asList(10, 20, 5, 30, 15);
+Optional<Integer> maxNumber = numbers.stream()
+    .max(Integer::compareTo);
+System.out.println(maxNumber.orElse(null)); // Output: 30
+===================================================
+ Find minimum number in a list
+List<Integer> numbers = Arrays.asList(10, 20, 5, 30, 15);
+Optional<Integer> minNumber = numbers.stream()
+    .min(Integer::compareTo);
+System.out.println(minNumber.orElse(null)); // Output: 5
+===================================================
+    Calculate average of numbers in a list
+List<Integer> numbers = Arrays.asList(10, 20, 30, 40, 50);
+OptionalDouble average = numbers.stream()
+    .mapToInt(Integer::intValue)
+    .average();
+System.out.println(average.orElse(0)); // Output: 30.0
+===================================================
+    Find distinct numbers in a listt
+List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 4, 4, 5);
+List<Integer> distinctNumbers = numbers.stream()
+    .distinct()
+    .collect(Collectors.toList());
+System.out.println(distinctNumbers); // Output: [1, 2, 3, 4, 5]
+===================================================
+    Sort numbers in ascending order
+List<Integer> numbers = Arrays.asList(5, 2, 8, 1, 4);
+List<Integer> sortedNumbers = numbers.stream()
+    .sorted()
+    .collect(Collectors.toList());
+System.out.println(sortedNumbers); // Output: [1, 2, 4, 5, 8]
+===================================================
+    Sort numbers in descending order
+List<Integer> numbers = Arrays.asList(5, 2, 8, 1, 4);
+List<Integer> sortedNumbers = numbers.stream()
+    .sorted(Comparator.reverseOrder())
+    .collect(Collectors.toList());
+System.out.println(sortedNumbers); // Output: [8, 5, 4, 2, 1]
+===================================================
+    Filter even numbers from a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+List<Integer> evenNumbers = numbers.stream()
+    .filter(n -> n % 2 == 0)
+    .collect(Collectors.toList());
+System.out.println(evenNumbers); // Output: [2, 4, 6]
+===================================================
+    Filter odd numbers from a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+List<Integer> oddNumbers = numbers.stream()
+    .filter(n -> n % 2 != 0)
+    .collect(Collectors.toList());
+System.out.println(oddNumbers); // Output: [1, 3, 5]
+===================================================
+    Find squares of all numbers in a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> squares = numbers.stream()
+    .map(n -> n * n)
+    .collect(Collectors.toList());
+System.out.println(squares); // Output: [1, 4, 9, 16, 25]
+===================================================
+    Find cubes of all numbers in a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> cubes = numbers.stream()
+    .map(n -> n * n * n)
+    .collect(Collectors.toList());
+System.out.println(cubes); // Output: [1, 8, 27, 64, 125]
+===================================================
+    Find numbers greater than a specific value
+List<Integer> numbers = Arrays.asList(10, 20, 30, 40, 50);
+int threshold = 25;
+List<Integer> filteredNumbers = numbers.stream()
+    .filter(n -> n > threshold)
+    .collect(Collectors.toList());
+System.out.println(filteredNumbers); // Output: [30, 40, 50]
+===================================================
+    Find factorial of a number using streams
+int number = 5;
+int factorial = IntStream.rangeClosed(1, number)
+    .reduce(1, (a, b) -> a * b);
+System.out.println(factorial); // Output: 120
+===================================================
+    Generate a list of random numbers
+List<Integer> randomNumbers = new Random().ints(10, 1, 100)
+    .boxed()
+    .collect(Collectors.toList());
+System.out.println(randomNumbers); // Output: [random numbers between 1 and 100]
+===================================================
+    Find prime numbers in a range
+int start = 10;
+int end = 50;
+List<Integer> primeNumbers = IntStream.rangeClosed(start, end)
+    .filter(n -> IntStream.rangeClosed(2, (int) Math.sqrt(n))
+        .allMatch(i -> n % i != 0))
+    .boxed()
+    .collect(Collectors.toList());
+System.out.println(primeNumbers); // Output: [11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
+===================================================
+    Generate Fibonacci series up to n terms
+int n = 10;
+List<Integer> fibonacci = IntStream.range(0, n)
+    .mapToObj(i -> {
+        if (i == 0) return 0;
+        else if (i == 1) return 1;
+        else return fibonacci.get(i - 1) + fibonacci.get(i - 2);
+    })
+    .collect(Collectors.toList());
+System.out.println(fibonacci); // Output: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+===================================================
+    Find the second largest number in a list
+List<Integer> numbers = Arrays.asList(10, 20, 30, 40, 50);
+Optional<Integer> secondLargest = numbers.stream()
+    .distinct()
+    .sorted(Comparator.reverseOrder())
+    .skip(1)
+    .findFirst();
+System.out.println(secondLargest.orElse(null)); // Output: 40
+===================================================
+    Find the sum of even numbers in a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+int sumOfEvens = numbers.stream()
+    .filter(n -> n % 2 == 0)
+    .mapToInt(Integer::intValue)
+    .sum();
+System.out.println(sumOfEvens); // Output: 12
+===================================================
+    Find the sum of odd numbers in a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+int sumOfOdds = numbers.stream()
+    .filter(n -> n % 2 != 0)
+    .mapToInt(Integer::intValue)
+    .sum();
+System.out.println(sumOfOdds); // Output: 9
+===================================================
+ Find numbers starting with specific digit
+List<Integer> numbers = Arrays.asList(10, 23, 34, 45, 56, 67, 78, 89, 90);
+int startingDigit = 3;
+List<Integer> filteredNumbers = numbers.stream()
+    .filter(n -> String.valueOf(n).startsWith(String.valueOf(startingDigit)))
+    .collect(Collectors.toList());
+System.out.println(filteredNumbers); // Output: [34]
+===================================================
+Get first n elements from a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+int n = 5;
+List<Integer> firstNElements = numbers.stream()
+    .limit(n)
+    .collect(Collectors.toList());
+System.out.println(firstNElements); // Output: [1, 2, 3, 4, 5]
+===================================================
+Skip first n elements from a list
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+int n = 5;
+List<Integer> skippedElements = numbers.stream()
+    .skip(n)
+    .collect(Collectors.toList());
+System.out.println(skippedElements); // Output: [6, 7, 8, 9, 10]
+===================================================
+Sum of squares of all numbers
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sumOfSquares = numbers.stream()
+    .mapToInt(n -> n * n)
+    .sum();
+System.out.println(sumOfSquares); // Output: 55
+===================================================
+Partition numbers into even and odd
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+Map<Boolean, List<Integer>> partitioned = numbers.stream()
+    .collect(Collectors.partitioningBy(n -> n % 2 == 0));
+System.out.println(partitioned); // Output: {false=[1, 3, 5], true=[2, 4, 6]
+===================================================
+Group numbers by their remainder when divided by n
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+int divisor = 3;
+Map<Integer, List<Integer>> grouped = numbers.stream()
+    .collect(Collectors.groupingBy(n -> n % divisor));
+System.out.println(grouped); // Output: {0=[3, 6, 9], 1=[1, 4, 7], 2=[2, 5, 8]}
+===================================================
+ Merge two lists and remove duplicates
+ List<Integer> list1 = Arrays.asList(1, 2, 3, 4);
+ List<Integer> list2 = Arrays.asList(3, 4, 5, 6);
+ List<Integer> merged = Stream.concat(list1.stream(), list2.stream())
+     .distinct()
+     .collect(Collectors.toList());
+ System.out.println(merged); // Output: [1, 2, 3, 4, 5, 6]
+===================================================
+Find common elements between two lists
+List<Integer> list1 = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> list2 = Arrays.asList(3, 4, 5, 6, 7);
+List<Integer> common = list1.stream()
+    .filter(list2::contains)
+    .collect(Collectors.toList());
+System.out.println(common); // Output: [3, 4, 5]
+===================================================
+Convert list of integers to list of strings
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<String> stringNumbers = numbers.stream()
+    .map(String::valueOf)
+    .collect(Collectors.toList());
+System.out.println(stringNumbers); // Output: [1, 2, 3, 4, 5]
+===================================================
+ Convert list of strings to list of integers
+List<String> stringNumbers = Arrays.asList("1", "2", "3", "4", "5");
+List<Integer> numbers = stringNumbers.stream()
+    .map(Integer::valueOf)
+    .collect(Collectors.toList());
+System.out.println(numbers); // Output: [1, 2, 3, 4, 5]
+===================================================
+Extract numbers from a string
+String str = "a1b2c3d4e5";
+List<Integer> numbers = str.chars()
+    .mapToObj(c -> (char) c)
+    .filter(Character::isDigit)
+    .map(c -> Integer.valueOf(String.valueOf(c)))
+    .collect(Collectors.toList());
+System.out.println(numbers); // Output: [1, 2, 3, 4, 5]
+===================================================
+ Sum of digits in a number
+int number = 12345;
+int sumOfDigits = String.valueOf(number).chars()
+    .map(c -> c - '0')
+    .sum();
+System.out.println(sumOfDigits); // Output: 15
+===================================================
+    Find the largest digit in a number
+int number = 583920;
+int largestDigit = String.valueOf(number).chars()
+    .map(c -> c - '0')
+    .max()
+    .orElse(-1);
+System.out.println(largestDigit); // Output: 9
+===================================================
+Sort strings by their numeric value
+List<String> stringNumbers = Arrays.asList("10", "2", "33", "4", "25");
+List<String> sortedByNumericValue = stringNumbers.stream()
+    .sorted(Comparator.comparingInt(Integer::valueOf))
+    .collect(Collectors.toList());
+System.out.println(sortedByNumericValue); // Output: [2, 4, 10, 25, 33]
+===================================================
+Filter strings that can be parsed as integers
+List<String> mixed = Arrays.asList("1", "abc", "2", "def", "3");
+List<String> validNumbers = mixed.stream()
+    .filter(s -> s.matches("\\d+"))
+    .collect(Collectors.toList());
+System.out.println(validNumbers); // Output: [1, 2, 3]
+===================================================
+Group strings by their length and count them
+List<String> words = Arrays.asList("a", "bb", "ccc", "dd", "e");
+Map<Integer, Long> lengthCount = words.stream()
+    .collect(Collectors.groupingBy(String::length, Collectors.counting()));
+System.out.println(lengthCount); // Output: {1=2, 2=2, 3=1}
+===================================================
+Get all employee names
+List<String> names = employees.stream()
+    .map(Employee::getName)
+    .collect(Collectors.toList());
+System.out.println(names); // Output: [Alice, Bob, Charlie]
+===================================================
+Filter employees by department
+String department = "IT";
+List<Employee> itEmployees = employees.stream()
+    .filter(e -> e.getDepartment().equals(department))
+    .collect(Collectors.toList());
+System.out.println(itEmployees); // Output: [Employee{name='Alice', department='IT'}, Employee{name='Charlie', department='IT'}]
+===================================================
+Get employees with salary greater than n
+double threshold = 60000;
+List<Employee> highEarners = employees.stream()
+    .filter(e -> e.getSalary() > threshold)
+    .collect(Collectors.toList());
+System.out.println(highEarners); // Output: [Employee{name='Bob', department='HR'}, Employee{name='Charlie', department='IT'}]
+===================================================
+Count total number of employees
+long totalEmployees = employees.stream()
+    .count();
+System.out.println(totalEmployees); // Output: 3
+===================================================
+Get average salary of all employees
+double averageSalary = employees.stream()
+    .mapToDouble(Employee::getSalary)
+    .average()
+    .orElse(0);
+System.out.println(averageSalary); // Output: 60000.0
+===================================================
+Group employees by department
+Map<String, List<Employee>> byDept = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment));
+System.out.println(byDept); // Output: {IT=[Employee{name='Alice', department='IT'}, Employee{name='Charlie', department='IT'}], HR=[Employee{name='Bob', department='HR'}]}
+===================================================
+Count employees in each department
+Map<String, Long> countByDept = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting()));
+System.out.println(countByDept); // Output: {IT=2, HR=1}
+===================================================
+Get highest paid employee
+Optional<Employee> highestPaid = employees.stream()
+    .max(Comparator.comparingDouble(Employee::getSalary));
+System.out.println(highestPaid.orElse(null)); // Output: Employee{name='Bob', department='HR'}
+===================================================
+Get lowest paid employee
+Optional<Employee> lowestPaid = employees.stream()
+    .min(Comparator.comparingDouble(Employee::getSalary));
+System.out.println(lowestPaid.orElse(null)); // Output: Employee{name='Alice', department='IT'}
+===================================================
+Sort employees by salary in ascending order
+List<Employee> sortedBySalary = employees.stream()
+    .sorted(Comparator.comparingDouble(Employee::getSalary))
+    .collect(Collectors.toList());
+System.out.println(sortedBySalary); // Output: [Employee{name='Alice', department='IT'}, Employee{name='Charlie', department='IT'}, Employee{name='Bob', department='HR'}]
+===================================================
+Sort employees by salary in descending order
+List<Employee> sortedBySalaryDesc = employees.stream()
+    .sorted(Comparator.comparingDouble(Employee::getSalary).reversed())
+    .collect(Collectors.toList());
+System.out.println(sortedBySalaryDesc); // Output: [Employee{name='Bob', department='HR'}, Employee{name='Charlie', department='IT'}, Employee{name='Alice', department='IT'}]
+===================================================
+Get top 3 highest paid employees
+List<Employee> top3HighestPaid = employees.stream()
+    .sorted(Comparator.comparingDouble(Employee::getSalary).reversed())
+    .limit(3)
+    .collect(Collectors.toList());
+System.out.println(top3HighestPaid); // Output: [Employee{name='Bob', department='HR'}, Employee{name='Charlie', department='IT'}, Employee{name='Alice', department='IT'}]
+===================================================
+Group employees by gender
+Map<String, List<Employee>> byGender = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getGender));
+System.out.println(byGender); // Output: {Male=[Employee{name='Bob', department='HR'}], Female=[Employee{name='Alice', department='IT'}, Employee{name='Charlie', department='IT'}]}
+===================================================
+Get average salary by department
+Map<String, Double> avgSalaryByDept = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment, Collectors.averagingDouble(Employee::getSalary)));
+System.out.println(avgSalaryByDept); // Output: {IT=55000.0, HR=70000.0}
+===================================================
+Get department with maximum number of employees
+String maxDept = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting()))
+    .entrySet().stream()
+    .max(Map.Entry.comparingByValue())
+    .map(Map.Entry::getKey)
+    .orElse(null);
+System.out.println("Department with most employees: " + maxDept);
+```
+**Output:** `Department with most employees: IT`
+===================================================
+Get highest paid employee in each department
+Map<String, Optional<Employee>> highestByDept = employees.stream()
+    .collect(Collectors.groupingBy(
+        Employee::getDepartment,
+        Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary))
+    ));
+System.out.println("Highest paid in each department:");
+highestByDept.forEach((dept, emp) ->
+    System.out.println(dept + ": " + emp.get().getName() + " - $" + emp.get().getSalary()));
+====================================================================================================
+Get total salary expense by department
+Map<String, Double> totalSalaryByDept = employees.stream()
+    .collect(Collectors.groupingBy(
+        Employee::getDepartment,
+        Collectors.summingDouble(Employee::getSalary)
+    ));
+System.out.println("Total salary expense by department:");
+totalSalaryByDept.forEach((dept, total) ->
+    System.out.println(dept + ": $" + total));
+```
+**Output:**
+```Total salary expense by department:
+IT: $110000.0
+HR: $70000.0
+===================================================
+Get oldest employee in each department
+Map<String, Optional<Employee>> oldestByDept = employees.stream()
+    .collect(Collectors.groupingBy(
+        Employee::getDepartment,
+        Collectors.maxBy(Comparator.comparingInt(Employee::getAge))
+    ));
+System.out.println("Oldest employee in each department:");
+oldestByDept.forEach((dept, emp) ->
+    System.out.println(dept + ": " + emp.get().getName() + " - Age " + emp.get().getAge()));
+```
+**Output:**
+```Oldest employee in each department:
+IT: Alice - Age 30
+HR: Bob - Age 40
+===================================================
+Get employees with second highest salary
+double secondHighest = employees.stream()
+    .map(Employee::getSalary)
+    .distinct()
+    .sorted(Comparator.reverseOrder())
+    .skip(1)
+    .findFirst()
+    .orElse(0.0);
+===========================================================
+Get average age of male and female employees
+Map<String, Double> avgAgeByGender = employees.stream()
+    .collect(Collectors.groupingBy(
+        Employee::getGender,
+        Collectors.averagingInt(Employee::getAge)
+    ));
+System.out.println("Average  age by gender:");
+avgAgeByGender.forEach((gender, avgAge) ->
+    System.out.println(gender + ": " + avgAge));
+```
+**Output:**
+```Average  age by gender:
+Male: 40.0
+Female: 32.5
+===================================================
+Get department names as a comma-separated string
+String departments = employees.stream()
+    .map(Employee::getDepartment)
+    .distinct()
+    .collect(Collectors.joining(", "));
+System.out.println("Departments: " + departments);
+```
+**Output:** `Departments: IT, HR, Finance`
+===================================================
+Get employees sorted by multiple fields (department, then salary)
+List<Employee> sorted = employees.stream()
+    .sorted(Comparator.comparing(Employee::getDepartment)
+        .thenComparing(Employee::getSalary))
+    .collect(Collectors.toList());
+
+System.out.println("Sorted by department, then salary:");
+sorted.forEach(e -> System.out.println(e.getDepartment() + " - " +
+    e.getName() + " - $" + e.getSalary()));
+**Output:**
+Sorted by department, then salary:
+Finance - Emma - $52000.0
+Finance - Tom - $58000.0
+HR - Lisa - $48000.0
+===================================================
+Find sum of first n natural numbers
+int n = 10;
+int sum = IntStream.rangeClosed(1, n).sum();
+System.out.println("Sum of first " + n + " natural numbers: " + sum);
+```
+**Output:** `Sum of first 10 natural numbers: 55`
+===================================================
+Find product of first n natural numbers
+```java
+int n = 5;
+int product = IntStream.rangeClosed(1, n)
+    .reduce(1, (a, b) -> a * b);
+System.out.println("Product of first " + n + " natural numbers: " + product);
+```
+**Output:** `Product of first 5 natural numbers: 120`
+===================================================
+Calculate power of a number
+```java
+int base = 2, exponent = 10;
+int result = IntStream.range(0, exponent)
+    .map(i -> base)
+    .reduce(1, (a, b) -> a * b);
+System.out.println(base + "^" + exponent + " = " + result);
+```
+**Output:** `2^10 = 1024`
+===================================================
+Check if a number is perfect square
+```java
+int number = 16;
+boolean isPerfectSquare = Math.sqrt(number) % 1 == 0;
+System.out.println(number + " is perfect square: " + isPerfectSquare);
+```
+**Output:** `16 is perfect square: true`
+===================================================
+ Sort employees by name
+```java
+List<Employee> sorted = employees.stream()
+    .sorted(Comparator.comparing(Employee::getName))
+    .collect(Collectors.toList());
+System.out.println("Sorted by name:");
+sorted.forEach(e -> System.out.println(e.getName()));
+output:
+Sorted by name:
+Alice
+Bob
+Charlie
+===================================================
+Sort employees by name in reverse order
+```java
+List<Employee> sorted = employees.stream()
+    .sorted(Comparator.comparing(Employee::getName).reversed())
+    .collect(Collectors.toList());
+System.out.println("Sorted by name (reverse):");
+sorted.forEach(e -> System.out.println(e.getName()));
+output:
+Sorted by name (reverse):
+Charlie
+Bob
+Alice
+===================================================
+Sort employees by age, then by name
+```java
+List<Employee> sorted = employees.stream()
+    .sorted(Comparator.comparingInt(Employee::getAge)
+        .thenComparing(Employee::getName))
+    .collect(Collectors.toList());
+System.out.println("Sorted by age, then name:");
+sorted.forEach(e -> System.out.println(e.getName() + " - Age: " + e.getAge()));
+output:
+Sorted by age, then name:
+Alice - Age: 30
+Charlie - Age: 35
+Bob - Age: 40
+========================================================================================================================
+========================================================================================================================
+
+JAVA 8 STREAMS – 97 QUESTIONS WITH ANSWER (CODE) + OUTPUT
+(Using fixed inputs so outputs are deterministic)
+
+------------------------------------------------------------
+COMMON INPUTS USED FOR ALL OUTPUTS
+------------------------------------------------------------
+String s        = "programming"
+String sentence = "Java streams make coding easier streams"
+List<Integer> nums = [3, 5, 2, 3, 9, 5, 7]
+List<String> strs  = ["apple","bat","banana","apricot","cat"]
+
+Employees:
+1 Alice IT    70000 age 30
+2 Bob   HR    50000 age 45
+3 Cara  IT    90000 age 25
+4 Dan   Sales 60000 age 35
+5 Eve   HR    80000 age 29
+
+Notation:
+- Outputs shown are the printed/result values.
+- If you use HashMap/Set, ordering can vary; outputs shown use LinkedHashMap/LinkedHashSet where needed.
+
+============================================================
+LEVEL 1 – BASIC (STRING ONLY)
+============================================================
+
+1) Count characters in string
+Code:   long out = s.chars().count();
+Output: 11
+
+2) Frequency of each character
+Code:
+Map<Character,Long> out =
+  s.chars().mapToObj(c->(char)c)
+   .collect(Collectors.groupingBy(c->c, LinkedHashMap::new, Collectors.counting()));
+Output: {p=1, r=2, o=1, g=2, a=1, m=2, i=1, n=1}
+
+3) Find duplicate characters
+Code:
+List<Character> out =
+  s.chars().mapToObj(c->(char)c)
+   .collect(Collectors.groupingBy(c->c, LinkedHashMap::new, Collectors.counting()))
+   .entrySet().stream().filter(e->e.getValue()>1)
+   .map(Map.Entry::getKey).collect(Collectors.toList());
+Output: [r, g, m]
+
+4) First non-repeated character
+Code:
+Character out =
+  s.chars().mapToObj(c->(char)c)
+   .collect(Collectors.groupingBy(c->c, LinkedHashMap::new, Collectors.counting()))
+   .entrySet().stream().filter(e->e.getValue()==1)
+   .map(Map.Entry::getKey).findFirst().orElse(null);
+Output: p
+
+5) First repeated character
+Code:
+Set<Character> seen = new HashSet<>();
+Character out =
+  s.chars().mapToObj(c->(char)c).filter(c->!seen.add(c)).findFirst().orElse(null);
+Output: r
+
+6) Remove duplicate characters (keep first occurrence)
+Code:
+String out =
+  s.chars().mapToObj(c->String.valueOf((char)c)).distinct().collect(Collectors.joining());
+Output: progamin
+
+7) Reverse string
+Code:
+String out = new StringBuilder(s).reverse().toString();
+Output: gnimmargorp
+
+8) Check palindrome
+Code:
+boolean out =
+  IntStream.range(0, s.length()/2).allMatch(i -> s.charAt(i)==s.charAt(s.length()-1-i));
+Output: false
+
+9) Count vowels and consonants
+Code:
+long vowels = s.toLowerCase().chars().filter(c->"aeiou".indexOf(c)>=0).count();
+long consonants = s.toLowerCase().chars().filter(Character::isLetter).filter(c->"aeiou".indexOf(c)<0).count();
+Output: vowels=3, consonants=8
+
+10) Count spaces
+Code:   long out = s.chars().filter(c->c==' ').count();
+Output: 0
+
+11) Convert to uppercase
+Code:   String out = s.toUpperCase();
+Output: PROGRAMMING
+
+12) Convert to lowercase
+Code:   String out = s.toLowerCase();
+Output: programming
+
+13) Extract only digits from string
+Code:
+String out = s.chars().filter(Character::isDigit).mapToObj(c->String.valueOf((char)c)).collect(Collectors.joining());
+Output: ""  (empty)
+
+14) Extract only alphabets from string
+Code:
+String out = s.chars().filter(Character::isLetter).mapToObj(c->String.valueOf((char)c)).collect(Collectors.joining());
+Output: programming
+
+15) Remove special characters (keep only letter/digit)
+Code:
+String out = s.chars().filter(Character::isLetterOrDigit).mapToObj(c->String.valueOf((char)c)).collect(Collectors.joining());
+Output: programming
+
+16) Length of each word in a string
+Input: s has one word
+Code:
+List<Integer> out = Arrays.stream(s.split("\\s+")).map(String::length).collect(Collectors.toList());
+Output: [11]
+
+============================================================
+LEVEL 2 – MEDIUM (SENTENCE / WORD STREAMS)
+============================================================
+
+Let words = ["Java","streams","make","coding","easier","streams"]
+
+17) Count words in sentence
+Code:   long out = Arrays.stream(sentence.split("\\s+")).count();
+Output: 6
+
+18) Frequency of each word
+Code:
+Map<String,Long> out =
+  Arrays.stream(sentence.split("\\s+"))
+   .collect(Collectors.groupingBy(w->w, LinkedHashMap::new, Collectors.counting()));
+Output: {Java=1, streams=2, make=1, coding=1, easier=1}
+
+19) Duplicate words
+Code:
+List<String> out =
+  Arrays.stream(sentence.split("\\s+"))
+   .collect(Collectors.groupingBy(w->w, LinkedHashMap::new, Collectors.counting()))
+   .entrySet().stream().filter(e->e.getValue()>1).map(Map.Entry::getKey).collect(Collectors.toList());
+Output: [streams]
+
+20) Unique words (count == 1)
+Code:
+List<String> out =
+  Arrays.stream(sentence.split("\\s+"))
+   .collect(Collectors.groupingBy(w->w, LinkedHashMap::new, Collectors.counting()))
+   .entrySet().stream().filter(e->e.getValue()==1).map(Map.Entry::getKey).collect(Collectors.toList());
+Output: [Java, make, coding, easier]
+
+21) First repeated word
+Code:
+Set<String> seen = new HashSet<>();
+String out =
+  Arrays.stream(sentence.split("\\s+")).filter(w->!seen.add(w)).findFirst().orElse(null);
+Output: streams
+
+22) Longest word
+Code:
+String out =
+  Arrays.stream(sentence.split("\\s+")).max(Comparator.comparingInt(String::length)).orElse(null);
+Output: streams
+
+23) Shortest word
+Code:
+String out =
+  Arrays.stream(sentence.split("\\s+")).min(Comparator.comparingInt(String::length)).orElse(null);
+Output: Java
+
+24) Sort words alphabetically
+Code:
+List<String> out =
+  Arrays.stream(sentence.split("\\s+")).sorted().collect(Collectors.toList());
+Output: [Java, coding, easier, make, streams, streams]
+
+25) Sort words by length
+Code:
+List<String> out =
+  Arrays.stream(sentence.split("\\s+")).sorted(Comparator.comparingInt(String::length)).collect(Collectors.toList());
+Output: [Java, make, coding, easier, streams, streams]
+
+26) Convert sentence to Title Case
+Code:
+String out =
+  Arrays.stream(sentence.split("\\s+"))
+   .map(w->w.substring(0,1).toUpperCase()+w.substring(1).toLowerCase())
+   .collect(Collectors.joining(" "));
+Output: Java Streams Make Coding Easier Streams
+
+27) Group words by length
+Code:
+Map<Integer,List<String>> out =
+  Arrays.stream(sentence.split("\\s+")).collect(Collectors.groupingBy(String::length));
+Output: {4=[Java, make], 6=[coding, easier], 7=[streams, streams]}
+
+28) Count words starting with a vowel
+Code:
+long out =
+  Arrays.stream(sentence.split("\\s+"))
+   .map(String::toLowerCase).filter(w->"aeiou".indexOf(w.charAt(0))>=0).count();
+Output: 1
+
+29) Find words ending with 's'
+Code:
+List<String> out =
+  Arrays.stream(sentence.split("\\s+")).filter(w->w.endsWith("s")).collect(Collectors.toList());
+Output: [streams, streams]
+
+30) Find words containing substring "ing"
+Code:
+List<String> out =
+  Arrays.stream(sentence.split("\\s+")).filter(w->w.contains("ing")).collect(Collectors.toList());
+Output: [coding]
+
+31) Remove duplicate words preserving order
+Code:
+String out =
+  Arrays.stream(sentence.split("\\s+")).distinct().collect(Collectors.joining(" "));
+Output: Java streams make coding easier
+
+32) Reverse each word in sentence
+Code:
+String out =
+  Arrays.stream(sentence.split("\\s+"))
+   .map(w->new StringBuilder(w).reverse().toString())
+   .collect(Collectors.joining(" "));
+Output: avaJ smaerts ekam gnidoc reisae smaerts
+
+============================================================
+LEVEL 3 – MEDIUM (INTEGER STREAM QUESTIONS)
+============================================================
+
+33) Sum of all numbers
+Code:   int out = nums.stream().mapToInt(i->i).sum();
+Output: 34
+
+34) Average of numbers
+Code:   double out = nums.stream().mapToInt(i->i).average().orElse(0);
+Output: 4.857142857142857
+
+35) Maximum number
+Code:   int out = nums.stream().mapToInt(i->i).max().orElse(Integer.MIN_VALUE);
+Output: 9
+
+36) Minimum number
+Code:   int out = nums.stream().mapToInt(i->i).min().orElse(Integer.MAX_VALUE);
+Output: 2
+
+37) Count total elements
+Code:   long out = nums.stream().count();
+Output: 7
+
+38) Even numbers
+Code:   List<Integer> out = nums.stream().filter(i->i%2==0).collect(Collectors.toList());
+Output: [2]
+
+39) Odd numbers
+Code:   List<Integer> out = nums.stream().filter(i->i%2!=0).collect(Collectors.toList());
+Output: [3, 5, 3, 9, 5, 7]
+
+40) Numbers divisible by 3
+Code:   List<Integer> out = nums.stream().filter(i->i%3==0).collect(Collectors.toList());
+Output: [3, 3, 9]
+
+41) Remove duplicates
+Code:   List<Integer> out = nums.stream().distinct().collect(Collectors.toList());
+Output: [3, 5, 2, 9, 7]
+
+42) Sort ascending
+Code:   List<Integer> out = nums.stream().sorted().collect(Collectors.toList());
+Output: [2, 3, 3, 5, 5, 7, 9]
+
+43) Sort descending
+Code:   List<Integer> out = nums.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+Output: [9, 7, 5, 5, 3, 3, 2]
+
+44) Second highest (distinct)
+Code:   Integer out = nums.stream().distinct().sorted(Comparator.reverseOrder()).skip(1).findFirst().orElse(null);
+Output: 7
+
+45) Second lowest (distinct)
+Code:   Integer out = nums.stream().distinct().sorted().skip(1).findFirst().orElse(null);
+Output: 3
+
+46) Top 3 highest (distinct)
+Code:   List<Integer> out = nums.stream().distinct().sorted(Comparator.reverseOrder()).limit(3).collect(Collectors.toList());
+Output: [9, 7, 5]
+
+47) Sum of squares
+Code:   int out = nums.stream().mapToInt(i->i*i).sum();
+Output: 202
+
+48) Numbers greater than average
+Code:
+double avg = nums.stream().mapToInt(i->i).average().orElse(0);
+List<Integer> out = nums.stream().filter(i->i>avg).collect(Collectors.toList());
+Output: [5, 9, 5, 7]
+
+49) Product of all numbers
+Code:   int out = nums.stream().reduce(1, (a,b)->a*b);
+Output: 28350
+
+============================================================
+LEVEL 4 – MEDIUM (COMBINATION OF INTEGER & STRING)
+============================================================
+
+50) Length of each string
+Code:   List<Integer> out = strs.stream().map(String::length).collect(Collectors.toList());
+Output: [5, 3, 6, 7, 3]
+
+51) Group strings by length
+Code:   Map<Integer,List<String>> out = strs.stream().collect(Collectors.groupingBy(String::length));
+Output: {3=[bat, cat], 5=[apple], 6=[banana], 7=[apricot]}
+
+52) Count strings of each length
+Code:   Map<Integer,Long> out = strs.stream().collect(Collectors.groupingBy(String::length, Collectors.counting()));
+Output: {3=2, 5=1, 6=1, 7=1}
+
+53) Convert list to map (string -> length)
+Code:
+Map<String,Integer> out = strs.stream().collect(Collectors.toMap(x->x, String::length, (a,b)->a, LinkedHashMap::new));
+Output: {apple=5, bat=3, banana=6, apricot=7, cat=3}
+
+54) Longest string
+Code:   String out = strs.stream().max(Comparator.comparingInt(String::length)).orElse(null);
+Output: apricot
+
+55) Shortest string
+Code:   String out = strs.stream().min(Comparator.comparingInt(String::length)).orElse(null);
+Output: bat
+
+56) Sort strings by length
+Code:   List<String> out = strs.stream().sorted(Comparator.comparingInt(String::length)).collect(Collectors.toList());
+Output: [bat, cat, apple, banana, apricot]
+
+57) Partition strings based on length (>5 and <=5)
+Code:   Map<Boolean,List<String>> out = strs.stream().collect(Collectors.partitioningBy(x->x.length()>5));
+Output: {false=[apple, bat, cat], true=[banana, apricot]}
+
+58) Group strings by first character
+Code:   Map<Character,List<String>> out = strs.stream().collect(Collectors.groupingBy(x->x.charAt(0)));
+Output: {a=[apple, apricot], b=[bat, banana], c=[cat]}
+
+============================================================
+LEVEL 5 – EMPLOYEE CLASS (MOST ASKED)
+============================================================
+
+(Assume class Employee { id,name,department,salary,age + getters })
+
+59) Get list of employee names
+Code:   List<String> out = emps.stream().map(Employee::getName).collect(Collectors.toList());
+Output: [Alice, Bob, Cara, Dan, Eve]
+
+60) Employees in a department (IT)
+Code:   List<String> out = emps.stream().filter(e->e.getDepartment().equals("IT")).map(Employee::getName).collect(Collectors.toList());
+Output: [Alice, Cara]
+
+61) Count employees in each department
+Code:
+Map<String,Long> out = emps.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting()));
+Output: {Sales=1, HR=2, IT=2}
+
+62) Employee with highest salary
+Code:   Employee out = emps.stream().max(Comparator.comparingDouble(Employee::getSalary)).orElse(null);
+Output: Cara(90000.0,25)
+
+63) Employee with lowest salary
+Code:   Employee out = emps.stream().min(Comparator.comparingDouble(Employee::getSalary)).orElse(null);
+Output: Bob(50000.0,45)
+
+64) Sort employees by salary (ascending)
+Code:
+List<String> out = emps.stream().sorted(Comparator.comparingDouble(Employee::getSalary))
+  .map(e->e.name+"-"+(int)e.salary).collect(Collectors.toList());
+Output: [Bob-50000, Dan-60000, Alice-70000, Eve-80000, Cara-90000]
+
+65) Sort employees by name
+Code:   List<String> out = emps.stream().sorted(Comparator.comparing(Employee::getName)).map(Employee::getName).collect(Collectors.toList());
+Output: [Alice, Bob, Cara, Dan, Eve]
+
+66) Average salary of employees
+Code:   double out = emps.stream().collect(Collectors.averagingDouble(Employee::getSalary));
+Output: 70000.0
+
+67) Group employees by department
+Code:
+Map<String,List<String>> out =
+  emps.stream().collect(Collectors.groupingBy(Employee::getDepartment,
+    Collectors.mapping(Employee::getName, Collectors.toList())));
+Output: {Sales=[Dan], HR=[Bob, Eve], IT=[Alice, Cara]}
+
+68) Highest paid employee in each department
+Code:
+Map<String,Employee> out =
+  emps.stream().collect(Collectors.groupingBy(Employee::getDepartment,
+    Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary)), Optional::get)));
+Output: {Sales=Dan(60000.0,35), HR=Eve(80000.0,29), IT=Cara(90000.0,25)}
+
+69) Total salary paid per department
+Code:
+Map<String,Double> out =
+  emps.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.summingDouble(Employee::getSalary)));
+Output: {Sales=60000.0, HR=130000.0, IT=160000.0}
+
+70) Employee with maximum age
+Code:   Employee out = emps.stream().max(Comparator.comparingInt(Employee::getAge)).orElse(null);
+Output: Bob(50000.0,45)
+
+71) Employee with minimum age
+Code:   Employee out = emps.stream().min(Comparator.comparingInt(Employee::getAge)).orElse(null);
+Output: Cara(90000.0,25)
+
+72) Employees whose salary is above average
+Code:
+double avg = emps.stream().mapToDouble(Employee::getSalary).average().orElse(0);
+List<String> out = emps.stream().filter(e->e.getSalary()>avg).map(Employee::getName).collect(Collectors.toList());
+Output: [Cara, Eve]
+
+73) Second highest salaried employee
+Code:
+Employee out = emps.stream().sorted(Comparator.comparingDouble(Employee::getSalary).reversed()).skip(1).findFirst().orElse(null);
+Output: Eve(80000.0,29)
+
+74) Partition employees by salary threshold (>50000)
+Code:
+Map<Boolean,List<String>> out =
+  emps.stream().collect(Collectors.partitioningBy(e->e.getSalary()>50000,
+    Collectors.mapping(Employee::getName, Collectors.toList())));
+Output: {false=[Bob], true=[Alice, Cara, Dan, Eve]}
+
+============================================================
+LEVEL 6 – ADVANCED (COMPARATOR / MIN / MAX / MATH / MATCH)
+============================================================
+
+75) Max salary using Comparator
+Code:   double out = emps.stream().map(Employee::getSalary).max(Double::compareTo).orElse(0.0);
+Output: 90000.0
+
+76) Min salary using Comparator
+Code:   double out = emps.stream().map(Employee::getSalary).min(Double::compareTo).orElse(0.0);
+Output: 50000.0
+
+77) Sort by salary then by name
+Code:
+List<String> out =
+  emps.stream()
+   .sorted(Comparator.comparingDouble(Employee::getSalary).thenComparing(Employee::getName))
+   .map(e->e.name+"-"+(int)e.salary).collect(Collectors.toList());
+Output: [Bob-50000, Dan-60000, Alice-70000, Eve-80000, Cara-90000]
+
+78) Sort by department then salary
+Code:
+List<String> out =
+  emps.stream()
+   .sorted(Comparator.comparing(Employee::getDepartment).thenComparingDouble(Employee::getSalary))
+   .map(e->e.department+":"+e.name+"-"+(int)e.salary).collect(Collectors.toList());
+Output: [HR:Bob-50000, HR:Eve-80000, IT:Alice-70000, IT:Cara-90000, Sales:Dan-60000]
+
+79) Top 3 highest paid employees
+Code:
+List<String> out =
+  emps.stream().sorted(Comparator.comparingDouble(Employee::getSalary).reversed()).limit(3)
+   .map(e->e.name+"-"+(int)e.salary).collect(Collectors.toList());
+Output: [Cara-90000, Eve-80000, Alice-70000]
+
+80) Youngest employee in each department
+Code:
+Map<String,Employee> out =
+  emps.stream().collect(Collectors.groupingBy(Employee::getDepartment,
+    Collectors.collectingAndThen(Collectors.minBy(Comparator.comparingInt(Employee::getAge)), Optional::get)));
+Output: {Sales=Dan(60000.0,35), HR=Eve(80000.0,29), IT=Cara(90000.0,25)}
+
+81) Oldest employee in each department
+Code:
+Map<String,Employee> out =
+  emps.stream().collect(Collectors.groupingBy(Employee::getDepartment,
+    Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparingInt(Employee::getAge)), Optional::get)));
+Output: {Sales=Dan(60000.0,35), HR=Bob(50000.0,45), IT=Alice(70000.0,30)}
+
+82) Sum of salaries using reduce
+Code:   double out = emps.stream().map(Employee::getSalary).reduce(0.0, Double::sum);
+Output: 350000.0
+
+83) Average salary using Collectors
+Code:   double out = emps.stream().collect(Collectors.averagingDouble(Employee::getSalary));
+Output: 70000.0
+
+84) Median salary using streams
+Code:
+List<Double> sals = emps.stream().map(Employee::getSalary).sorted().collect(Collectors.toList()); // [50000,60000,70000,80000,90000]
+double out = sals.size()%2==1 ? sals.get(sals.size()/2)
+  : (sals.get(sals.size()/2-1)+sals.get(sals.size()/2))/2;
+Output: 70000.0
+
+85) allMatch: all earn more than X (X=40000)
+Code:   boolean out = emps.stream().allMatch(e->e.getSalary()>40000);
+Output: true
+
+86) anyMatch: any employee belongs to HR
+Code:   boolean out = emps.stream().anyMatch(e->e.getDepartment().equals("HR"));
+Output: true
+
+87) noneMatch: no employee under 18
+Code:   boolean out = emps.stream().noneMatch(e->e.getAge()<18);
+Output: true
+
+============================================================
+LEVEL 7 – ADVANCED STREAM CONCEPTS (EXPERT)
+============================================================
+
+88) flatMap: flatten list of lists
+Input: [[1,2],[3,4]]
+Code:
+List<List<Integer>> lol = Arrays.asList(Arrays.asList(1,2), Arrays.asList(3,4));
+List<Integer> out = lol.stream().flatMap(List::stream).collect(Collectors.toList());
+Output: [1, 2, 3, 4]
+
+89) toMap with duplicate key handling (merge function)
+Input: animals=["cat","cow","dog"], key=first char
+Code:
+List<String> animals = Arrays.asList("cat","cow","dog");
+Map<Character,String> out = animals.stream().collect(Collectors.toMap(
+  a->a.charAt(0),
+  a->a,
+  (a,b)-> a.length()>=b.length() ? a : b,
+  LinkedHashMap::new
+));
+Output: {c=cat, d=dog}
+
+90) Parallel stream example (square nums)
+Code:
+List<Integer> out = nums.parallelStream().map(i->i*i).collect(Collectors.toList());
+Output: [9, 25, 4, 9, 81, 25, 49]
+(Note: order often preserved with toList, but don’t rely on it with side-effects.)
+
+91) Lazy evaluation (no terminal -> nothing runs)
+Code:
+Stream<Integer> st = nums.stream().map(i->{ System.out.print("map "+i+" | "); return i*i; });
+// no terminal op here -> prints nothing
+st = nums.stream().map(i->{ System.out.print("map "+i+" | "); return i*i; });
+int out = st.filter(x->x>20).findFirst().orElse(-1);
+Output:
+Printed: map 3 | map 5 |
+Result: 25
+
+92) Short-circuit operations (findFirst / anyMatch)
+Code:
+int firstEven = nums.stream().filter(i->i%2==0).findFirst().orElse(-1);
+boolean anyGt8 = nums.stream().anyMatch(i->i>8);
+Output: firstEven=2, anyGt8=true
+
+93) Custom Collector example (join with delimiter)
+Code:
+String out = strs.stream().collect(Collector.of(
+  StringBuilder::new,
+  (sb,x)->{ if(sb.length()>0) sb.append(" | "); sb.append(x); },
+  (a,b)->{ if(a.length()>0 && b.length()>0) a.append(" | "); a.append(b); return a; },
+  StringBuilder::toString
+));
+Output: apple | bat | banana | apricot | cat
+
+94) Stream vs Parallel Stream (demo output)
+Code:
+List<Integer> seq = nums.stream().map(i->i*i).collect(Collectors.toList());
+List<Integer> par = nums.parallelStream().map(i->i*i).collect(Collectors.toList());
+Output:
+seq=[9, 25, 4, 9, 81, 25, 49]
+par=[9, 25, 4, 9, 81, 25, 49]
+(Concept: parallel can change performance & ordering assumptions with certain ops/side-effects.)
+
+95) reduce vs collect difference (with example outputs)
+Code:
+int sumReduce = nums.stream().reduce(0, Integer::sum);
+List<Integer> collectList = nums.stream().filter(i->i>4).collect(Collectors.toList());
+Output:
+reduce gives single value -> 34
+collect gives collection   -> [5, 9, 5, 7]
+
+96) map vs flatMap difference (with example output)
+Input: lists=[[1,2],[3]]
+Code:
+List<List<Integer>> lists = Arrays.asList(Arrays.asList(1,2), Arrays.asList(3));
+List<Stream<Integer>> mapped = lists.stream().map(List::stream).collect(Collectors.toList());
+List<Integer> flatMapped = lists.stream().flatMap(List::stream).collect(Collectors.toList());
+Output:
+map => [Stream, Stream] (streams inside; printing shows objects)
+flatMap => [1, 2, 3]
+
+97) Stream pipeline optimization (filter before map)
+Code:
+List<Integer> out = nums.stream().filter(i->i>4).map(i->i*i).collect(Collectors.toList());
+Output: [25, 81, 25, 49]
+
+
