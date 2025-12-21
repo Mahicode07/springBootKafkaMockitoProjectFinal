@@ -238,3 +238,252 @@ details in memory.
 
 User class->User class, which is a convenient builder class provided by the framework for creating instances of UserDetails.
 The User class provides a fluent API for constructing UserDetails objects with various attributes.
+================================================================================================================================
+Explain Spring Security architecture and its core components
+
+Spring Security is built on a chain of filters (Filter Chain Proxy) that intercepts HTTP requests. Core components include:
+
+SecurityContextHolder: Thread-local storage holding SecurityContext
+SecurityContext: Contains Authentication object
+Authentication: Represents authenticated principal with authorities
+AuthenticationManager: Coordinates authentication attempts
+ProviderManager: Default implementation delegating to AuthenticationProviders
+AuthenticationProvider: Performs actual authentication
+UserDetailsService: Loads user-specific data
+GrantedAuthority: Represents permissions/roles
+
+Flow:
+Request hits FilterChainProxy
+Goes through security filter chain (15+ filters)
+Authentication filter extracts credentials
+AuthenticationManager delegates to appropriate provider
+Provider validates and returns Authentication object
+SecurityContext stores authentication
+Request proceeds to controller
+================================================================================================================================
+ What are the key filters in Spring Security filter chain and their order?
+ 1. ChannelProcessingFilter - HTTP/HTTPS switching
+ 2. SecurityContextPersistenceFilter - Establishes SecurityContext
+ 3. ConcurrentSessionFilter - Session management
+ 4. HeaderWriterFilter - Security headers
+ 5. CsrfFilter - CSRF protection
+ 6. LogoutFilter - Logout handling
+ 7. UsernamePasswordAuthenticationFilter - Form login
+ 8. BasicAuthenticationFilter - Basic auth
+ 9. RequestCacheAwareFilter - Request caching
+ 10. SecurityContextHolderAwareRequestFilter - Servlet API integration
+ 11. AnonymousAuthenticationFilter - Anonymous users
+ 12. SessionManagementFilter - Session fixation protection
+ 13. ExceptionTranslationFilter - Exception handling
+ 14. FilterSecurityInterceptor - Authorization decisions
+ ================================================================================================================================
+ How does Authentication and Authorization work internally?
+ Authentication Flow:
+ // When credentials arrive
+ 1. Filter creates UsernamePasswordAuthenticationToken (unauthenticated)
+ 2. AuthenticationManager.authenticate() called
+ 3. DaoAuthenticationProvider:
+    - Calls UserDetailsService.loadUserByUsername()
+    - Compares password using PasswordEncoder
+    - Returns authenticated token with authorities
+ 4. SecurityContextHolder.getContext().setAuthentication()
+
+Authorization Flow:
+ When secured resource accessed
+1. FilterSecurityInterceptor intercepts
+2. Calls AccessDecisionManager
+3. AccessDecisionVoters vote (GRANT/DENY/ABSTAIN)
+4. If granted, request proceeds
+5. If denied, AccessDeniedException thrown
+================================================================================================================================
+ What is JWT structure and how does each part work?
+ JWT has three parts separated by dots: header.payload.signature
+1. Header:
+   - Specifies token type (JWT) and signing algorithm (e.g., HS256)
+   - Example: {"alg":"HS256","typ":"JWT"}
+   - Base64Url encoded
+2.  Payload:
+   {
+     "sub": "user123",           // Subject (user ID)
+     "iat": 1516239022,          // Issued at
+     "exp": 1516242622,          // Expiration
+     "iss": "myapp.com",         // Issuer
+     "roles": ["USER", "ADMIN"]  // Custom claims
+   }
+3. Signature:
+   - Created by signing the header and payload with a secret key
+   - Ensures token integrity and authenticity
+   - HMACSHA256(
+       base64UrlEncode(header) + "." + base64UrlEncode(payload),
+       secret
+     )
+
+@Component
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   FilterChain filterChain)
+            throws ServletException, IOException {
+
+        try {
+            String jwt = getJwtFromRequest(request);
+
+            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+                String username = tokenProvider.getUsernameFromToken(jwt);
+
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                    );
+
+                authentication.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception ex) {
+            logger.error("Could not set user authentication", ex);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+}
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated())
+            .addFilterBefore(jwtAuthenticationFilter,
+                           UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+================================================================================================================================
+How to handle JWT token expiration and blacklisting?
+@Service
+public class TokenBlacklistService {
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    public void blacklistToken(String token) {
+        Date expiration = tokenProvider.getExpirationFromToken(token);
+        long timeToLive = expiration.getTime() - System.currentTimeMillis();
+
+        if (timeToLive > 0) {
+            redisTemplate.opsForValue().set(
+                "blacklist:" + token,
+                "blacklisted",
+                timeToLive,
+                TimeUnit.MILLISECONDS
+            );
+        }
+    }
+
+    public boolean isBlacklisted(String token) {
+        return redisTemplate.hasKey("blacklist:" + token);
+    }
+}
+================================================================================================================================
+How does JWT work with LDAP authentication? Explain complete flow
+1. User Login Request:
+   - User submits credentials (username/password) to the application.
+2. LDAP Authentication:
+   - Application uses Spring Security's LDAP authentication provider to validate credentials against the LDAP server.
+   - If valid, LDAP server returns user details (DN, attributes).
+3. JWT Generation:
+   - Application generates a JWT containing user information and roles.
+   - Signs the JWT with a secret key.
+4. Token Delivery:
+   - JWT is sent back to the client in the response.
+5. Subsequent Requests:
+   - Client includes JWT in the Authorization header for future requests.
+6. JWT Validation:
+   - Application intercepts requests, extracts JWT, and validates signature and expiration.
+   - If valid, retrieves user details from JWT.
+7. Authorization:
+   - Application checks user roles/permissions from JWT for access control.
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().authenticated())
+            .ldapAuthentication(ldap -> ldap
+                .userDnPatterns("uid={0},ou=people")
+                .groupSearchBase("ou=groups")
+                .contextSource(context -> context
+                    .url("ldap://localhost:8389/dc=springframework,dc=org")
+                    .managerDn("uid=admin,ou=system")
+                    .managerPassword("secret"))
+                .passwordCompare(compare -> compare
+                    .passwordEncoder(new LdapShaPasswordEncoder())
+                    .passwordAttribute("userPassword")))
+            .addFilterBefore(jwtAuthenticationFilter(),
+                           UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
+}
