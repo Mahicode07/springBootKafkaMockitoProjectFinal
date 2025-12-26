@@ -1,0 +1,669 @@
+What is a transaction and why is it important?
+Answer:
+A transaction is a logical unit of work that must be executed completely or not at all,
+following ACID properties (Atomicity, Consistency, Isolation, Durability). In Spring, transactions ensure data integrity
+when performing multiple database operations.
+Example:
+java// Bank transfer scenario - both operations must succeed or fail together
+public void transferMoney(Account from, Account to, BigDecimal amount) {
+    from.setBalance(from.getBalance().subtract(amount));  // Debit
+    to.setBalance(to.getBalance().add(amount));          // Credit
+    // If either fails, both should rollback
+}
+Without transactions, if the debit succeeds but credit fails, money disappears from the system.
+========================================================================================================================
+
+1) Transactions + ACID (real-life feel)
+Q1) What is a transaction?
+
+Answer: A transaction is a business unit of work where you want either everything to happen or nothing to happen.
+
+Real-life example: “Order Placement”
+
+When a user places an order:
+
+Create order row
+Reduce stock
+Charge payment
+Create shipment record
+
+If payment fails, you must undo stock reduction + order creation ⇒ rollback.
+
+@Transactional
+public void placeOrder() {
+  orderRepo.save(order);           // step 1
+  inventoryRepo.reduceStock(...);  // step 2
+  paymentGateway.charge(...);      // step 3 (if fails -> rollback)
+  shipmentRepo.create(...);        // step 4
+}
+
+ACID explained in plain terms
+
+Atomicity: “All steps together or none” (order + stock + payment)
+Consistency: “Rules always true” (stock never negative, balance never negative)
+Isolation: “Others don’t see half-done work” (no one should see unpaid order as paid)
+Durability: “After commit, it stays” (server crash shouldn’t lose the paid order)
+
+2) Transaction Propagation (with concrete business scenarios)
+
+Propagation = what happens when one transactional method calls another.
+
+Think: parent flow calls child flow.
+
+2.1 REQUIRED (default)
+
+Meaning: If a transaction already exists → join it, else start new.
+
+✅ Best when everything is one business unit.
+
+Real-life scenario: Checkout (everything must succeed)
+
+reserve stock + create order + take payment must succeed together.
+If payment fails → rollback stock and order.
+
+@Transactional(propagation = Propagation.REQUIRED)
+public void checkout() {
+  createOrder();        // same TX
+  reserveInventory();   // same TX
+  chargePayment();      // same TX
+}
+
+
+Key interview line:
+
+REQUIRED means “one big transaction for the full flow”.
+
+Follow-ups interviewers ask
+
+What happens if child throws RuntimeException?
+✅ whole transaction rolls back
+
+What if child catches exception and doesn’t rethrow?
+✅ parent may commit (be careful)
+
+2.2 REQUIRES_NEW
+
+Meaning: Always start a new transaction, suspend parent.
+
+✅ Used when child must commit independently.
+
+Scenario 1: Audit logs (must be saved even if business fails)
+
+You want to record:
+
+“User attempted withdrawal”
+“Withdrawal failed due to insufficient funds”
+Even if withdrawal fails, the audit should remain.
+
+@Transactional
+public void withdraw() {
+  auditService.logAttempt();     // TX2 commits
+  doWithdraw();                  // TX1
+}
+
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void logAttempt() {
+  auditRepo.save(...);           // committed even if TX1 rolls back
+}
+
+Scenario 2: Send Email / Notification
+
+User registration should succeed even if email fails.
+
+✅ But: email send itself isn’t a DB transaction.
+Typical pattern: log email attempt in DB in REQUIRES_NEW + call external provider.
+
+Follow-ups
+
+If REQUIRES_NEW fails, does parent rollback?
+✅ Not automatically. But if exception bubbles up and you don’t catch it, parent may rollback due to exception.
+
+Why use try/catch around REQUIRES_NEW?
+✅ to prevent parent rollback because of propagated exception.
+
+2.3 NESTED
+
+Meaning: Same transaction but creates a savepoint.
+If nested method fails → rollback to savepoint only.
+
+✅ Used for “optional” business parts inside the same checkout.
+
+Scenario: Optional coupon / loyalty points
+
+Order + payment must succeed
+
+Coupon application can fail (invalid code) without failing checkout
+
+@Transactional
+public void checkout() {
+  createOrder();          // must succeed
+  chargePayment();        // must succeed
+  try { applyCoupon(); } catch(Exception e) {}
+}
+
+@Transactional(propagation = Propagation.NESTED)
+public void applyCoupon() {
+  // if invalid coupon -> rollback only coupon changes
+  couponRepo.markUsed(...);
+  orderRepo.applyDiscount(...);
+}
+
+
+Key difference vs REQUIRES_NEW
+
+NESTED depends on parent TX. If parent rolls back → nested changes also rollback.
+REQUIRES_NEW commits independently.
+
+Follow-ups
+
+What if DB doesn’t support savepoints?
+✅ NESTED behaves like REQUIRED or may not work as expected (depends on platform/transaction manager).
+
+When would you prefer NESTED over REQUIRES_NEW?
+✅ when you want partial rollback BUT still want everything to be part of the same overall transaction outcome.
+
+2.4 MANDATORY
+
+Meaning: Must already have a transaction or throws error.
+
+Scenario: Ledger write in banking
+
+You never want a ledger update without transaction.
+
+@Transactional(propagation = Propagation.MANDATORY)
+public void recordLedgerEntries(...) { ... }
+
+
+Follow-ups
+
+Why not REQUIRED?
+✅ REQUIRED would create a new transaction accidentally. MANDATORY prevents misuse.
+
+2.5 SUPPORTS
+
+Meaning: Join transaction if exists; else run without transaction.
+
+Scenario: Product catalog read
+
+Called from:
+
+checkout flow (inside transaction)
+product page API (no transaction)
+
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+public Product getProduct(Long id) { ... }
+
+
+Follow-up
+
+Why not REQUIRED for reads?
+✅ unnecessary overhead + holds resources.
+
+2.6 NOT_SUPPORTED
+
+Meaning: Always run without transaction; suspend existing.
+
+Scenario: Report generation / exporting huge file
+Long-running tasks should not hold DB transaction open.
+
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
+public byte[] generateReport() { ... }
+
+
+Follow-ups
+
+Why is long transaction bad?
+✅ locks, connection usage, blocking, timeouts, deadlocks.
+
+2.7 NEVER
+
+Meaning: Must not run in transaction; if exists → throw exception.
+
+Scenario: cache update
+
+If you update cache inside a TX that later rolls back → cache becomes wrong.
+
+So enforce “no transactions here”.
+========================================================================================================================
+
+3) Isolation Levels (with human examples)
+
+Isolation controls how concurrent transactions see each other.
+
+Phenomena (super interview-friendly)
+
+Dirty read: read uncommitted
+
+Non-repeatable read: Same row, different value on re-read
+
+Phantom read: new rows appear for same query condition
+
+
+1️⃣ Non-Repeatable Read
+What it is
+A non-repeatable read happens when:
+You read the same row twice
+Another transaction updates or deletes that row and commits
+You get different values each time
+The row already existed, but its data changed.
+
+Real-life example (Bank balance)
+
+Transaction T1
+SELECT balance FROM account WHERE id = 1;
+-- Result: 1000
+
+Transaction T2
+UPDATE account SET balance = 1500 WHERE id = 1;
+COMMIT;
+
+Transaction T1 (again)
+SELECT balance FROM account WHERE id = 1;
+-- Result: 1500
+
+🔴 Same row, different value → Non-repeatable read
+
+
+2️⃣ Phantom Read
+What it is
+
+A phantom read happens when:
+
+You run the same query twice
+Another transaction inserts or deletes new rows
+You see extra or missing rows
+
+👉 Existing rows are the same, but new rows appear or disappear.
+
+Real-life example (Orders list)
+
+Transaction T1
+SELECT * FROM orders WHERE amount > 100;
+-- Result: 5 rows
+
+Transaction T2
+INSERT INTO orders (amount) VALUES (200);
+COMMIT;
+
+Transaction T1 (again)
+SELECT * FROM orders WHERE amount > 100;
+-- Result: 6 rows
+
+🔴 New row appears → Phantom read
+
+
+Isolation Levels vs These Problems
+| Isolation Level      | Dirty Read  | Non-Repeatable Read | Phantom Read |
+| -------------------- | ----------- | ------------------- | ------------ |
+| **READ_UNCOMMITTED** | ❌ Possible  | ❌ Possible          | ❌ Possible   |
+| **READ_COMMITTED**   | ✅ Prevented | ❌ Possible          | ❌ Possible   |
+| **REPEATABLE_READ**  | ✅ Prevented | ✅ Prevented         | ❌ Possible   |
+| **SERIALIZABLE**     | ✅ Prevented | ✅ Prevented         | ✅ Prevented  |
+
+
+
+1️⃣ READ_UNCOMMITTED
+What it allows
+
+❌ Dirty reads
+❌ Non-repeatable reads
+❌ Phantom reads
+
+👉 You can read uncommitted data from another transaction.
+
+Simple explanation
+
+“I can see data that might never actually be committed.”
+
+Real-life scenario: Bank balance (bad idea)
+
+Transaction T1 updates balance from 1000 → 2000 (not committed yet)
+Transaction T2 reads balance and sees 2000
+T1 rolls back
+
+Actual balance is still 1000, but T2 already saw wrong data
+
+T1: UPDATE balance = 2000 (not committed)
+T2: READ balance → 2000  ❌
+T1: ROLLBACK
+
+🔴 Problem: T2 read data that never really existed.
+
+When to use
+Almost never in production
+Sometimes for fast, approximate dashboards
+
+2️⃣ READ_COMMITTED (Most common default)
+What it allows / prevents
+
+✅ Prevents dirty reads
+
+❌ Allows non-repeatable reads
+❌ Allows phantom reads
+
+👉 You only see committed data, but data can change between reads.
+
+Simple explanation
+
+“I won’t see unfinished work, but finished work can change while I’m reading.”
+
+Real-life scenario: Product price change
+
+T1 reads product price = 100
+T2 updates price to 120 and commits
+T1 reads again and sees 120
+
+T1: READ price → 100
+T2: UPDATE price → 120 (COMMIT)
+T1: READ price → 120  ❌ (changed)
+
+
+🔴 Problem: Same row, different value → Non-repeatable read
+
+When to use
+Default for most applications
+Good balance of performance + consistency
+
+3️⃣ REPEATABLE_READ (MySQL default)
+What it allows / prevents
+
+✅ Prevents dirty reads
+✅ Prevents non-repeatable reads
+❌ Allows phantom reads
+
+👉 Rows you read won’t change, but new rows may appear.
+
+Simple explanation
+
+“Rows I read stay the same, but new rows can show up.”
+
+Real-life scenario: Invoice generation
+
+T1 reads all order items and prices
+T2 updates item price and commits
+T1 reads again → still sees old prices
+
+T1: READ item price → 50
+T2: UPDATE item price → 60 (COMMIT)
+T1: READ item price → 50  ✅ (same)
+
+✔️ This is good for financial calculations.
+
+Phantom read example
+T1: SELECT orders WHERE amount > 100 → 5 rows
+T2 inserts new order (amount 200)
+T1 runs same query → 6 rows
+
+🔴 New row appears → Phantom read
+
+When to use
+Invoices
+Reports
+
+Calculations that must be stable
+
+4️⃣ SERIALIZABLE (Strongest)
+What it allows / prevents
+
+✅ Prevents dirty reads
+✅ Prevents non-repeatable reads
+✅ Prevents phantom reads
+
+👉 Transactions behave as if they run one by one.
+
+Simple explanation
+
+“No concurrency issues — everything happens in strict order.”
+
+Real-life scenario: Seat booking / flash sale
+
+Two users try to book the last seat
+
+With SERIALIZABLE:
+
+User A books first
+User B waits
+User B sees seat as unavailable
+
+User A: CHECK seat → available → BOOK → COMMIT
+User B: WAIT → CHECK seat → unavailable ❌
+
+
+✔️ No double booking
+✔️ No overselling
+
+When to use
+
+Ticket booking
+Limited inventory
+
+Critical financial operations
+
+⚠️ Trade-off: Lower performance, more locking
+🔑 One-line Interview Summary (Very Useful)
+
+READ_UNCOMMITTED → can read uncommitted data
+READ_COMMITTED → no dirty reads, but data can change
+REPEATABLE_READ → rows stay same, new rows may appear
+SERIALIZABLE → full isolation, safest but slowest
+=========================================================================================================================
+how transaction works internally? what actually proxy means in term of transaction?
+Spring does NOT put transaction code inside your method.
+It wraps your method with a PROXY that starts, commits, or rolls back the transaction.
+
+2️⃣ What REALLY happens when you use @Transactional
+Your code (what you write)
+@Service
+public class OrderService {
+
+    @Transactional
+    public void placeOrder() {
+        saveOrder();
+        reduceStock();
+        chargePayment();
+    }
+}
+
+What Spring creates (conceptually)
+
+Spring creates a proxy object around OrderService.
+
+Client
+  |
+  v
+OrderServiceProxy  ---->  OrderService (real object)
+
+3️⃣ What is a Proxy? (Very Important)
+Simple definition
+A proxy is a wrapper object that intercepts method calls and adds behavior before and after the real method executes.
+
+Real-life analogy
+
+Think of airport security ✈️
+Passenger → Security Check → Boarding Gate
+
+
+You (method call)
+
+Security (transaction logic)
+Plane (actual business logic)
+You never bypass security unless you sneak in from inside 😉
+
+4️⃣ Internal Flow of a Transaction (Step by Step)
+6
+Step 1: Application starts
+
+Spring scans beans
+
+Sees @Transactional
+
+Creates a proxy instead of giving you the real object
+
+Spring Context
+ └── OrderServiceProxy (NOT OrderService directly)
+
+Step 2: Client calls the method
+orderService.placeOrder();
+
+
+But actually 👇
+
+Client → OrderServiceProxy.placeOrder()
+
+Step 3: Proxy intercepts the call
+
+The proxy does transaction logic first:
+
+Proxy:
+ ├─ Open DB connection
+ ├─ Set isolation level
+ ├─ Disable auto-commit
+ ├─ Begin transaction
+ └─ Call real method
+
+Step 4: Real method executes
+OrderService.placeOrder()
+ ├─ saveOrder()
+ ├─ reduceStock()
+ ├─ chargePayment()
+
+
+At this point:
+
+All DB operations run inside the same transaction
+
+Connection is bound to the current thread
+
+Step 5: Method finishes → Proxy takes over again
+Case 1: No exception
+Proxy:
+ ├─ COMMIT transaction
+ ├─ Close connection
+ └─ Return result
+
+Case 2: RuntimeException occurs
+Proxy:
+ ├─ ROLLBACK transaction
+ ├─ Close connection
+ └─ Rethrow exception
+
+5️⃣ What happens with exceptions? (Very common interview question)
+Default Spring behavior
+Exception Type	Transaction
+RuntimeException	❌ Rollback
+Error	❌ Rollback
+Checked Exception	✅ Commit
+@Transactional
+public void demo() throws IOException {
+    saveData();
+    throw new IOException(); // COMMIT happens by default
+}
+
+Why?
+
+Spring assumes checked exceptions are business-handled, not system failures.
+
+👉 To change this:
+
+@Transactional(rollbackFor = Exception.class)
+
+6️⃣ Why self-invocation breaks transactions
+Problematic code
+@Service
+public class UserService {
+
+    public void register() {
+        saveUser(); // ❌ bypasses proxy
+    }
+
+    @Transactional
+    public void saveUser() {
+        userRepo.save(...);
+    }
+}
+
+What REALLY happens
+UserService.register()
+ └── this.saveUser()  ❌ direct call, no proxy
+
+
+🚫 No transaction starts
+🚫 No commit/rollback logic
+
+Correct approaches
+✅ Option 1: Move transaction to caller
+@Transactional
+public void register() {
+    saveUser();
+}
+
+✅ Option 2: Call through proxy (self-injection)
+@Autowired
+private UserService self;
+
+public void register() {
+    self.saveUser(); // goes through proxy
+}
+
+✅ Option 3: Extract to another service (best practice)
+userPersistenceService.saveUser();
+
+7️⃣ How propagation fits into proxy logic
+REQUIRED (default)
+Proxy checks:
+ ├─ Is there an active transaction?
+ │    ├─ Yes → join it
+ │    └─ No  → start new
+
+REQUIRES_NEW
+Proxy:
+ ├─ Suspend existing transaction
+ ├─ Start new transaction
+ ├─ Execute method
+ ├─ Commit / rollback
+ └─ Resume parent transaction
+
+NESTED
+Proxy:
+ ├─ Create SAVEPOINT
+ ├─ Execute method
+ ├─ Exception?
+ │    ├─ Yes → rollback to savepoint
+ │    └─ No  → continue
+=========================================================================================================================
+Why does @Transactional not work in same-class calls?
+Proxy is bypassed; call doesn’t go through Spring proxy.
+
+Default rollback rules in Spring?
+RuntimeException → rollback; Checked exception → commit (unless rollbackFor set).
+
+How to force rollback for checked exceptions?
+@Transactional(rollbackFor = Exception.class)
+
+Does @Transactional work on private methods?
+No (proxy intercepts public methods).
+
+Isolation set in child method gets applied?
+Only if it starts a new TX (REQUIRES_NEW); otherwise parent’s isolation wins.
+
+Propagation logic
+
+When do you prefer REQUIRES_NEW?
+audit logs, outbox/event logs, notification logs.
+
+When do you prefer NESTED?
+optional steps like coupon/loyalty where failure shouldn’t fail checkout but parent rollback should still rollback all.
+
+Can REQUIRES_NEW cause deadlocks?
+Yes, if it touches same rows/resources in different order; also increases DB load.
+
+Isolation / concurrency
+
+Which level prevents non-repeatable reads?
+REPEATABLE_READ+
+
+Which prevents phantom reads?
+SERIALIZABLE
+
+Why not always use SERIALIZABLE?
+Lower concurrency, more locking, slower throughput.
