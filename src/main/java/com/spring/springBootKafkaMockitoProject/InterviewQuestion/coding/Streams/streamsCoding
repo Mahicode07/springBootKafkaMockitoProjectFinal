@@ -1312,4 +1312,24 @@ Code:
 List<Integer> out = nums.stream().filter(i->i>4).map(i->i*i).collect(Collectors.toList());
 Output: [25, 81, 25, 49]
 
+Group words by first character and collect distinct words
+Map<Character, Set<String>> result =
+    words.stream()
+         .collect(Collectors.groupingBy(
+             word -> word.charAt(0),
+             Collectors.mapping(String::toLowerCase, Collectors.toSet())
+         ));
+
+
+Group transactions by year and collect transaction IDs
+Map<Integer, List<String>> result =
+    transactions.stream()
+                .collect(Collectors.groupingBy(
+                    Transaction::getYear,
+                    Collectors.mapping(Transaction::getId, Collectors.toList())
+                ));
+
+
+
+
 
