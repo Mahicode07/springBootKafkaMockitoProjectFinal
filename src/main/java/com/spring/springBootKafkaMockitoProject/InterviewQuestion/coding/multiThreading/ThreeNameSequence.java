@@ -11,98 +11,37 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreeNameSequence {
-    private static int retryCount = 3;
-    private int state = 0;
     private final Lock lock = new ReentrantLock();
-    Condition AlicCondition;
-    Condition BobCondition;
-    Condition CharlieCondition;
+    private final Condition turnChanged = lock.newCondition();
 
-    public ThreeNameSequence() {
-        this.AlicCondition = this.lock.newCondition();
-        this.BobCondition = this.lock.newCondition();
-        this.CharlieCondition = this.lock.newCondition();
-    }
+    private int state = 0;         // shared counter
+    private final int NAMES = 3;    // Alice, Bob, Charlie
 
-    private void printA() {
-        for(int i = 0; i <= 3; ++i) {
-            this.lock.lock();
-
+    private void print(String name, int myTurn, int times) {
+        for (int i = 0; i < times; i++) {
+            lock.lock();
             try {
-                while(this.state % retryCount != 0) {
-                    this.AlicCondition.await();
+                while (state % NAMES != myTurn) {
+                    turnChanged.await();
                 }
-
-                System.out.println("Alice");
-                ++this.state;
-                this.BobCondition.signal();
-                continue;
-            } catch (InterruptedException var6) {
+                System.out.println(name);
+                state++;
+                turnChanged.signalAll(); // wake others, only correct one proceeds
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
             } finally {
-                this.lock.unlock();
+                lock.unlock();
             }
-
-            return;
         }
-
-    }
-
-    private void printB() {
-        for(int i = 0; i <= 3; ++i) {
-            this.lock.lock();
-
-            try {
-                while(this.state % retryCount != 1) {
-                    this.BobCondition.await();
-                }
-
-                System.out.println("BOB");
-                ++this.state;
-                this.CharlieCondition.signal();
-                continue;
-            } catch (InterruptedException var6) {
-            } finally {
-                this.lock.unlock();
-            }
-
-            return;
-        }
-
-    }
-
-    private void printC() {
-        for(int i = 0; i <= 3; ++i) {
-            this.lock.lock();
-
-            try {
-                while(this.state % retryCount != 2) {
-                    this.CharlieCondition.await();
-                }
-
-                System.out.println("charlie");
-                ++this.state;
-                this.AlicCondition.signal();
-                continue;
-            } catch (InterruptedException var6) {
-            } finally {
-                this.lock.unlock();
-            }
-
-            return;
-        }
-
     }
 
     public static void main(String[] args) {
-        ThreeNameSequence threeNameSequence = new ThreeNameSequence();
-        Objects.requireNonNull(threeNameSequence);
-        Thread t1 = new Thread(threeNameSequence::printA);
-        Objects.requireNonNull(threeNameSequence);
-        Thread t2 = new Thread(threeNameSequence::printB);
-        Objects.requireNonNull(threeNameSequence);
-        Thread t3 = new Thread(threeNameSequence::printC);
-        t1.start();
-        t2.start();
-        t3.start();
+        ThreeNameSequence obj = new ThreeNameSequence();
+        int times = 4;
+
+        new Thread(() -> obj.print("Alice",   0, times)).start();
+        new Thread(() -> obj.print("Bob",     1, times)).start();
+        new Thread(() -> obj.print("Charlie", 2, times)).start();
     }
 }
