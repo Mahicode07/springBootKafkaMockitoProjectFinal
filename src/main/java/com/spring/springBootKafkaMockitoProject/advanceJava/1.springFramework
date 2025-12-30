@@ -1,0 +1,149 @@
+What is Spring?
+Spring is a Java framework that helps in building enterprise applications. It is a powerful toolkit for
+making software using Java.
+It's like having a set of tools that help developers build programs more
+easily. With Spring, tasks like connecting to databases or managing different parts of a program
+become simpler
+
+What are the advantages of the Spring framework?
+It supports transactions, which helps in managing database operations
+smoothly. It also integrates well with other technologies and makes testing easier. With tools like
+Spring Boot and Spring Cloud, developers can quickly create, deploy, and maintain scalable and
+reliable applications
+
+Difference between Spring and Spring Boot?
+Spring is a framework that helps build Java applications with many tools for different tasks. Spring
+Boot makes using Spring easier by providing ready-made setups, reducing the need for a lot of extra
+code. It includes an embedded server, so we can quickly start and run applications, making
+development faster and simpler.
+
+What Is a Spring Bean?
+A Spring Bean is an object that is created and managed by the Spring framework. It is a key part of a
+Spring application, and the framework handles the creation and setup of these objects. Beans allow
+our application components to work together easily, making our code simpler to manage and test.
+
+What are the types of IOC container in Spring?
+In Spring, there are two main types of IoC containers: BeanFactory and ApplicationContext.
+BeanFactory is the basic container that handles creating and managing objects. ApplicationContext is
+more advanced, adding features like event handling and easier integration with Spring’s tools. Most
+developers prefer ApplicationContext because it offers more capabilities and is easier to use
+
+Are Singleton Beans Thread-Safe?
+No, singleton beans in Spring are not thread-safe by default. Because they are shared by multiple
+parts of the application at the same time, we need to add extra code to make them safe for use by
+multiple threads. This usually means using synchronized methods or thread-safe data structures.
+
+You have a large Spring project with many interdependent beans. How would you manage the
+dependencies to maintain clean code and reduce coupling?
+I would:
+• Use dependency injection to manage dependencies.
+• Utilize Spring Profiles for environment-specific configurations.
+• Group related beans in separate configuration classes.
+• Use @ComponentScan to automatically discover beans.
+
+You have a singleton bean that needs to be thread-safe. What approaches would you take to
+ensure its thread safety?
+I would:
+• Use synchronized methods or blocks to control access to critical sections.
+• Use ThreadLocal to provide thread-confined objects.
+• Implement stateless beans where possible to avoid shared state.
+• Use concurrent utilities from java.util.concurrent.
+
+| Aspect                          | BeanFactory                                                       | ApplicationContext                                                                              |
+| ------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Type**                        | Basic container                                                   | Advanced container (extends `BeanFactory`)                                                      |
+| **Primary purpose**             | Simple bean management                                            | Full-featured enterprise application support                                                    |
+| **Bean instantiation**          | **Lazy initialization** by default (beans created when requested) | **Eager initialization** by default for singleton beans                                         |
+| **Configuration loading**       | Manual or limited                                                 | Automatic and feature-rich                                                                      |
+| **Dependency Injection**        | Supported                                                         | Supported                                                                                       |
+| **Annotation support**          | Limited                                                           | Full support (`@Autowired`, `@Component`, etc.)                                                 |
+| **Internationalization (i18n)** | ❌ Not supported                                                   | ✅ Supported via `MessageSource`                                                                 |
+| **Event handling**              | ❌ Not supported                                                   | ✅ Supports application events (`ApplicationEventPublisher`)                                     |
+| **AOP support**                 | Limited                                                           | Full AOP support                                                                                |
+| **Declarative services**        | ❌ Not supported                                                   | ✅ Supports declarative transactions, security, etc.                                             |
+| **Web application support**     | ❌ Not supported                                                   | ✅ Supported (`WebApplicationContext`)                                                           |
+| **Resource loading**            | Basic                                                             | Advanced (`ResourceLoader`)                                                                     |
+| **Bean post-processors**        | Must be registered manually                                       | Automatically detected and registered                                                           |
+| **Enterprise features**         | Minimal                                                           | Rich enterprise-level features                                                                  |
+| **Typical implementations**     | `XmlBeanFactory` *(deprecated)*                                   | `ClassPathXmlApplicationContext`, `AnnotationConfigApplicationContext`, `WebApplicationContext` |
+| **Use case**                    | Lightweight, simple applications                                  | Most modern Spring applications                                                                 |
+
+
+what is internationalization?
+Internationalization (often abbreviated as i18n) is the process of designing and preparing software
+so that it can be easily adapted to different languages and regions without requiring changes to
+the underlying code. This involves separating the text and cultural elements from the code, allowing
+for easy translation and localization. Internationalization ensures that applications can reach a
+global audience by supporting multiple languages and regional formats.
+
+What is a circular dependency issue?
+A circular dependency issue occurs when two or more beans in a Spring application
+depend on each other to be created. For example, Bean A requires Bean B to be created,
+and Bean B simultaneously requires Bean A. This situation leads to a deadlock, as neither
+bean can be instantiated until the other is, which prevents the application from starting
+up properly.
+
+Explain different ways provided by Spring Boot to resolve circular dependencies.
+In Spring Boot, circular dependencies can be resolved by using setter injection instead of
+constructor injection, allowing beans to be instantiated before their dependencies are
+set. Another method is using the @Lazy annotation, which defers the initialization of a
+bean until it is actually needed, thus breaking the dependency cycle. Additionally,
+redesigning the application architecture to better separate concerns and reduce coupling
+between beans can also effectively address circular dependencies.
+
+Difference between @Component and @Service. Are these interchangeable?
+@Component is a generic stereotype for any Spring-managed component, while
+@Service is a specialization of @Component that indicates a bean is performing a service
+task or business logic. Technically, they are interchangeable because they both create
+Spring beans, but using @Service provides better clarity about the bean's role within the
+application. It's best practice to use @Service for service-layer beans and @Component
+for beans that don't fit into more specific categories like @Controller or @Repository.
+
+| Aspect                        | CrudRepository                                            | JpaRepository                                              |
+| ----------------------------- | --------------------------------------------------------- | ---------------------------------------------------------- |
+| **Package**                   | `org.springframework.data.repository`                     | `org.springframework.data.jpa.repository`                  |
+| **Type**                      | Core repository interface                                 | JPA-specific repository                                    |
+| **Extends**                   | —                                                         | `CrudRepository`, `PagingAndSortingRepository`             |
+| **Primary purpose**           | Basic CRUD operations                                     | Full JPA-based data access                                 |
+| **CRUD methods**              | `save()`, `findById()`, `findAll()`, `deleteById()`, etc. | Inherits all CRUD methods                                  |
+| **Pagination & Sorting**      | ❌ Not supported                                           | ✅ Supported (`findAll(Pageable)`, `findAll(Sort)`)         |
+| **Batch operations**          | ❌ Not supported                                           | ✅ Supported (`saveAll()`, `deleteInBatch()`)               |
+| **Flush support**             | ❌ Not supported                                           | ✅ Supported (`flush()`, `saveAndFlush()`)                  |
+| **JPA-specific methods**      | ❌ Not supported                                           | ✅ Supported (`getOne()` / `getReferenceById()`)            |
+| **Specification support**     | ❌ Not supported                                           | ❌ Not directly (needs `JpaSpecificationExecutor`)          |
+| **Underlying technology**     | Technology-agnostic                                       | Specifically for JPA (Hibernate, EclipseLink, etc.)        |
+| **Performance optimizations** | Basic                                                     | Advanced (batching, flushing, persistence context control) |
+| **Typical use case**          | Simple CRUD-only applications                             | Real-world JPA-based applications                          |
+
+
+| Aspect                      | `@Qualifier`                                                      | `@Primary`                                                        |
+| --------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **Package**                 | `org.springframework.beans.factory.annotation`                    | `org.springframework.context.annotation`                          |
+| **Purpose**                 | Specifies **which exact bean** to inject                          | Marks a bean as the **default choice**                            |
+| **When used**               | At the **injection point** (field/constructor/setter)             | At the **bean definition**                                        |
+| **Scope of effect**         | Local (only where specified)                                      | Global (applies wherever ambiguity exists)                        |
+| **Used when**               | Multiple beans of the same type exist and you want a specific one | Multiple beans of the same type exist and one should be preferred |
+| **Overrides ambiguity**     | Explicit selection                                                | Implicit selection                                                |
+| **Can override the other?** | ✅ Yes, overrides `@Primary`                                       | ❌ No, overridden by `@Qualifier`                                  |
+| **Typical syntax**          | `@Autowired @Qualifier("beanName")`                               | `@Primary` on bean class or method                                |
+| **Required every time?**    | Yes, at each injection point                                      | No, applies automatically                                         |
+| **Best use case**           | When different beans are needed in different places               | When one bean is the most commonly used                           |
+
+What happens if multiple AutoConfiguration classes define the same bean?
+In Spring Boot, if multiple auto-configuration classes define the same bean, the last one
+read by the Spring container usually takes precedence, potentially overriding the beans
+defined earlier. This behavior is influenced by the ordering of auto-configuration classes,
+which can be controlled using the @AutoConfigureOrder or
+@AutoConfigureAfter/@AutoConfigureBefore annotations to specify the load order
+explicitly. This setup helps manage dependencies and configurations more effectively in
+complex application
+
+What type of injection use by @Autowired?
+The @Autowired annotation in Spring primarily uses constructor injection by default,
+where dependencies are provided through a class constructor at the time of object
+creation, promoting immutability and mandatory dependency declaration. However, it
+can also be used for field injection, where Spring directly sets the values of fields on your
+beans, and setter injection, where dependencies are injected through setter methods
+after the bean is constructed. This flexibility allows for various configurations depending
+on the needs of the application
+

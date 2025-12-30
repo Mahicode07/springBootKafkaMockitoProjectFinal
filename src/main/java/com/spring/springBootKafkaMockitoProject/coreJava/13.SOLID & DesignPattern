@@ -782,6 +782,30 @@ Structural design patterns->
         }
     }
 
-
-
 apf
+
+How can design patterns affect the performance of a Java application?
+Design patterns can impact performance by adding complexity, but they improve
+system architecture and maintainability. The long-term benefits often outweigh the
+initial performance cost.
+
+Why do we use builder design pattern rather than constructor-based object creation?
+We use the Builder design pattern over constructor-based object creation when an object has many
+optional parameters or when creating the object requires multiple steps. Constructors can become
+hard to manage with too many parameters, leading to confusion and potential errors. The Builder
+pattern simplifies this by allowing you to build the object step-by-step, making the code more
+readable, flexible, and easier to maintain, while avoiding constructor overloading.
+
+How can we break a singleton class? What is the strategy for single object creation?
+A singleton class can be broken by using techniques like reflection, serialization, or cloning, which can
+bypass the singleton's one-instance rule. To prevent this, you can use strategies like preventing
+reflection by throwing exceptions in the constructor, implementing readResolve to handle
+deserialization properly, and overriding the clone() method to prevent cloning. Additionally, using
+enum for singleton implementation is a robust strategy, as it prevents most of these pitfalls naturally.
+
+How would you apply the Observer pattern in an event-driven application?
+In an event-driven application, the Observer pattern is applied by having observers (listeners) register
+with a subject (event source) to receive updates when specific events occur. When the subject
+triggers an event, it automatically notifies all registered observers, which then react accordingly. This
+decouples the event source from the response logic, making the system more flexible and
+maintainable, as observers can be added or removed dynamically without altering the subject.

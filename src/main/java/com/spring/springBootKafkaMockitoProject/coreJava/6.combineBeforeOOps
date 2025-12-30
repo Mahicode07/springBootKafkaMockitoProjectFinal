@@ -160,6 +160,12 @@ Other classes in same package	Yes	Yes	Yes	No	No
 Subclasses in other package	Yes	Yes	No	Yes	No
 Non-subclasses in other packages	Yes	No	No	No	No
 
+Can you provide examples of when to use each type of access modifier?
+1. Public: Used when members should be accessible from any other class.
+2. Protected: Ideal for members that should be accessible to subclasses and classes
+within the same package.
+3. Default: Use when members should be accessible only within the same package.
+4. Private: Best for members intended only for use within their own class
 
 Instance initialization block (Non-static initialization block)->
 executed after static methods and before constructors
@@ -245,7 +251,44 @@ There are two ways to make a class as final.->
 The first way to make a class final is to use the final keyword
 The second way is to declare all of its constructors as private
 
+What is the difference between inheritance and composition?
+Inheritance is when one class gets its features from another class. Composition is
+when a class is made using parts from other classes, which can be more flexible.
 
+What is the difference between association, aggregation, and composition in Java?
+Association is a general relationship between two classes. Aggregation is a weak
+association (has-a) where the child can exist independently of the parent.
+Composition is a strong association where the child cannot exist without the parent.
 
+Can inner classes have static declarations?
+Inner classes in Java can have static declarations if they are themselves declared as static. These
+static nested classes can contain static methods, fields, or blocks. However, non-static inner classes,
+which are associated with an instance of the outer class, cannot contain any static members. The
+reason is that static members belong to the class rather than an instance, and non-static inner
+classes are intimately linked to the outer class's instance.
 
+ Can you provide a scenario where creating a custom marker interface would be beneficial?
+Creating a custom marker interface can be beneficial in scenarios where you want to enforce a
+special handling or policy for certain classes without adding any actual methods. For example,
+consider a security system where only certain data objects can be transmitted over a network. You
+could define a marker interface like Transmittable. By implementing this interface in certain classes,
+you can use instanceof to check and ensure that only objects of these classes are transmitted,
+enhancing security controls.
 
+Can an enum extend another class in Java?
+No, an enum in Java cannot extend another class. In Java, all enums implicitly extend the
+java.lang.Enum class, and since Java does not support multiple inheritance for classes, an enum
+cannot extend any other class. However, enums can implement interfaces, allowing them to include
+additional functionality beyond the basic enum capabilities. This provides a way to enhance the
+functionality of enums without the need for class inheritance.
+
+How do you iterate over all values of an enum?
+To iterate over all values of an enum in Java, you can use the values() method, which returns an array
+of all enum constants in the order they're declared. You can then loop through this array using a foreach loop
+
+What happens when an exception is thrown in a static initialization block?
+When an exception is thrown in a static initialization block in Java, it prevents the class from being
+loaded properly. This results in a java.lang.ExceptionInInitializerError. If an attempt is made to use the
+class afterwards, the JVM will throw a NoClassDefFoundError because the class initialization
+previously failed. This mechanism ensures that no class is used unless it has been correctly and fully
+initialized.

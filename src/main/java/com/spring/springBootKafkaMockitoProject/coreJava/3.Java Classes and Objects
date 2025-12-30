@@ -187,5 +187,9 @@ Predefined Classes in Java->
     1. Object Class:2. Math Class:3. String Class:4. System Class:5. Random Class:
 
 
+Can a class in Java be without any methods or fields?
+Yes, a class in Java can be declared without any methods or fields. Such a class can still
+be used to create objects, although these objects would have no specific behavior or
+state
 
 

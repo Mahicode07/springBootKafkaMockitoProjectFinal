@@ -1,0 +1,555 @@
+What is ApplicationRunner in SpringBoot?
+ApplicationRunner in Spring Boot lets us run code right after the application starts. We create a class
+that implements the run method with our custom logic. This code runs automatically when the app
+is ready. It's useful for tasks like setting up data or resources, making it easy to perform actions as
+soon as the application launches.
+
+| Aspect                        | CommandLineRunner                             | ApplicationRunner                              |
+| ----------------------------- | --------------------------------------------- | ---------------------------------------------- |
+| **Package**                   | `org.springframework.boot`                    | `org.springframework.boot`                     |
+| **Purpose**                   | Run code after Spring Boot application starts | Run code after Spring Boot application starts  |
+| **Method to implement**       | `run(String... args)`                         | `run(ApplicationArguments args)`               |
+| **Argument type**             | Raw `String[]` arguments                      | Structured `ApplicationArguments`              |
+| **Argument handling**         | Manual parsing required                       | Built-in support for option & non-option args  |
+| **Access to option args**     | ❌ No direct support                           | ✅ `args.getOptionNames()`, `getOptionValues()` |
+| **Access to non-option args** | ❌ Manual parsing                              | ✅ `getNonOptionArgs()`                         |
+| **Readability**               | Simpler but less expressive                   | Cleaner and more expressive                    |
+| **Use case**                  | Simple startup logic                          | Complex startup logic needing parsed args      |
+| **Ordering support**          | ✅ Supports `@Order` / `Ordered`               | ✅ Supports `@Order` / `Ordered`                |
+| **Multiple runners**          | Supported                                     | Supported                                      |
+| **Introduced in**             | Spring Boot 1.0                               | Spring Boot 1.3                                |
+
+What is Spring Boot dependency management?
+Spring Boot dependency management makes it easier to handle the dependencies that our project
+depends on. Instead of manually keeping track of them, Spring Boot helps us manage them
+automatically. It uses tools like Maven or Gradle to organize these dependencies, making sure they
+work well together. This saves developers time and effort and allowing us to focus on writing their
+own code without getting bogged down in managing dependencies
+
+Can we disable the default web server in a Spring Boot application?
+Yes, we can disable the default web server in a Spring Boot application by setting the
+spring.main.web-application-type property to none in our application.properties or application.yml
+file. This will result in a non-web application, suitable for messaging or batch processing jobs.
+
+How to disable a specific auto-configuration class?
+We can disable specific auto-configuration classes in Spring Boot by using the exclude attribute of the
+@EnableAutoConfiguration annotation or by setting the spring.autoconfigure.exclude property in our
+application.properties or application.yml file.
+
+What is the difference between RequestMapping and GetMapping?
+@RequestMapping is a general annotation that can be used for routing any HTTP method requests
+(like GET, POST, etc.), requiring explicit specification of the method. @GetMapping is a specialized
+version of @RequestMapping that is designed specifically for HTTP GET requests, making the code
+more readable and concise.
+
+What are the differences between @SpringBootApplication and @EnableAutoConfiguration
+annotation?
+The @SpringBootApplication annotation is a convenience annotation that combines @Configuration,
+@EnableAutoConfiguration, and @ComponentScan annotations. It is used to mark the main class of
+a Spring Boot application and trigger auto-configuration and component scanning. On the other
+hand, @EnableAutoConfiguration specifically enables Spring Boot's auto-configuration mechanism,
+which attempts to automatically configure our application based on the jar dependencies we have
+added. It is included within @SpringBootApplication.
+
+How can you programmatically determine which profiles are currently active in a Spring Boot
+application?
+In a Spring Boot application, we can find out which profiles are active by using a tool called
+Environment. First, we include Environment in our code using @Autowired, which automatically fills
+it with the right information. Then, we use the getActiveProfiles() method of Environment to get a list
+of all the active profiles. This method gives us the names of these profiles as a simple array of strings.
+@Autowired
+Environment env;
+String[] activeProfiles = env.getActiveProfiles();
+
+Mention the differences between WAR and embedded containers.
+Traditional WAR deployment requires a standalone servlet container like Tomcat, Jetty, or WildFly. In
+contrast, Spring Boot with an embedded container allows us to package the application and the
+container as a single executable JAR file, simplifying deployment and ensuring that the environment
+configurations remain consistent.
+
+ How to get the list of all the beans in our Spring Boot application?
+ To list all the beans loaded by the Spring ApplicationContext, we can inject the ApplicationContext
+ into any Spring-managed bean and call the getBeanDefinitionNames() method. This will return a
+ String array containing the names of all beans managed by the context.
+
+How to enable debugging log in the Spring Boot application?
+To enable debugging logs in Spring Boot, we can set the logging level to DEBUG in the
+application.properties or application.yml file by adding a line such as logging.level.root=DEBUG. This
+will provide detailed logging output, useful for debugging purposes.
+
+Can we customize a specific auto-configuration in springboot?
+Yes, in Spring Boot, we can customize specific auto-configurations. Although Spring Boot
+automatically sets up components based on our environment, we can override these settings in our
+application properties or YAML file, or by adding our own configuration beans. We can also use the
+@Conditional annotation to include or exclude certain configurations under specific conditions. This
+flexibility allows us to tailor the auto-configuration to better fit our application’s specific needs.
+
+What is versioning in REST? What are the ways that we can use to implement versioning?
+Versioning in REST APIs helps manage changes without breaking existing clients. It allows different
+versions of the API to exist at the same time, making it easier for clients to upgrade gradually.
+We can version REST APIs in several ways: include the version number in the URL (e.g.,
+/api/v1/resource), add a version parameter in the URL (e.g., /api/resource?version=1), use custom
+headers to specify the version (e.g., Accept: application/vnd.example.v1+json), or use media types
+for versioning (e.g., application/vnd.example.v1+json).
+
+What should the delete API method status code be?
+The DELETE API method should typically return a status code of 200 OK if the deletion is
+successful and returns a response body, 204 No Content if the deletion is successful without a
+response body, or 404 Not Found if the resource to be deleted does not exist
+
+How does Spring Boot decide which embedded server to use if multiple options are available
+in the classpath?
+Spring Boot decides which embedded server to use based on the order of dependencies in the
+classpath. If multiple server dependencies are present, it selects the first one found. For example, if
+both Tomcat and Jetty are present, it will use the one that appears first in the dependency list
+
+@EnableWebMvc: The @EnableWebMvc annotation in Spring activates the default
+configuration for Spring MVC. It sets up essential components like view resolvers,
+message converters, and handler mappings, providing a base configuration for
+building web applications.
+
+. @EnableAsync: The @EnableAsync annotation in Spring enables asynchronous
+method execution. It allows methods to run in the background on a separate thread,
+improving performance by freeing up the main thread for other tasks.
+
+@Scheduled: The @Scheduled annotation in Spring triggers methods to run at fixed
+intervals or specific times. It enables scheduling tasks automatically based on cron
+expressions, fixed delays, or fixed rates, facilitating automated and timed execution
+of methods.
+
+@EnableScheduling: @EnableScheduling is an annotation in Spring Framework used
+to enable scheduling capabilities for methods within a Spring application. It allows
+methods annotated with @Scheduled to be executed based on specified time
+intervals or cron expressions
+
+How would you handle inter-service communication in a microservices architecture using
+Spring Boot?
+For simple, direct communication, I would use RestTemplate, which allows services to send
+requests and receive responses like a two-way conversation.
+For more complex interactions, especially when dealing with multiple services, I would
+choose Feign Client. Feign Client simplifies declaring and making web service clients, making
+the code cleaner and the process more efficient.
+For asynchronous communication, where immediate responses aren't necessary, I would use
+message brokers like RabbitMQ or Kafka. These act like community boards, where services
+can post messages that other services can read and act upon later. This approach ensures a
+robust, flexible communication system between microservices.
+
+How does Spring Boot simplify the data access layer implementation?
+Spring Boot greatly eases the implementation of the data access layer by offering several
+streamlined features.
+First, it auto-configures essential settings like data source and JPA/Hibernate based on the
+libraries present in the classpath, reducing manual setup. It also provides built-in repository
+support, such as JpaRepository, enabling easy CRUD operations without the need for
+boilerplate code.
+Additionally, Spring Boot can automatically initialize database schemas and seed data using
+scripts. It integrates smoothly with various databases and ORM technologies and translates
+SQL exceptions into Spring’s data access exceptions, providing a consistent and simplified
+error handling mechanism.
+
+What are conditional annotations and explain the purpose of conditional annotations in
+Spring Boot?
+Conditional annotations in Spring Boot help us create beans or configurations only if certain
+conditions are met.
+It's like setting rules: "If this condition is true, then do this." A common example is
+@ConditionalOnClass, which creates a bean only if a specific class is present.
+This makes our application flexible and adaptable to different environments without
+changing the code, enhancing its modularity and efficiency.
+
+Explain the role of @EnableAutoConfiguration annotation in a Spring Boot application.
+How does Spring Boot achieve autoconfiguration internally?"
+@EnableAutoConfiguration in Spring Boot tells the framework to automatically set up the
+application based on its dependencies.
+Internally, Spring Boot uses Condition Evaluation, examining the classpath, existing beans,
+and properties.
+It depends on @Conditional annotations (like @ConditionalOnClass) in its auto-configuration
+classes to determine what to configure. This smart setup tailors the configuration to our
+needs, simplifying and speeding up the development process
+
+How can we secure the actuator endpoints?
+Limit Exposure: By default, not all actuator endpoints are exposed. We can control which
+ones are available over the web. It's like choosing what parts of your diary are okay to share.
+Use Spring Security: We can configure Spring Security to require authentication for accessing
+actuator endpoints.
+Use HTTPS instead of HTTP.
+Actuator Role: Create a specific role, like ACTUATOR_ADMIN, and assign it to users who
+should have access. This is like giving a key to only trusted people.
+
+What strategies would you use to optimize the performance of a Spring Boot application?
+Let’s say my Spring Boot application is taking too long to respond to user requests. I could:
+• Implement caching for frequently accessed data.
+• Optimize database queries to reduce the load on the database.
+• Use asynchronous methods for operations like sending emails.
+• Load Balancer if traffic is high
+• Optimize the time complexity of the code
+• Use webFlux to handle a large number of concurrent connections.
+
+YAML has limitations->
+more error-prone due to its sensitivity to spaces and indentation. Additionally, YAML is less
+familiar to some developers compared to the straightforward key-value format of properties
+files.
+While YAML is great for complex configurations and readability, these limitations are
+important to consider when choosing the format for Spring Boot configuration.
+
+How can you enable and use asynchronous methods in a Spring Boot application?
+To enable and use asynchronous methods in a Spring Boot application:
+• First, I would add the @EnableAsync annotation to one of my configuration classes.
+This enables Spring's asynchronous method execution capability.
+• Next, I would mark methods I want to run asynchronously with the @Async
+annotation. These methods can return void or a Future type if I want to track the result.
+• Finally, I would call these methods like any other method. Spring takes care of
+running them in separate threads, allowing the calling thread to proceed without waiting for
+the task to finish.
+Remember, for the @Async annotation to be effective, the method calls must be made from
+outside the class. If I call an asynchronous method from within the same class, it won't
+execute asynchronously due to the way Spring proxying works
+
+After successful registration, your Spring Boot application needs to send a welcome email
+to the user. Describe how would you send the emails to the registered users.
+First, I would ensure the Spring Boot Starter Mail dependency is in my project's pom.xml.
+Next in application.properties, I would set up my mail server details, like host, port,
+username, and password.
+Then I would write a service class that uses JavaMailSender to send emails. In this service, I
+craft the welcome email content and use the send method to dispatch emails.
+And finally, after a user successfully registers, I would call my mail service from within the
+registration logic to send the welcome email.
+
+What is Spring Boot CLI and how to execute the Spring Boot project using boot CLI?
+Spring Boot CLI (Command Line Interface) is a tool for running Spring Boot applications
+easily. It helps to avoid boilerplate code and configuration.
+To execute the spring boot project using boot CLI:
+• First, install the CLI through a package manager or download it from the Spring
+website.
+• Write the application code in a Groovy script, which allows using Spring Boot
+features without detailed configuration.
+• In the terminal, navigate to the script's directory and run spring run myApp.groovy,
+substituting myApp.groovy with the script's filename
+
+ How Is Spring Security Implemented In A Spring Boot Application?
+To add the spring security in a spring boot application, we first need to include spring
+security starter dependency in the POM file
+Then, we create a configuration class extending WebSecurityConfigurerAdapter to customize
+security settings, such as specifying secured endpoints and configuring the login and logout
+process. we also implement the UserDetailsService interface to load user information,
+usually from a database, and use a password encoder like BCryptPasswordEncoder for secure
+password storage.
+We can secure specific endpoints using annotations like @PreAuthorize, based on roles or
+permissions. This setup ensures that my Spring Boot application is secure, managing both
+authentication and authorization effectively
+
+In Spring Boot, how is session management configured and handled, especially in
+distributed systems?
+In Spring Boot for distributed systems, session management is done by storing session
+information in a shared location using Spring Session.
+This way, any server can access the session data, allowing users to stay logged in across
+different servers.
+We set it up by adding Spring Session to our project and choosing where to store the
+sessions, like in a database or cache.
+This makes our app more scalable and keeps user sessions consistent.
+
+Imagine you are designing a Spring Boot application that interfaces with multiple external
+APIs. How would you handle API rate limits and failures?
+To handle API rate limits and failures in a Spring Boot application, I would
+• Use a circuit breaker to manage failures
+• Implement rate limiting to avoid exceeding API limits
+• Add a retry mechanism with exponential backoff for temporary issues
+• Use caching to reduce the number of requests.
+
+How you would manage externalized configuration and secure sensitive configuration
+properties in a microservices architecture?
+To handle these settings across microservices in a big project, I would use a tool called Spring
+Cloud Config.
+It's like having a central folder where all settings are kept.
+This folder can be on the web or my computer. There's a special app, called Config Server,
+that gives out these settings to all the other small apps when they ask for it.
+If there are any secret settings, like passwords, I would make sure they are scrambled up so
+no one can easily see them. This way, all microservices can easily get updated settings they
+need to work right, and the important stuff stays safe
+
+How does Spring Boot support internationalization (i18n)?
+Spring Boot supports internationalization (i18n) by showing our application's text in different
+languages by using property files.
+We put these files in a folder named src/main/resources. Each file has a name like
+messages_xx.properties, where xx stands for the language code. Spring Boot uses these files
+to pick the right language based on the user's settings. We can set rules on how to choose
+the user's language with something called LocaleResolver.
+This way, our application can speak to users in their language, making it more user-friendly
+for people from different parts of the world.
+
+Explain the process of creating a Docker image for a Spring Boot application.
+To make a Docker image for a Spring Boot app, we start by writing a Dockerfile. This file tells
+Docker how to build our app's image.
+We mention which Java version to use, add our app's .jar file, and specify how to run our
+app.
+After writing the Dockerfile, we run a command docker build -t myapp:latest . in the
+terminal.
+This command tells Docker to create the image with everything our app needs to run. By
+doing this, we can easily run our Spring Boot app anywhere Docker is available, making our
+app portable and easy to deploy.
+
+How would you manage and monitor asynchronous tasks in a Spring Boot application,
+ensuring that you can track task progress and handle failures?
+I'd integrate with a messaging system like RabbitMQ or Apache Kafka. First, I'd add the
+necessary dependencies in my pom.xml or build.gradle file. Then, I'd configure the
+connection to the message broker in my application.properties or application.yml file,
+specifying details like the host, port, and credentials.
+Next, I'd use Spring's @EnableMessaging annotation to enable messaging capabilities and
+create a @Bean to define the queue, exchange, and binding. To send messages, I'd autowire
+the KafkaTemplate and use its send or convertAndSend method, passing the message and
+destination.
+
+Your application needs to process notifications asynchronously using a message queue.
+Explain how you would set up the integration and send messages from your Spring Boot
+application.
+To manage and monitor asynchronous tasks in a Spring Boot app, I'd use the @Async
+annotation to run tasks in the background and CompletableFuture to track their progress
+and handling results or failures. For thread management, I'd configure a
+ThreadPoolTaskExecutor to customize thread settings.
+To monitor these tasks, I'd integrate Spring Boot Actuator, which provides insights into app
+health and metrics, including thread pool usage. This combination allows me to efficiently
+run tasks asynchronously, monitor their execution, and ensure proper error handling,
+keeping the app responsive and reliable
+
+How to Tell an Auto-Configuration to Back Away When a Bean Exists?
+In Spring Boot, to make an auto-configuration step back when a bean already exists, we use
+the
+@ConditionalOnMissingBean annotation. This tells Spring Boot to only create a bean if it
+doesn't already exist in the context.
+For example, if we are auto-configuring a data source but want to back off when a data
+source bean is manually defined, we annotate the auto-configuration method with
+@ConditionalOnMissingBean(DataSource.class). This ensures our custom configuration takes
+precedence, and Spring Boot's auto-configuration will not interfere if the bean is already
+defined
+
+How to Deploy Spring Boot Web Applications as Jar and War Files?
+To deploy Spring Boot web applications, we can package them as either JAR or WAR files. For
+a JAR, we use Spring Boot's embedded server, like Tomcat, by running the command mvn
+package and then java jar target/myapplication.jar.
+If we need a WAR file for deployment on an external server, we change the packaging in the
+pom.xml to <packaging>war</packaging>, ensure the application extends
+SpringBootServletInitializer, and then build with mvn package. The WAR file can then be
+deployed to any Java servlet container, like Tomcat or Jetty.
+
+How to resolve whitelabel error page in the spring boot application?
+To fix the Whitelabel Error Page in a Spring Boot app, we need to check if our URLs are
+correctly mapped in the controllers. If a URL doesn't match any controller, Spring Boot shows
+this error page.
+We should add or update our mappings to cover the URLs we are using. Also, we can create
+custom error pages or use @ControllerAdvice to handle errors globally.
+This way, instead of the default error page, visitors can see a more helpful or custom
+message when something goes wrong.
+
+How can you implement pagination in a springboot application?
+To implement pagination in a Spring Boot application, I use Spring Data JPA's Pageable
+interface.
+In the repository layer, I modify my query methods to accept a Pageable object as a
+parameter. When calling these methods from my service layer, I create an instance of
+PageRequest, specifying the page number and page size I want.
+This PageRequest is then passed to the repository method. Spring Data JPA handles the
+pagination logic automatically, returning a Page object that contains the requested page of
+data along with useful information like total pages and total elements. This approach allows
+me to efficiently manage large datasets by retrieving only a subset of data at a time.
+
+How can Spring Boot be used to implement event-driven architectures?
+Spring Boot lets us build event-driven architectures by allowing parts of our application to
+communicate through events. we create custom events by making classes that extend
+ApplicationEvent. To send out an event, we use ApplicationEventPublisher.
+Then, we set up listeners with @EventListener to react to these events. This can be done in
+realtime or in the background, making our application more modular. Different parts can
+easily talk to each other or respond to changes without being directly connected, which is
+great for tasks like sending notifications or updating data based on events, helping keep my
+code clean and manageable.
+
+Describe a scenario where a Spring Boot application needs to dynamically switch between
+multiple data sources at runtime based on the request context.
+Imagine Spring Boot application that serves users from different places, like Europe or Asia, we
+switch between databases based on where the user is from. This means if someone from Europe
+visits the app, they get data from the European database, making the content more relevant to them.
+We set this up by having a special part in the app that knows which database to use when it sees
+where the request is coming from. This way, users see information and offers that make sense for
+their region.
+
+How do you achieve logging in Spring Boot?
+In Spring Boot, logging is achieved using the built-in support for common logging libraries like
+Logback, Log4J2, or JUL (Java Util Logging). By default, Spring Boot configures Logback for us with
+sensible defaults. we can customize these settings by adding a logback.xml file in our resources
+directory to define log levels, output formats, and file destinations for different logging scenarios,
+ensuring us to capture necessary log data efficiently and clearly
+
+What is SLF4J logging?
+SLF4J (Simple Logging Facade for Java) is a logging facade that provides a simple abstraction for
+various logging frameworks like Logback, Log4J, and others. It allows developers to write logging
+code independent of the actual implementation. By using SLF4J, we can switch between different
+logging frameworks without changing our main application code. This flexibility makes it easier
+to integrate and manage logging across different parts of your application or in different
+environments.
+
+If you have to switch between Logback to Log4j, what changes are required in the code?
+To switch from Logback to Log4J in a Spring Boot application, we primarily need to change the
+dependencies in our pom.xml or build.gradle file. Remove the Logback dependencies and add
+Log4J dependencies. Also, replace the logback.xml configuration file with a log4j2.xml
+configuration file to define our logging behavior. If we are using SLF4J, no changes to the actual
+logging calls in our Java code are necessary, as SLF4J handles the abstraction.
+
+
+How do you achieve multiple DB connections in a Spring Boot app?
+To manage multiple database connections in a Spring Boot application, we can define separate
+data source configurations for each database. We can use the @Configuration annotation to
+create different configuration classes, specifying different @Bean definitions for each
+DataSource, EntityManagerFactory, and TransactionManager. Additionally, we can use the
+@Qualifier annotation to distinguish between them in our service classes. This setup allows us to
+easily connect and interact with multiple databases within the same application
+
+How does Spring Boot handle database migrations?
+Spring Boot handles database migrations using tools like Flyway or Liquibase. These tools
+manage database version control and apply incremental changes to the database schema
+automatically during application startup. We can define the required database changes in scripts
+or XML configurations, and Spring Boot ensures these migrations are executed in the correct
+order. This setup helps maintain consistency across different environments and simplifies the
+process of updating the database as the application evolves
+
+Can transaction management be externally managed in Spring Boot, or must it be within
+the application?
+In Spring Boot, transaction management can be externally managed through container-managed
+transactions in environments like Java EE application servers or microservices orchestrators.
+However, by default, Spring Boot uses application-level transaction management with the
+@Transactional annotation. External transaction management allows transactions to be
+coordinated across multiple services or systems, but it adds complexity and often requires a
+specific infrastructure, such as a transaction manager like JTA (Java Transaction API).
+
+You need to migrate an application from an embedded Tomcat to an external Tomcat
+server. What steps would you follow?
+To migrate from embedded Tomcat to an external Tomcat server, first, change the packaging type
+from JAR to WAR in our pom.xml or build.gradle. Remove the embedded Tomcat dependency
+and ensure your main class extends SpringBootServletInitializer for proper WAR deployment.
+Then, build the WAR file and deploy it to the external Tomcat server by placing it in the webapps
+folder or using Tomcat’s management interface for deployment.
+
+Describe the process of creating a custom Spring Boot starter. Why might this be useful?
+Creating a custom Spring Boot starter involves defining reusable libraries and configuration in a
+separate module. First, create a new Maven or Gradle project with the desired dependencies.
+Then, add auto-configuration classes annotated with @Configuration and specify them in
+spring.factories. This is useful when you want to package common functionality across multiple
+applications, simplifying integration by reducing repetitive configuration and ensuring
+consistency in settings
+
+Can you use both application.yml and application.properties in a Spring Boot project? If so,
+how are they prioritized?
+Yes, we can use both application.yml and application.properties files in a Spring Boot project. If
+both are present, Spring Boot merges their configurations. The properties defined in
+application.properties have a higher priority and will override any matching keys in
+application.yml. This flexibility allows us to use both YAML and properties formats for different
+parts of your configuration, taking advantage of YAML's hierarchical data structure and
+properties' simplicity.
+
+How do you configure and connect multiple databases in a Spring Boot application?
+To configure and connect multiple databases in a Spring Boot application, define separate
+DataSource, EntityManager, and TransactionManager beans for each database. Use the
+@Primary annotation on one of the DataSource beans to designate it as the default. Each
+configuration set should be defined in its own @Configuration class and differentiated with
+@Qualifier annotations when injecting. This setup allows precise control over database
+operations, ensuring the correct database is used for each data access operation.
+
+Your application is experiencing session loss when deployed across multiple servers. What
+strategy would you implement to manage sessions effectively?
+To manage sessions effectively across multiple servers and prevent session loss, implement a
+centralized session store using technologies like Redis, Hazelcast, or a JDBC-based store through
+Spring Session. This approach ensures that session data is shared and synchronized across all
+servers, maintaining user session continuity regardless of which server handles the request.
+Configure Spring Session in your application to handle the serialization and retrieval of session
+data from the centralized store, enhancing reliability and user experience in a distributed
+environment.
+
+Can you list some of the endpoints provided by Spring Boot Actuator?
+Spring Boot Actuator provides several built-in endpoints to help monitor and manage your
+application. Key endpoints include /health for health status, /info for general app information,
+/metrics for various metrics like memory usage and HTTP traffic, /env for the current
+environment properties, and /loggers for viewing and changing logging levels. These endpoints
+are crucial for real-time monitoring and provide vital diagnostics that aid in the effective
+management of applications in production.
+
+How do you customize Actuator endpoints?
+To customize Actuator endpoints in Spring Boot, we can modify their configuration in the
+application.properties or application.yml file. we can enable or disable specific endpoints, change
+their access paths, or restrict their exposure to certain user roles. Additionally, we can add
+custom endpoints by creating a component with @Endpoint, @ReadOperation,
+@WriteOperation, or @DeleteOperation annotations to define custom management operations
+tailored to your application's needs.
+
+Can you use custom validators in Spring Boot? How?
+Yes, we can use custom validators in Spring Boot by implementing the Validator interface. First,
+create a class that implements this interface and define the validation logic in the validate()
+method. Then, in our controller, we can inject this custom validator and use it by calling
+validate() method explicitly, or configure it to be used automatically with specific data types or in
+certain contexts. This approach allows us to enforce complex validation rules tailored to our
+application's needs
+
+What should be considered when using Spring Boot DevTools in production environments?
+Using Spring Boot DevTools in production environments is generally discouraged due to its
+performance implications and potential security risks. DevTools is designed for development,
+offering features like automatic restarts and enhanced session persistence that are not suitable
+for production, where stability and security are paramount. If DevTools is accidentally included in
+a production build, it can expose sensitive application details and consume additional resources.
+Always ensure that DevTools dependencies are excluded from production builds to mitigate
+these risks.
+
+Have you encountered any real-world bugs due to the incorrect choice between PUT and
+POST? How did you resolve it?
+Using POST instead of PUT can lead to duplicate data creation if the endpoint is called multiple
+times. To resolve such issues, one would switch to using PUT where appropriate to ensure
+idempotence, meaning subsequent identical requests won't create extra data but will update the
+existing record. Additionally, implementing checks for existing data before creation can prevent
+duplicates when using POST.
+
+If you have multiple beans of the same type in your Spring application context, how would
+you handle conflicts using @Autowired and @Qualifier? What potential issues could arise if
+you mix these annotations incorrectly?
+In Spring, if we have multiple beans of the same type and use @Autowired without specifying
+which bean to inject, Spring will throw a NoUniqueBeanDefinitionException due to ambiguity. To
+resolve this, use @Qualifier alongside @Autowired to specify the exact bean by its name.
+Incorrectly mixing these annotations, like using a wrong qualifier name or omitting @Qualifier
+when needed, can lead to the wrong bean being injected or runtime errors, disrupting the
+application's behavior and dependency management
+
+Assume your cache is stale due to frequent updates in the underlying data source. How
+would you determine when to refresh the cache, and what strategies would you use to ensure
+minimal disruption to users?
+To handle frequent updates in the underlying data source and minimize cache staleness, employ
+a cache invalidation strategy. One effective method is to use event-driven cache refreshes:
+whenever data is updated in the database, an event triggers the cache to refresh. This ensures
+that the cache always reflects the most current data. Additionally, consider implementing a timeto-live (TTL) policy for
+cache entries to automatically refresh data at regular intervals, balancing
+between freshness and performance.
+
+If you discover a critical bug shortly after deployment, what processes do you have in place
+to roll back the changes quickly and safely?
+If a critical bug is discovered after deployment, a rollback process is initiated to revert to the
+previous stable version of the application. This is typically done using version control systems and
+deployment tools that support rollback capabilities. The process involves stopping the current
+deployment, activating the last known good configuration, and restarting the services.
+Continuous monitoring and automated alerts ensure that any degradation in service is quickly
+detected and addressed, minimizing downtime and impact on users.
+
+Where are you storing your artifacts?
+Artifacts are typically stored in a repository management system, such as Artifactory or Nexus,
+which acts as a centralized storage and management solution for binary artifacts. These systems
+help in versioning, tracking, and organizing the artifacts generated from builds. They also ensure
+that artifacts are available for deployment to various environments and facilitate sharing across
+different development teams, improving efficiency and consistency in the build and release
+process.
+
+If your artifact storage becomes inaccessible, what contingency plans do you have to
+ensure your deployment process can continue?
+If the primary artifact storage becomes inaccessible, a contingency plan involves having a
+secondary, redundant artifact repository configured as a fallback. This backup should be regularly
+synchronized with the primary to ensure it has the latest versions of all artifacts. Additionally,
+ensuring that critical artifacts are cached locally or in a distributed cache can provide temporary
+relief during outages. These strategies ensure deployments can continue without significant
+delays, maintaining operational continuity.
+
+How will you make two ambiguity URL working in spring boot without changing the HTTP
+method type and no change will be accepted in URL as well?
+In Spring Boot, we can resolve ambiguous URLs without changing the HTTP method or URL by
+using request parameters or path variables. For example, define two methods with the same URL
+but add different query parameters like @RequestParam. This allows both URLs to exist, but they
+are distinguished by the presence of certain parameters. This way, we don’t need to modify the
+URL or HTTP method.

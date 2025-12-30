@@ -616,8 +616,132 @@ in static binding, the actual object is not used, whereas the actual object is u
 Private, static, and final methods show static binding because they cannot be overridden, whereas except private, static, and final methods,
 other methods show dynamic binding because they can be overridden.
 
+What does mean by polymorphism in Java?
+Polymorphism in Java means that the same piece of code can do different things depending
+on what kind of object it's dealing with. For example, if you have a method called "draw," it
+might make a circle for a Circle object and a square for a Square object.
 
+How does method overloading relate to polymorphism?
+Method overloading is using the same method name with different inputs in the
+same class. It's a simple way to use polymorphism when you're writing your code.
 
+What is dynamic method dispatch in Java?
+Dynamic method dispatch is a way Java decides which method to use at runtime
+when methods are overridden in subclasses. It ensures the correct method is used
+based on the type of object.
+
+Can constructors be polymorphic?
+No, constructors cannot be polymorphic. We can have many constructors in a class
+with different inputs, but they don’t behave differently based on the object type like
+methods do
+
+Can you provide examples of when to use an interface versus when to extend a
+class?
+Use an interface when we want to list the methods a class should have, without
+detailing how they work. Use class extension when we want a new class to inherit
+features and behaviors from an existing class and possibly modify them.
+
+What is a static method in an Interface, and how is it different from a default
+method in an interface?
+A static method in an interface belongs to the interface itself and cannot be
+overridden. A default method provides a default implementation for classes that
+implement the interface, and it can be overridden.
+
+Is it possible to overload methods that differ only by their return type in Java?
+In Java, we cannot overload methods just by changing their return type. The
+methods must differ by their parameters for overloading to be valid.
+
+You have two interfaces with the same default method signature but different method bodies.
+How would you resolve this diamond problem when a class implements both interfaces?with example?
+When a class implements two interfaces that define the same default method signature,
+the compiler forces you to explicitly resolve the conflict.
+
+class MyClass implements InterfaceA, InterfaceB {
+    // Compilation error!
+}
+❌ Compilation error:
+class MyClass inherits unrelated defaults for greet()
+from types InterfaceA and InterfaceB
+
+Solution 1: Override the method and choose one implementation
+class MyClass implements InterfaceA, InterfaceB {
+
+    @Override
+    public void greet() {
+        InterfaceA.super.greet(); // choose InterfaceA's version
+    }
+}
+Solution 2: Provide your own implementation
+class MyClass implements InterfaceA, InterfaceB {
+
+    @Override
+    public void greet() {
+        System.out.println("Hello from MyClass");
+    }
+}
+Solution 3: Combine both default implementations
+class MyClass implements InterfaceA, InterfaceB {
+
+    @Override
+    public void greet() {
+        InterfaceA.super.greet();
+        InterfaceB.super.greet();
+        System.out.println("Hello from MyClass (combined)");
+    }
+}
+
+How are Static Methods in interfaces different from Default Methods in Java 8?
+In Java 8, static methods in interfaces allow the interface to define methods that can be called on the
+interface itself, not on instances of classes that implement the interface. This is similar to static
+methods in classes. Conversely, default methods are methods within an interface that have an
+implementation. They can be called on instances of classes that implement the interface, providing
+default behavior without requiring the implementing class to override the method. Static methods
+help in utility or helper functionality, while default methods aid in enhancing interfaces without
+breaking existing implementations.
+Static methods in interfaces:
+Are not inherited
+Cannot be overridden
+Are accessed via InterfaceName.method()
+Use cases of static method->
+Utility or helper methods related to the interface
+Factory methods to create instances of implementing classes
+Common Validation Logic for Implementations->If all implementations need shared validation,
+static methods provide a clean solution.
+Default Behavior Support for Default Methods->Static methods are often used internally by default methods to avoid duplication.
+
+ What are method references in Java 8, and how do they relate to Lambda Expressions?
+Method references in Java 8 are a shorthand notation of lambda expressions that refer directly to
+methods by their names. They serve as a clean and concise way to express instances where lambda
+expressions simply call existing methods. For example, instead of using a lambda like (x) ->
+System.out.println(x), you can use the method reference System.out::println. This syntax directly
+points to the println method, improving code clarity and reducing verbosity when interfacing with
+functional interfaces.
+
+How can a Lambda expression access variables outside its scope? What is the concept behind
+it?
+Lambda expressions in Java can access variables outside their scope, specifically final or effectively
+final variables from their enclosing scope. An effectively final variable is one that is not modified after
+initialization. This restriction ensures that the lambda expression is state-consistent and can be safely
+called multiple times without side effects that could arise from modifying external variables. This
+capability allows lambda expressions to capture and use local variables in a functional-style
+programming approach, enhancing their utility and flexibility
+
+What is the difference between Optional.of() and Optional.ofNullable()?
+In Java, Optional.of() and Optional.ofNullable() are methods used to create Optional objects, but
+they handle null values differently. Optional.of(value) requires a non-null value and throws a
+NullPointerException if passed a null. This is suitable when you are certain the value is not null. In
+contrast, Optional.ofNullable(value) is safe for use with values that might be null. It returns an empty
+Optional if the value is null, thus avoiding any exceptions.
+
+How does the internal working of Stream.sorted() differ when using natural ordering versus
+custom comparator?
+The Stream.sorted() method in Java sorts the elements of a stream either using natural ordering or a
+custom comparator. When using natural ordering, it assumes that the stream elements implement
+the Comparable interface and sorts them according to their compareTo method. With a custom
+comparator, you provide a Comparator object that defines a different sorting logic. This allows for
+flexibility in sorting based on attributes or rules that do not adhere to the natural order of the
+elements. Both methods internally use efficient sorting algorithms optimized for performance and
+stability.
 
 
 

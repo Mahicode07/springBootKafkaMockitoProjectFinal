@@ -395,6 +395,37 @@ The Collections class offers static methods that perform various operations on c
 and modifying elements. It's a part of the Java Collections Framework and serves as a utility class to ease
 collection manipulation.
 
+How does Collections.sort() work internally?
+Internally, Collections.sort() in Java uses a modified version of the MergeSort algorithm known as
+TimSort. This algorithm is efficient and stable, meaning it preserves the order of equal elements. It
+breaks the list into smaller parts, sorts each part, and then merges them back together in sorted
+order, ensuring that the overall list is ordered. This method is optimized for performance and
+reliability, making it suitable for sorting both primitive types and objects based on natural ordering or
+a specified comparator.
+
+What would happen if you try to sort a list containing null elements using Collections.sort()?
+If you try to sort a list containing null elements using Collections.sort(), it will throw a
+NullPointerException. This method requires all elements in the list to be non-null and comparable.
+Null elements lack a comparison order, which prevents Collections.sort() from determining their
+position relative to other elements. To sort such lists, you must either remove null elements or use a
+custom comparator that explicitly handles nulls
+
+Can you sort a list of custom objects using Collections.sort() without providing a Comparator?
+Yes, you can sort a list of custom objects using Collections.sort() without providing a Comparator,
+but only if the custom objects implement the Comparable interface. This interface requires defining
+a compareTo method, which specifies the natural ordering of the objects. If the objects do not
+implement Comparable, or if the compareTo method is not implemented, attempting to sort without
+a Comparator will result in a ClassCastException.
+
+What is the difference between using Collections.sort() and Stream.sorted() in Java 8+?
+The difference between Collections.sort() and Stream.sorted() in Java 8+ lies in how they handle
+data and output. Collections.sort() modifies the list it sorts directly, changing the original data
+structure. On the other hand, Stream.sorted() operates on a stream of data and returns a new
+sorted stream without altering the original source. This makes Stream.sorted() more flexible and
+suitable for functional programming styles, as it supports chain operations and doesn't affect the
+original data
+
+
 e.g List<String> list = Arrays.asList("Banana", "Apple", "Cherry");
 
 1. Sorting and Reversing

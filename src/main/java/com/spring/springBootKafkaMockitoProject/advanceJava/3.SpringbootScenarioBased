@@ -398,3 +398,57 @@ To ensure backward compatibility in a microservices architecture using Spring Bo
 6. Database Schema Management:
 - Use database migration tools like Flyway or Liquibase to manage schema changes in a backward-compatible manner.
 - Avoid dropping columns or tables that are still in use by older versions of the microservices
+
+Now let's say you need to migrate an existing application to use a new database schema in
+Spring Boot without downtime. How would you plan and execute this migration?
+To migrate an existing Spring Boot application to a new database schema without downtime, I
+would use a phased approach. First, introduce the new schema alongside the old one and modify
+the application to write to both schemas simultaneously. Gradually transfer the existing data to
+the new schema. Once verified, switch read operations to the new schema. Finally,
+decommission the old schema after ensuring everything functions correctly with the new setup.
+
+Can you talk about a time when a misconfiguration in the properties file caused an issue in
+production?
+Once, a misconfiguration in the properties file caused an issue in a production environment by
+incorrectly setting the database connection timeout too low. This led to frequent database
+connection drops under high load, affecting application performance and user experience. The
+issue was identified through error logs and monitoring tools. The resolution involved correcting
+the timeout setting in the properties file and redeploying the application, which restored stability
+and performance to the system.
+
+How do you manage configuration changes for your Dockerized Spring Boot application
+across different environments (development, testing, production)?
+To manage configuration changes for a Dockerized Spring Boot application across different
+environments, use environment variables. In Docker, we can set these variables in the dockercompose.yml or pass them directly in the Docker run command. This method allows us to keep
+sensitive and environment-specific settings (like database URLs and credentials) out of our
+application's codebase. Configurations can be adjusted dynamically when starting containers,
+ensuring flexibility and security across environments.
+
+You need to integrate Kafka to handle real-time notifications in a social media application
+built with Spring Boot. How would you set up and configure this integration?
+To integrate Kafka for real-time notifications in a Spring Boot application, we can start by adding
+the Spring Kafka dependency in our project’s build file (pom.xml or build.gradle). Configure Kafka
+properties in the application.properties or application.yml file, specifying the broker address,
+producer, and consumer settings. Implement Kafka producer and consumer services using
+@EnableKafka. The producer service sends messages to a Kafka topic, while the consumer
+service listens to the topic and processes incoming messages. This setup ensures efficient
+handling of real-time events in your application.
+
+How would you ensure that your custom starter doesn’t interfere with Spring Boot's own
+auto-configuration?
+To ensure that our custom starter doesn't interfere with Spring Boot's auto-configuration, use
+conditional annotations such as @ConditionalOnMissingBean, @ConditionalOnClass, and
+@ConditionalOnProperty. These annotations prevent our configurations from being applied if
+certain classes, beans, or properties are already defined by Spring Boot's default configuration.
+Place these conditions in your auto-configuration classes. This approach ensures that our starter
+adds functionality only when it doesn't conflict with what's already configured, maintaining
+compatibility and preventing configuration clashes.
+
+Suppose you need to ensure zero downtime deployments for a Spring Boot e-commerce
+application. What approach would you take?
+For zero downtime deployments in a Spring Boot e-commerce application, I recommend using a
+blue-green deployment strategy. This approach involves having two identical production
+environments (blue and green). Deploy the new version to the green environment while the blue
+environment remains active. After testing the green environment to ensure it's functioning
+properly, switch traffic from blue to green. This method minimizes downtime and risk by
+ensuring there is always a live environment available to users

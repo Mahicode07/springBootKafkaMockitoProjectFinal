@@ -1420,6 +1420,78 @@ Work-stealing->	Yes	Internally /yes, via ForkJoinPool
 Blocking->	Often uses join() (can block)	/Non-blocking (encouraged), supports callbacks
 Composition->	Manual joining of results	/Easily compose pipelines with thenApply(), thenCombine()
 Exception Handling->	Manual	/Built-in with exceptionally(), handle() etc.
+
+What is exchanger class
+The Exchanger class in Java is a synchronization point at which threads can pair and
+swap elements within pairs. Each thread presents some object on exchange and
+receives another object in return from another thread.
+
+What is reflection in java?
+Reflection in Java is a capability to inspect and modify the runtime behavior of
+applications. It allows programs to manipulate internal properties of classes,
+methods, interfaces, and dynamically call them at runtime.
+
+You need to implement a feature that requires concurrent processing of tasks. What Java
+constructs would you use to ensure efficient and safe execution?
+To implement concurrent processing of tasks efficiently and safely, you can use Java's ExecutorService
+along with a thread pool. It manages multiple threads, executing tasks concurrently without
+overloading the system. For thread safety, you can use synchronized blocks or ReentrantLock to
+protect shared resources. Additionally, using ConcurrentHashMap or other thread-safe collections
+ensures data consistency during concurrent operations. This approach ensures scalability and safe
+task execution.
+
+How many threads will open for parallel streams and how does parallel stream internally
+work?
+Parallel streams in Java use the default ForkJoinPool, which typically has a number of threads
+equal to one less than the number of available processors (cores) on the machine. Internally,
+parallel streams split the data into smaller chunks, which are processed in parallel by these
+threads. This division and parallel processing help in utilizing the CPU effectively, leading to
+improved performance on tasks suitable for parallelization, such as large collections or arrays.
+
+Use CountDownLatch for events like starting a part of the
+application only after certain services have been initialized. CyclicBarrier is suitable for scenarios
+where tasks are split into steps and each step requires synchronization between threads, like in a
+multi-stage computation.
+
+Explain the internal working of ThreadPoolExecutor and how it manages tasks in its
+different states.
+The ThreadPoolExecutor in Java manages tasks using a pool of worker threads. When a task is
+submitted, the executor first checks if there are idle threads to execute it. If not, and the core
+pool size is not reached, it creates a new thread. If the pool is full, tasks are placed in a queue.
+Once the queue fills up, new tasks are handled by a rejection policy. The executor moves
+between states like RUNNING, SHUTDOWN, and TERMINATED to manage task lifecycle and
+resource usage
+
+Can you describe the process of how memory is allocated in the heap and whether the
+heap size is fixed?
+In Java, memory is allocated in the heap for all objects created during runtime. The heap size is
+not fixed; it can be adjusted with JVM options (-Xms for initial size and -Xmx for maximum size).
+As the application runs, the heap grows or shrinks depending on memory needs, with garbage
+collection reclaiming unused memory. This dynamic allocation helps manage memory efficiently
+and ensures the application uses only the necessary resources.
+
+Can you use the synchronized keyword inside a Lambda expression?
+No, you cannot directly use the synchronized keyword inside the body of a lambda expression in
+Java. Lambda expressions are meant to be short, stateless, and concise blocks of code. They do not
+have an intrinsic lock object to synchronize on, unlike methods in a class. If synchronization is
+necessary within a lambda, you must handle it externally, such as synchronizing on an external object
+or using higher-level concurrency utilities provided by Java.
+
+What are use cases of ThreadLocal variables in Java?
+ThreadLocal variables in Java are used to maintain data that is unique to each thread, providing a
+thread-safe environment without requiring synchronization. Common use cases include maintaining
+user sessions in web applications, where each HTTP request is handled by a different thread, or
+storing data that is specific to a particular thread's execution context, such as a transaction ID or
+temporary user credentials. This ensures that each thread has its own instance of a variable, isolated
+from other threads.
+
+What is the RejectedExecutionHandler in ThreadPoolExecutor? How can you customize it?
+The RejectedExecutionHandler in a ThreadPoolExecutor in Java is an interface that handles tasks that
+cannot be executed by the thread pool, typically when the pool is fully utilized and the task queue is
+full. You can customize it by implementing this interface and defining your own rejectedExecution
+method. This method decides what to do with the rejected tasks, such as logging them, running
+them on a different executor, or implementing a backoff and retry mechanism. This customization
+allows for more robust handling of task overflows in applications.
 =======================================================================================================================================
 Multithreading Interview question->
 1)Ping-Pong Example with wait() and notify()->

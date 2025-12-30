@@ -229,14 +229,36 @@ C vs Java->
     C language supports virtual keywords.
     Whereas virtual keywords are not supported by Java.
 
+Can a Java application be run without installing the JRE?
+We can't run a Java application without having the JRE (Java Runtime Environment)
+because it has the essential tools and libraries the application needs to work. But,
+there's a cool tool called jlink in newer Java versions that lets us bundle our Java
+application with its own little version of the JRE
 
+Which is faster to access between heap and stack, and why?
+The stack is faster to access because it stores method calls and local variables in a
+Last-In-First-Out (LIFO) structure. The heap, used for dynamic memory allocation
+(objects), is slower due to its more complex management.
 
+What will happen if we declare don’t declare the main as static?
+If I don't declare the main method as static in a Java program, the JVM won't be able to
+launch the application.
+As aresult, the program will compile, but it will fail to run, giving an error like "Main
+method is not static in class myClass, please define the main method as: public static
+void main(String[] args)."
 
+jvm size increase?
+“I can increase JVM size by increasing heap using -Xmx/-Xms or MaxRAMPercentage.
+In ECS, I also need to raise the task/container memory limit because the JVM is constrained by cgroups.
+And I leave headroom for non-heap/native memory like metaspace, thread stacks, and direct buffers to prevent container OOM kills.”
 
-
-
-
-
+How would you improve the scalability and memory efficiency of a large Java application?
+To improve the scalability and memory efficiency of a large Java application, optimize resource
+usage by using efficient data structures, reduce object creation through pooling, and implement
+caching for frequently accessed data. Use lazy initialization and remove unnecessary references
+to avoid memory leaks. Leverage multithreading for better concurrency and scale horizontally
+with distributed systems. Adjust JVM settings, such as heap size and garbage collection tuning, to
+ensure optimal memory management as the application grows.
 
 
 

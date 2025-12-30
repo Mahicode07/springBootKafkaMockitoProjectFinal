@@ -59,6 +59,12 @@ Sometimes we may not know the exact time in a program from where we will not req
 In such situations, we can write the code inside the finalize() method as a backup to free the resources if they
 have not been released yet.
 
+Discuss the difference between finalize() and finally. Under what circumstances
+might finalize() not get called in a Java application?
+finalize() is called by the garbage collector before an object is destroyed, while finally
+is used in a try-catch block to execute code regardless of exceptions. finalize() may
+not get called if the garbage collector doesn't run or the JVM shuts down
+
 ------------------
 object class->
 equals()
@@ -383,3 +389,66 @@ virtualThread.start();
 Virtual threads maps to platforms threads when it does real work
 and os thread are not allocated to platform thread until real works needs to be executed.
 virtual thread resides in java heap memory.
+====================================================================================================================
+Is there a scenario where autoboxing and unboxing could cause a NullPointerException?
+A NullPointerException can occur if you unbox a null object; for example, assigning
+null to an Integer and then using it in a context where an int is expected.
+
+Can we write multiple finally blocks in Java?
+No, each try can only have one finally block. Multiple finally blocks are not allowed
+within a single try-catch-finally structure.
+
+What is the purpose of @Retention?
+The @Retention annotation in Java specifies how long annotations should be retained in the program
+lifecycle. It can take three values: SOURCE, CLASS, and RUNTIME. SOURCE keeps the annotation only
+in the source code, CLASS retains it in the compiled bytecode but not at runtime, and RUNTIME
+keeps the annotation available at runtime for reflection. This is useful for controlling whether
+annotations are accessible during different phases of execution.
+
+ What does the @Target annotation do?
+The @Target annotation in Java specifies where an annotation can be applied. It restricts the usage
+of an annotation to specific program elements like classes, methods, fields, or constructors. For
+example, using @Target(ElementType.METHOD) ensures the annotation can only be used on
+methods. This helps prevent accidental misuse of annotations and improves code clarity by clearly
+defining where they are applicable in your code.
+
+What is the difference between Class.forName() and ClassLoader.loadClass()?
+Class.forName() loads a class and also initializes it by executing any static blocks or static variable
+initializations. In contrast, ClassLoader.loadClass() only loads the class without initializing it until it's
+needed later. Use Class.forName() when you need the class to be loaded and initialized immediately,
+while ClassLoader.loadClass() is useful when you want to defer initialization for performance reasons
+or when initializing the class isn't immediately required.
+
+What happens if a final field is changed using reflection?
+If a final field is changed using reflection in Java, the change can bypass compile-time restrictions,
+allowing the field to be modified. However, this breaks the immutability contract, and the behavior
+may not be predictable. For example, some compilers or JVM optimizations might still assume the
+field is immutable, leading to inconsistent behavior. To modify a final field using reflection, you must
+disable access checks with setAccessible(true), but this should be avoided in practice due to potential
+risks.
+
+What is the significance of the Enum<?> declaration in the Enum class?
+The Enum<?> declaration in the Enum class signifies that it is a generic class, where ? is a wildcard
+representing any specific enum type. This allows the Enum class to be type-safe and work with any
+enumerated type while still maintaining flexibility. The Enum<?> declaration ensures that the class
+can handle various enum types without knowing their specific names, enabling consistent behavior
+across all enum types in Java
+
+Explain the difference between peek() and map(). In what scenarios should peek() be used with
+caution?
+In Java's Stream API, peek() and map() both operate on elements of a stream, but they serve
+different purposes. map() transforms each element and returns a new stream containing the
+transformed elements. peek(), on the other hand, is mainly for debugging and allows you to perform
+operations on each element without altering them, returning the same stream. Caution is advised
+with peek() because its side effects can be unpredictable if used for purposes other than debugging,
+such as altering the state of objects, which can lead to inconsistent results in the stream's pipeline
+execution.
+
+ What is the difference between NoClassDefFoundError and ClassNotFoundException?
+The difference between NoClassDefFoundError and ClassNotFoundException in Java centers on when
+these errors occur. ClassNotFoundException is thrown when the Java Virtual Machine (JVM) cannot
+find a class at runtime that was available at compile time, typically because it's not available on the
+classpath. This is often encountered when using methods like Class.forName(). On the other hand,
+NoClassDefFoundError occurs when the JVM finds a class at compile time but not during runtime,
+usually due to issues like a class failing to load because of static initialization failure or changes in
+classpath after compilation.

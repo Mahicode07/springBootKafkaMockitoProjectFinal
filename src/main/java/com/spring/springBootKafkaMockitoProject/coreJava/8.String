@@ -6,6 +6,10 @@ public final class String
 The CharSequence is an interface that is used to represent the sequence of characters.
 String, StringBuffer, and StringBuilder class implement it.
 
+How Are Strings Represented in Memory?
+In Java, strings are represented in memory as objects of the String class, which internally uses a
+character array to store the string data
+
 To handle string data in Java, we need an object of string class.
 Basically, there are three ways to create a string object in Java.
 By string literal.

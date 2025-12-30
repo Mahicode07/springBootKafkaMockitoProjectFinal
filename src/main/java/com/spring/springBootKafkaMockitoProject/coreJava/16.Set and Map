@@ -202,6 +202,15 @@ When you need elements to be sorted
 You need efficient range-based queries
 You want to frequently access min, max, floor, ceiling, etc.
 Avoid duplicates with automatic sorting
+
+
+How does TreeSet sort elements when it stores objects and not wrapper classes?
+When a TreeSet stores objects that are not wrapper classes, it uses natural ordering provided by the
+object's Comparable implementation, if the class implements the Comparable interface. The
+compareTo() method in the object defines how to sort the elements. Alternatively, if the objects
+don't implement Comparable, you can provide a custom Comparator when creating the TreeSet,
+which specifies how the elements should be ordered. Without this, trying to store unsorted objects
+would result in a runtime error
 =======================================================================
 Map->
 key-value pair based data structure.
@@ -658,3 +667,20 @@ Order of keys	No guarantee	Maintained (ascending)
 Comparator support	❌	✅
 Range views	❌	✅ (headMap, tailMap, subMap)
 Methods	Basic map methods	Extended with sorted capabilities
+
+What would happen if you override only the equals() method and not hashCode() in a custom
+key class used in HashMap?
+If you override only the equals() method without overriding hashCode() in a custom key class used in
+a HashMap, you'll run into problems. Java requires that equal objects must have the same hash code.
+If they don’t, the HashMap might not find the object even though it's there. This inconsistency can
+lead to duplicate keys and unpredictable behavior, as the HashMap uses the hash code to locate
+keys. Always override both methods to ensure correct behavior.
+
+What is the difference between HashMap and IdentityHashMap in terms of how they handle
+keys?
+The main difference between HashMap and IdentityHashMap is how they handle key comparison.
+HashMap uses the equals() method and hashCode() to determine if two keys are the same, which
+checks for logical equality. In contrast, IdentityHashMap uses == for key comparison, which checks
+for reference equality. This means IdentityHashMap considers two keys equal only if they are exactly
+the same object, not merely equal objects. This makes IdentityHashMap suitable for identity-based
+key operations.

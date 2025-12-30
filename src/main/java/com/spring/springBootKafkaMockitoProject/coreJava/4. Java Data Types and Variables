@@ -193,6 +193,17 @@ Constants in Java->
     you must assign its value at the time of the declaration.
     If you define a constant with static and final keyword, you can also initialize it in the static initialization block.
 
+What are enums in Java and how are they useful?
+Enums in Java are special types used to define a set of fixed constants, like days of the week or
+directions (NORTH, SOUTH, etc.). They are useful because they make the code more readable and
+prevent errors by limiting the possible values for a variable. Instead of using random numbers or
+strings, enums ensure only predefined values are used, improving code clarity and safety
 
+What is the diamond operator, and how does it work?
+The diamond operator in Java, introduced in Java 7, simplifies the notation of generics by reducing
+the need to duplicate generic type parameters. For instance, instead of writing List<String> list = new
+ArrayList<String>();, you can use the diamond operator: List<String> list = new ArrayList<>();. The
+compiler infers the type parameter String for the ArrayList based on the variable's declared type,
+making the code cleaner and easier to read.
 
 

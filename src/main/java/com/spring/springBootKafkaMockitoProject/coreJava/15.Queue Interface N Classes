@@ -9,6 +9,14 @@ Queue Interface is present in java.util package.
   Unlike regular FIFO queues, elements in a PriorityQueue are ordered based on their priority
   (natural ordering or a custom comparator).
 
+Describe a scenario where you used a PriorityQueue, and explain why it was chosen over other
+types of queues.
+I used a PriorityQueue in a scenario where I needed to manage tasks by their priority, not just by the
+order they arrived. This type of queue helped in automatically sorting tasks such that the most
+critical ones were handled first. Unlike regular queues that process tasks in the order they come
+(FIFO), PriorityQueue sorts them based on their urgency, making it ideal for situations where some
+tasks are more important than others.
+
  Key Characteristics:
  Not FIFO: Order is determined by priority, not insertion.
  Null elements not allowed.->Inserting null will throw NullPointerException.
