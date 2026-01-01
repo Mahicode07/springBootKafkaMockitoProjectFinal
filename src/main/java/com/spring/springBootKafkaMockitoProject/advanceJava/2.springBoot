@@ -553,3 +553,68 @@ using request parameters or path variables. For example, define two methods with
 but add different query parameters like @RequestParam. This allows both URLs to exist, but they
 are distinguished by the presence of certain parameters. This way, we don’t need to modify the
 URL or HTTP method.
+
+how to create custom annotation in spring boot?
+To create a custom annotation in Spring Boot, we define a new annotation interface using the
+@interface keyword. We can specify retention policies and target elements using meta-annotations
+like @Retention and @Target. After defining the annotation, we can create an aspect or a
+component that processes this annotation using Spring AOP or custom logic. This allows us to
+add specific behaviors or configurations to methods or classes annotated with our custom
+annotation, enhancing modularity and reusability in our application.
+What is a Custom Annotation?
+An annotation is a special interface that starts with @.
+Custom annotations allow you to define your own annotations for configuration, validation, documentation, or behavior control.
+
+import java.lang.annotation.*;
+
+@Target(ElementType.METHOD)          // Where it can be used
+@Retention(RetentionPolicy.RUNTIME) // Available at runtime
+public @interface LogExecutionTime {
+    String value() default "";
+}
+
+Common @Target values
+TYPE → class, interface
+METHOD
+FIELD
+PARAMETER
+CONSTRUCTOR
+ANNOTATION_TYPE
+
+Common @Retention values
+SOURCE → discarded by compiler
+CLASS → in .class file, not runtime
+RUNTIME → accessible via reflection
+
+Using the Custom Annotation
+public class Service {
+
+    @LogExecutionTime("Important method")
+    public void process() throws InterruptedException {
+        Thread.sleep(500);
+    }
+}
+
+Reading the Annotation (Reflection)
+import java.lang.reflect.Method;
+
+public class AnnotationProcessor {
+
+    public static void main(String[] args) throws Exception {
+        Method method = Service.class.getMethod("process");
+
+        if (method.isAnnotationPresent(LogExecutionTime.class)) {
+            LogExecutionTime annotation =
+                    method.getAnnotation(LogExecutionTime.class);
+
+            System.out.println("Annotation value: " + annotation.value());
+        }
+    }
+}
+
+use cases->
+1. Logging and Monitoring: Measure method execution time.
+2. Validation: Annotate fields for custom validation logic.
+3. Configuration: Mark methods or classes for special configuration handling.
+4. Security: Indicate methods that require specific security checks.
+
