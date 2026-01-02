@@ -18,3 +18,880 @@ where TestClass1 and TestClass2 are the test classes you created in step 1.
 3. In the test suite class, you can also include other test suites by adding them to the @SuiteClasses annotation.
 4. Run the test suite class as a JUnit test to execute all the test cases in the included test classes.
 ============================================================================================================================================================
+What is JUnit?
+JUnit is a popular open-source testing framework for Java programming language. It is used to write and run unit tests, which are small,
+isolated tests that verify the behavior of individual components or methods in a software application.
+JUnit provides annotations, assertions, and test runners to facilitate the creation and execution of tests,
+making it easier for developers to ensure the correctness and reliability of their code.
+============================================================================================================================================================
+JUnit 4 vs JUnit 5 (Jupiter)?
+JUnit 4 and JUnit 5 (Jupiter) are both versions of the JUnit testing framework, but they have some key differences:
+1. Architecture: JUnit 4 has a monolithic architecture, while JUnit 5 has a modular architecture with three main components: JUnit Platform,
+JUnit Jupiter, and JUnit Vintage.
+2. Annotations: JUnit 5 introduces new annotations such as @BeforeEach, @AfterEach, @BeforeAll, and @AfterAll, which replace the JUnit 4 annotations
+ @Before, @After, @BeforeClass, and @AfterClass.
+3. Extension Model: JUnit 5 has a more flexible extension model that allows developers to create custom extensions using the Extension API.
+4. Parameterized Tests: JUnit 5 has built-in support for parameterized tests, making it easier to run the same test with different inputs.
+5. Assertions: JUnit 5 provides a more fluent and expressive API for assertions compared to JUnit 4.
+6. Compatibility: JUnit 5 is not backward compatible with JUnit 4, but JUnit Vintage allows running JUnit 4 tests on the JUnit 5 platform.
+Overall, JUnit 5 offers more features and flexibility compared to JUnit 4, making it a preferred choice for modern Java testing.
+============================================================================================================================================================
+What are assertions? Why needed?
+Assertions are statements used in unit testing to verify that a specific condition is true.
+They are essential for validating the expected behavior of the code being tested.
+Assertions help ensure that the code produces the correct output and behaves as intended.
+If an assertion fails, it indicates that there is a bug or issue in the code that needs to be addressed.
+Assertions are needed to:
+1. Validate expected outcomes: They help confirm that the code produces the expected results.
+2. Detect bugs: They help identify issues in the code by checking for conditions that should not occur.
+3. Improve code quality: They encourage developers to write testable code and ensure that the code meets its requirements.
+4. Facilitate debugging: They provide useful information when tests fail, making it easier to identify and fix issues.
+Overall, assertions are a crucial part of unit testing that helps ensure the reliability and correctness of software applications.
+assertEquals(expected, actual);
+assertTrue(condition);
+assertThrows(Exception.class, () -> method());
+============================================================================================================================================================
+How do you test exceptions in JUnit 5?
+In JUnit 5, you can test exceptions using the assertThrows() method. This method allows you to specify the type of exception you expect to be thrown
+and a lambda expression that contains the code that should throw the exception.
+Here is an example of how to test exceptions in JUnit 5:
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+public class ExceptionTest {
+    @Test
+    public void testException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            // Code that is expected to throw the exception
+            throw new IllegalArgumentException("Invalid argument");
+        });
+    }
+}
+In this example, the testException() method uses assertThrows() to verify that an IllegalArgumentException is thrown when the specified code is executed.
+If the exception is thrown as expected, the test will pass; otherwise, it will fail.
+
+You can also capture the thrown exception and perform additional assertions on it:
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+public class ExceptionTest {
+    @Test
+    public void testException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            // Code that is expected to throw the exception
+            throw new IllegalArgumentException("Invalid argument");
+        });
+        assertEquals("Invalid argument", exception.getMessage());
+    }
+}
+In this example, we capture the thrown IllegalArgumentException and assert that its message is as expected
+=============================================================================================================================================================
+Explain JUnit lifecycle annotations clearly?
+JUnit lifecycle annotations are used to define methods that should be executed at specific points in the test lifecycle.
+Here are the main lifecycle annotations in JUnit 5:
+1. @BeforeAll: This annotation is used to mark a method that should be executed once before all test methods in the test class. The method must be static.
+2. @AfterAll: This annotation is used to mark a method that should be executed once after all test methods in the test class. The method must be static.
+3. @BeforeEach: This annotation is used to mark a method that should be executed before each test method in the test class.
+4. @AfterEach: This annotation is used to mark a method that should be executed after each test method in the test class.
+Here is an example that demonstrates the use of these lifecycle annotations:
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+public class LifecycleTest {
+    @BeforeAll
+    static void setupAll() {
+        System.out.println("Before all tests");
+    }
+    @AfterAll
+    static void tearDownAll() {
+        System.out.println("After all tests");
+    }
+    @BeforeEach
+    void setup() {
+        System.out.println("Before each test");
+    }
+    @AfterEach
+    void tearDown() {
+        System.out.println("After each test");
+    }
+    @Test
+    void test1() {
+        System.out.println("Executing test 1");
+    }
+    @Test
+    void test2() {
+        System.out.println("Executing test 2");
+    }
+}
+In this example, the output will show the order of execution for the lifecycle methods and test methods:
+Before all tests
+Before each test
+Executing test 1
+After each test
+Before each test
+Executing test 2
+After each test
+After all tests
+This demonstrates how the lifecycle annotations control the execution flow of the test methods in JUnit 5.
+=============================================================================================================================================================
+use cases of each lifecycle annotations in junit?
+1. @BeforeAll:
+Use case: Setting up a database connection or initializing shared resources that are needed for all tests in the test class.
+Example: Establishing a connection to a test database before running any tests.
+2. @AfterAll:
+Use case: Cleaning up shared resources or closing connections that were established in the @BeforeAll method.
+Example: Closing the database connection after all tests have been executed.
+3. @BeforeEach:
+Use case: Initializing test data or resetting the state of objects before each test method is executed.
+Example: Creating a new instance of a class or resetting a list to an empty state before each test.
+4. @AfterEach:
+Use case: Cleaning up or resetting the state after each test method has been executed to ensure tests do not interfere with each other.
+Example: Clearing a list or resetting mock objects after each test to ensure a clean state for the next test.
+These lifecycle annotations help manage the setup and teardown processes in unit testing, ensuring that tests are isolated and do not affect each other's outcomes.
+=============================================================================================================================================================
+Common JUnit Assertions with examples?
+1. assertEquals(expected, actual):
+Use case: To check if two values are equal.
+Example:
+import static org.junit.jupiter.api.Assertions.assertEquals;
+@Test
+void testAddition() {
+    assertEquals(5, 2 + 3);
+}
+2. assertTrue(condition):
+Use case: To check if a condition is true.
+Example:
+import static org.junit.jupiter.api.Assertions.assertTrue;
+@Test
+void testCondition() {
+    assertTrue(3 > 2);
+}
+3. assertFalse(condition):
+Use case: To check if a condition is false.
+Example:
+import static org.junit.jupiter.api.Assertions.assertFalse;
+@Test
+void testCondition() {
+    assertFalse(2 > 3);
+}
+4. assertNull(object):
+Use case: To check if an object is null.
+Example:
+import static org.junit.jupiter.api.Assertions.assertNull;
+@Test
+void testNull() {
+    Object obj = null;
+    assertNull(obj);
+}
+5. assertNotNull(object):
+Use case: To check if an object is not null.
+Example:
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+@Test
+void testNotNull() {
+    Object obj = new Object();
+    assertNotNull(obj);
+}
+6. assertThrows(expectedType, executable):
+Use case: To check if a specific exception is thrown.
+Example:
+import static org.junit.jupiter.api.Assertions.assertThrows;
+@Test
+void testException() {
+    assertThrows(IllegalArgumentException.class, () -> {
+        throw new IllegalArgumentException("Invalid argument");
+    });
+}
+7. assertArrayEquals(expectedArray, actualArray):
+Use case: To check if two arrays are equal.
+Example:
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+@Test
+void testArrayEquals() {
+    int[] expected = {1, 2, 3};
+    int[] actual = {1, 2, 3};
+    assertArrayEquals(expected, actual);
+}
+These are some of the common JUnit assertions used to validate the behavior of code in unit tests.
+=============================================================================================================================================================
+explain parameterized tests in junit with example?
+Parameterized tests in JUnit allow you to run the same test method multiple times with different input values.
+This is useful for testing methods that should behave the same way for a variety of inputs.
+In JUnit 5, you can create parameterized tests using the @ParameterizedTest annotation along with
+various source annotations to provide the input values.
+Here is an example of a parameterized test in JUnit 5:
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+public class ParameterizedTestExample {
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4, 5})
+    void testIsEven(int number) {
+        boolean isEven = (number % 2 == 0);
+        if (number % 2 == 0) {
+            assertEquals(true, isEven);
+        } else {
+            assertEquals(false, isEven);
+        }
+    }
+}
+In this example, the testIsEven() method is annotated with @ParameterizedTest and uses @ValueSource to provide a set of integer values (1, 2, 3, 4, 5).
+The test method will be executed five times, once for each value in the array.
+The test checks whether each number is even and asserts the expected result.
+You can also use other source annotations like @CsvSource, @MethodSource, and @EnumSource to provide more complex input data for parameterized tests.
+=============================================================================================================================================================
+What are some common pitfalls to avoid when writing JUnit tests?
+Common pitfalls include writing tests that are too tightly coupled to the implementation, neglecting edge cases, and not cleaning up test data properly.
+Another issue is relying on external systems or resources that can make tests flaky and hard to reproduce.
+==============================================================================================================================================================
+How do you approach testing private methods in JUnit?
+Testing private methods directly is generally discouraged as it breaks encapsulation. Instead, focus on testing the public methods that use the private methods.
+If necessary, you can use reflection to access private methods, but this should be a last resort.
+Another approach is to refactor the code to move the private method into a separate class where it can be tested directly.
+=============================================================================================================================================================
+How do you handle flaky tests in JUnit?
+Flaky tests are tests that sometimes pass and sometimes fail without any changes to the code. To handle flaky tests, it's important to identify the root cause,
+which could be issues like timing problems, dependencies on external systems, or improper setup and teardown.
+ You can also improve test reliability by mocking external dependencies and ensuring that setup and teardown processes are idempotent.
+Additionally, consider using retry mechanisms or marking tests as @Disabled temporarily while investigating the issue.
+=============================================================================================================================================================
+What is the importance of code coverage in JUnit testing, and how do you measure it?
+Code coverage is a metric that indicates how much of your code is executed during testing.
+High code coverage generally means that more of your code is tested, reducing the risk of untested bugs.
+To measure code coverage in JUnit, tools like JaCoCo or Cobertura can be used. These tools provide detailed reports showing
+which parts of the code were covered by tests and which were not. However, it's important to remember that high code coverage
+alone doesn't guarantee good tests; the quality and relevance of the tests are equally important
+=============================================================================================================================================================
+What is the role of the @Tag annotation in JUnit?
+The @Tag annotation in JUnit is used to categorize and group test methods or classes.
+This allows you to filter and run specific groups of tests based on their tags.
+For example, you can tag tests as "fast", "slow", "integration", etc., and then run only the tests with a
+specific tag using the JUnit test runner or build tools like Maven or Gradle.
+Example:
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+public class TaggedTest {
+    @Test
+    @Tag("fast")
+    void fastTest() {
+        // Fast test logic
+    }
+
+    @Test
+    @Tag("slow")
+    void slowTest() {
+        // Slow test logic
+    }
+}
+In this example, the fastTest() method is tagged as "fast" and the slowTest() method is tagged as "slow".
+You can then run tests based on these tags as needed.
+=============================================================================================================================================================
+How does the @RepeatedTest annotation work in JUnit?
+The @RepeatedTest annotation in JUnit is used to indicate that a test method should be executed multiple times.
+This is useful for testing scenarios where you want to ensure consistent behavior across multiple executions,
+such as testing for flakiness or performance.
+You can specify the number of repetitions using the value attribute of the @RepeatedTest annotation.
+Here is an example:
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.RepeatedTest;
+public class RepeatedTestExample {
+    @RepeatedTest(5)
+    void testRepeatedly() {
+        // Test logic that will be executed 5 times
+        assertTrue(Math.random() < 1); // Example assertion
+    }
+}
+In this example, the testRepeatedly() method will be executed 5 times when the test suite is run.
+Each execution is independent, allowing you to verify that the test logic behaves consistently across multiple runs.
+You can also access the current repetition number and total repetitions using the RepetitionInfo parameter:
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.RepetitionInfo;
+public class RepeatedTestExample {
+    @RepeatedTest(5)
+    void testRepeatedly(RepetitionInfo repetitionInfo) {
+        int currentRepetition = repetitionInfo.getCurrentRepetition();
+        int totalRepetitions = repetitionInfo.getTotalRepetitions();
+        // Test logic that can use currentRepetition and totalRepetitions
+        assertTrue(Math.random() < 1); // Example assertion
+    }
+}
+In this enhanced example, you can use the RepetitionInfo object to get information about the current repetition and the total number of repetitions.
+=============================================================================================================================================================
+Can you explain the @Nested annotation in JUnit and its benefits?
+The @Nested annotation in JUnit is used to create nested test classes within a test class. This allows you to group related tests together in a hierarchical structure,
+making it easier to organize and manage complex test scenarios.
+Benefits of using @Nested annotation:
+1. Improved organization: Grouping related tests together helps in maintaining a clear structure, especially for large test suites.
+2. Enhanced readability: Nested classes can provide context for the tests they contain, making it easier to understand the purpose of each test.
+3. Shared setup and teardown: You can define setup and teardown methods in the outer class that apply to all nested classes,
+reducing code duplication.
+4. Logical grouping: You can create logical groupings of tests that share common characteristics or behaviors
+Here is an example of using the @Nested annotation:
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+public class NestedTestExample {
+    @Nested
+    class AdditionTests {
+        @Test
+        void testPositiveNumbers() {
+            assertEquals(5, 2 + 3);
+        }
+        @Test
+        void testNegativeNumbers() {
+            assertEquals(-5, -2 + -3);
+        }
+    }
+    @Nested
+    class SubtractionTests {
+        @Test
+        void testPositiveNumbers() {
+            assertEquals(1, 3 - 2);
+        }
+        @Test
+        void testNegativeNumbers() {
+            assertEquals(1, -2 - -3);
+        }
+    }
+}
+In this example, we have two nested classes, AdditionTests and SubtractionTests, each containing related test methods.
+This structure improves the organization and readability of the tests.
+=============================================================================================================================================================
+What is the purpose of the @Timeout annotation in JUnit?
+The @Timeout annotation in JUnit is used to specify a maximum time limit for the execution of a test method.
+If the test method exceeds the specified time limit, it will be terminated and marked as failed.
+This is useful for ensuring that tests do not run indefinitely and helps identify performance issues or infinite loops in the code being tested.
+You can specify the timeout duration using the value attribute of the @Timeout annotation, along with the time unit (e.g., seconds, milliseconds).
+Here is an example of using the @Timeout annotation:
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import java.util.concurrent.TimeUnit;
+public class TimeoutTestExample {
+    @Test
+    @Timeout(value = 2, unit = TimeUnit.SECONDS)
+    void testWithTimeout() throws InterruptedException {
+        // Simulate a long-running operation
+        Thread.sleep(3000); // This will cause the test to fail due to timeout
+        assertTrue(true);
+    }
+}
+In this example, the testWithTimeout() method is annotated with @Timeout, specifying a maximum execution time of 2 seconds.
+Since the method sleeps for 3 seconds, it will exceed the timeout limit and the test will fail.
+The @Timeout annotation helps ensure that tests complete within a reasonable time frame, improving the overall reliability and performance of the test suite.
+=============================================================================================================================================================
+How would you approach testing a method that relies on the current system time?
+When testing a method that relies on the current system time, I would use dependency injection to inject a clock or time provider into the method.
+This allows us to control the time during tests, making them deterministic and repeatable.
+Here's how I would approach it:
+Create an interface (e.g., TimeProvider) with a method to get the current time
+Implement this interface with a real implementation for production code
+Create a mock implementation for testing, allowing us to set specific times
+Inject the TimeProvider into the class or method being tested
+In tests, use the mock implementation to set the desired time
+================================================================================================================================================================
+ How would you test a method that makes an API call to an external service?
+To test a method that makes an API call to an external service, I would use the following approach:
+
+Use a mocking framework (like Mockito) to create a mock of the external service client
+Set up the mock to return predefined responses for different scenarios
+Inject the mock into the class under test
+Write tests that cover various scenarios: successful responses, error responses, timeouts, etc.
+Verify that the method handles these scenarios correctly
+=============================================================================================================================================================
+what is mockito in junit?
+Mockito is a popular mocking framework for Java that is often used in conjunction with JUnit for unit testing.
+It allows developers to create mock objects for dependencies, enabling them to isolate the unit of work being tested.
+With Mockito, you can define the behavior of mock objects, verify interactions, and simulate various scenarios without relying on actual implementations.
+This helps in writing effective and efficient unit tests by focusing on the logic of the code under test rather than its dependencies.
+=============================================================================================================================================================
+What is mocking? Stubbing? Verification?
+Mocking is the process of creating mock objects that simulate the behavior of real objects in a controlled way.
+Stubbing is the process of defining the behavior of mock objects, specifying what they should return when certain methods are called.
+Verification is the process of checking that specific interactions with mock objects occurred as expected
+during the test execution.
+=============================================================================================================================================================
+How to create a mock object in Mockito?
+To create a mock object in Mockito, you can use the Mockito.mock() method or the @Mock annotation.
+Here are two ways to create a mock object:
+1. Using Mockito.mock() method:
+import static org.mockito.Mockito.*;
+MyClass myMock = mock(MyClass.class);
+2. Using @Mock annotation:
+import static org.mockito.Mockito.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+public class MyTest {
+    @Mock
+    MyClass myMock;
+    @Before
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
+}
+In both cases, myMock is a mock object of the MyClass type that can be used in your tests.
+You can then define the behavior of the mock object using stubbing and verify interactions with it.
+=============================================================================================================================================================
+Most important Mockito annotations?
+1. @Mock: Used to create and inject mock objects.
+2. @InjectMocks: Used to create an instance of the class under test and inject the mock objects into it.
+3. @Spy: Used to create a spy object that allows you to call real methods while still being able to stub and verify interactions.
+4. @Captor: Used to create an ArgumentCaptor for capturing arguments passed to mock methods.
+5. @Before: Used to set up the test environment before each test method is executed.
+These annotations help simplify the process of creating and managing mock objects in your tests.
+=============================================================================================================================================================
+JUnit 5 integration?
+To integrate Mockito with JUnit 5, you can use the MockitoExtension provided by Mockito. This extension allows you to use Mockito annotations
+ like @Mock and @InjectMocks
+in your JUnit 5 test classes. Here is how to set it up:
+1. Add the Mockito and JUnit 5 dependencies to your project.
+2. Annotate your test class with @ExtendWith(MockitoExtension.class).
+3. Use Mockito annotations like @Mock and @InjectMocks in your test class.
+Here is an example:
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
+
+  @Mock UserRepo repo;
+  @InjectMocks UserService service;
+
+  @Test
+  void returnsUserName() {
+    when(repo.findNameById(1)).thenReturn("Mahendra");
+    assertEquals("Mahendra", service.getName(1));
+    verify(repo).findNameById(1);
+  }
+}
+In this example, the UserServiceTest class is annotated with @ExtendWith(MockitoExtension.class), allowing the use of Mockito annotations.
+The repo mock is injected into the service instance, and the test method verifies the behavior of the getName() method.
+=============================================================================================================================================================
+How to mock a final class in Mockito?
+To mock a final class in Mockito, you need to enable the inline mock maker by adding the following dependency to your project:
+For Maven:
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-inline</artifactId>
+    <version>3.11.2</version> <!-- Use the latest version -->
+    <scope>test</scope>
+</dependency>
+For Gradle:
+testImplementation 'org.mockito:mockito-inline:3.11.2' // Use the latest version
+Once you have added the dependency, you can mock final classes just like any other class:
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class FinalClassTest {
+    @Test
+    void testMockFinalClass() {
+        FinalClass finalClassMock = mock(FinalClass.class);
+        when(finalClassMock.finalMethod()).thenReturn("Mocked Response");
+        assertEquals("Mocked Response", finalClassMock.finalMethod());
+    }
+}
+In this example, FinalClass is a final class, and we are able to create a mock of it using Mockito.
+The inline mock maker allows Mockito to create mocks of final classes and methods.
+=============================================================================================================================================================
+How to mock static methods in Mockito?
+To mock static methods in Mockito, you need to use the Mockito-inline extension, which allows for mocking static methods.
+First, add the Mockito-inline dependency to your project:
+For Maven:
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-inline</artifactId>
+    <version>3.11.2</version> <!-- Use the latest version -->
+    <scope>test</scope>
+</dependency>
+For Gradle:
+testImplementation 'org.mockito:mockito-inline:3.11.2' // Use the latest version
+Once you have added the dependency, you can mock static methods using the Mockito.mockStatic() method.
+Here is an example:
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+public class StaticMethodTest {
+    @Test
+    void testMockStaticMethod() {
+        try (MockedStatic<StaticClass> mockedStatic = mockStatic(StaticClass.class)) {
+            mockedStatic.when(StaticClass::staticMethod).thenReturn("Mocked Static Response");
+            assertEquals("Mocked Static Response", StaticClass.staticMethod());
+        }
+    }
+}
+In this example, StaticClass is a class with a static method staticMethod(). We use Mockito.mockStatic() to create a mock for the static method,
+define its behavior, and verify that it returns the mocked response.
+The try-with-resources statement ensures that the static mock is closed after use.
+=============================================================================================================================================================
+when().thenReturn() vs doReturn().when()?
+The when().thenReturn() and doReturn().when() methods in Mockito are both used for stubbing method calls, but they have different use cases:
+1. when().thenReturn():
+This is the standard way to stub a method call. It is used when you want to specify the return value of a method when it is called with specific arguments.
+Example:
+when(mockedObject.method(args)).thenReturn(value);
+2. doReturn().when():
+This is used when you want to stub a method call on a spy object or when the method you are stubbing is final or void.
+It is also useful when you want to avoid calling the actual method during stubbing.
+Example:
+doReturn(value).when(spyObject).method(args);
+In summary, use when().thenReturn() for regular stubbing and doReturn().when() for stubbing on spies, final methods, or void methods.
+=============================================================================================================================================================
+How to verify method calls in Mockito?
+In Mockito, you can verify method calls using the verify() method. This allows you to check whether a specific method was called on a mock object,
+how many times it was called, and with what arguments.
+Here is an example of how to verify method calls in Mockito:
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class VerificationTest {
+    @Test
+    void testVerifyMethodCall() {
+        // Create a mock object
+        MyClass myMock = mock(MyClass.class);
+        // Call a method on the mock object
+        myMock.myMethod("Hello");
+        // Verify that the method was called with the expected argument
+        verify(myMock).myMethod("Hello");
+        // Verify that the method was called exactly once
+        verify(myMock, times(1)).myMethod("Hello");
+        // Verify that the method was never called with a different argument
+        verify(myMock, never()).myMethod("World");
+    }
+}
+In this example, we create a mock object of MyClass and call the myMethod() method on it.
+We then use the verify() method to check that myMethod() was called with the argument "Hello", that it was called exactly once,
+and that it was never called with the argument "World".
+You can also use other verification modes like atLeastOnce(), atMost(), and times(n) to customize the verification behavior.
+=============================================================================================================================================================
+what is stubbing in mockito?
+Stubbing in Mockito is the process of defining the behavior of mock objects.
+It allows you to specify what a mock object should return when a specific method is called with certain arguments.
+This is useful for isolating the unit of work being tested and controlling the behavior of dependencies.
+Stubbing is typically done using the when().thenReturn() or doReturn().when() methods.
+For example:
+import static org.mockito.Mockito.*;
+MyClass myMock = mock(MyClass.class);
+when(myMock.myMethod("input")).thenReturn("output");
+In this example, we create a mock object of MyClass and stub the myMethod() method to return "output" when called with the argument "input".
+This allows us to test the behavior of code that depends on MyClass without relying on its actual implementation.
+=============================================================================================================================================================
+How to stub void methods in Mockito?
+To stub void methods in Mockito, you can use the doNothing(), doThrow(), or doAnswer() methods.
+Here are examples of how to stub void methods using these approaches:
+1. Using doNothing():
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class VoidMethodTest {
+    @Test
+    void testDoNothing() {
+        MyClass myMock = mock(MyClass.class);
+        doNothing().when(myMock).voidMethod();
+        myMock.voidMethod(); // This will do nothing
+        verify(myMock).voidMethod(); // Verify that the method was called
+    }
+}
+2. Using doThrow():
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class VoidMethodTest {
+    @Test
+    void testDoThrow() {
+        MyClass myMock = mock(MyClass.class);
+        doThrow(new RuntimeException("Error")).when(myMock).voidMethod();
+        assertThrows(RuntimeException.class, () -> myMock.voidMethod());
+        verify(myMock).voidMethod(); // Verify that the method was called
+    }
+}
+3. Using doAnswer():
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.Answer;
+public class VoidMethodTest {
+    @Test
+    void testDoAnswer() {
+        MyClass myMock = mock(MyClass.class);
+        doAnswer((Answer<Void>) invocation -> {
+            System.out.println("Void method called");
+            return null;
+        }).when(myMock).voidMethod();
+        myMock.voidMethod(); // This will print "Void method called"
+        verify(myMock).voidMethod(); // Verify that the method was called
+    }
+}
+In these examples, we demonstrate how to stub void methods using doNothing(), doThrow(), and doAnswer() in Mockito.
+This allows you to control the behavior of void methods in your tests.
+=============================================================================================================================================================
+How to capture arguments passed to a mock method in Mockito?
+In Mockito, you can capture arguments passed to a mock method using the ArgumentCaptor class.
+This allows you to inspect the arguments that were passed to the method during the test execution.
+Here is an example of how to use ArgumentCaptor in Mockito:
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+public class ArgumentCaptorTest {
+    @Test
+    void testArgumentCaptor() {
+        // Create a mock object
+        MyClass myMock = mock(MyClass.class);
+        // Call a method on the mock object
+        myMock.myMethod("Hello", 42);
+        // Create an ArgumentCaptor for the String argument
+        ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
+        // Create an ArgumentCaptor for the Integer argument
+        ArgumentCaptor<Integer> intCaptor = ArgumentCaptor.forClass(Integer.class);
+        // Verify that the method was called and capture the arguments
+        verify(myMock).myMethod(stringCaptor.capture(), intCaptor.capture());
+        // Assert the captured arguments
+        assertEquals("Hello", stringCaptor.getValue());
+        assertEquals(42, intCaptor.getValue());
+    }
+}
+In this example, we create a mock object of MyClass and call the myMethod() method with two arguments.
+We then create ArgumentCaptor instances for each argument type and use them to capture the arguments passed to the method.
+Finally, we assert that the captured arguments match the expected values.
+=============================================================================================================================================================
+How to spy on real objects in Mockito?
+In Mockito, you can spy on real objects using the Mockito.spy() method.
+A spy allows you to wrap a real object and monitor its interactions while still being able to call its real methods.
+Here is an example of how to spy on real objects in Mockito:
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+public class SpyTest {
+    @Test
+    void testSpy() {
+        // Create a real object
+        MyClass realObject = new MyClass();
+        // Create a spy of the real object
+        MyClass spyObject = spy(realObject);
+        // Call a method on the spy object
+        String result = spyObject.myMethod("input");
+        // Verify that the method was called
+        verify(spyObject).myMethod("input");
+        // Assert the result of the method call
+        assertEquals("Processed: input", result);
+        // Stub a method on the spy object
+        doReturn("Stubbed Response").when(spyObject).myMethod("stub");
+        // Call the stubbed method
+        String stubbedResult = spyObject.myMethod("stub");
+        // Assert the result of the stubbed method call
+        assertEquals("Stubbed Response", stubbedResult);
+    }
+}
+In this example, we create a real object of MyClass and then create a spy of that object using Mockito.spy().
+We call a method on the spy object, verify that it was called, and assert the result.
+We also demonstrate how to stub a method on the spy object using doReturn().when().
+This allows us to control the behavior of specific methods while still using the real implementation for others.
+=============================================================================================================================================================
+How to handle exceptions in Mockito stubbing?
+In Mockito, you can handle exceptions in stubbing by using the doThrow() method or the when().thenThrow() method.
+These methods allow you to specify that a mock method should throw an exception when it is called.
+Here are examples of how to handle exceptions in Mockito stubbing:
+1. Using doThrow():
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class ExceptionStubbingTest {
+    @Test
+    void testDoThrow() {
+        MyClass myMock = mock(MyClass.class);
+        doThrow(new RuntimeException("Error occurred")).when(myMock).myMethod();
+        assertThrows(RuntimeException.class, () -> myMock.myMethod());
+    }
+}
+2. Using when().thenThrow():
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class ExceptionStubbingTest {
+    @Test
+    void testWhenThenThrow() {
+        MyClass myMock = mock(MyClass.class);
+        when(myMock.myMethod()).thenThrow(new RuntimeException("Error occurred"));
+        assertThrows(RuntimeException.class, () -> myMock.myMethod());
+    }
+}
+In both examples, we create a mock object of MyClass and stub the myMethod() to throw a RuntimeException when it is called.
+We then use assertThrows() to verify that the exception is thrown as expected.
+This allows you to test how your code handles exceptions thrown by dependencies.
+=============================================================================================================================================================
+difference between mock and spy in Mockito?
+In Mockito, the main difference between a mock and a spy is how they handle method calls:
+1. Mock:
+A mock is a completely fake object that simulates the behavior of a real object. When you create a mock, all methods are stubbed to do nothing by default,
+and you need to explicitly define the behavior of each method using stubbing (e.g., when().thenReturn()).
+Mocks are typically used when you want to isolate the unit of work being tested and do not need the real implementation.
+2. Spy:
+A spy is a wrapper around a real object that allows you to monitor its interactions while still being able to call its real methods.
+When you create a spy, the real methods are called by default, and you can choose to stub specific methods using doReturn().when() or doThrow().when().
+Spies are typically used when you want to test the behavior of a real object while still being able to verify interactions or stub certain methods.
+In summary, use mocks when you want a completely fake object, and use spies when you want to wrap a real object and monitor its behavior.
+=============================================================================================================================================================
+How to reset mocks in Mockito?
+In Mockito, you can reset mocks using the Mockito.reset() method. This method clears all interactions and stubbings on the specified mock objects,
+allowing you to start fresh with the mock.
+Here is an example of how to reset mocks in Mockito:
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class ResetMockTest {
+    @Test
+    void testResetMock() {
+        // Create a mock object
+        MyClass myMock = mock(MyClass.class);
+        // Stub a method on the mock object
+        when(myMock.myMethod()).thenReturn("Initial Response");
+        // Call the method and verify the response
+        assertEquals("Initial Response", myMock.myMethod());
+        // Reset the mock object
+        reset(myMock);
+        // After reset, the stubbed method will return null (default behavior)
+        assertNull(myMock.myMethod());
+        // You can now stub the method again if needed
+        when(myMock.myMethod()).thenReturn("New Response");
+        assertEquals("New Response", myMock.myMethod());
+    }
+}
+In this example, we create a mock object of MyClass and stub the myMethod() to return "Initial Response".
+After calling the method and verifying the response, we reset the mock using Mockito.reset(myMock).
+After the reset, the stubbed method returns null (the default behavior for unstubbed methods).
+We can then stub the method again to return a new response.
+=============================================================================================================================================================
+Why not mock private/static/final methods (and what to do)?
+Mocking private, static, or final methods is generally discouraged because it can lead to
+brittle tests that are tightly coupled to the implementation details of the code.
+brittle test means tests that break easily with changes in the code, even if the overall behavior remains the same.
+Here are some reasons why mocking these types of methods is not recommended:
+1. Encapsulation Violation: Mocking private methods breaks encapsulation and exposes implementation details that should be hidden.
+2. Static Methods: Static methods are tied to the class rather than an instance, making them harder to mock and leading to less flexible tests.
+3. Final Methods: Final methods cannot be overridden, which limits the ability to create mock subclasses.
+Instead of mocking private, static, or final methods, consider the following alternatives:
+1. Refactor the Code: Move the logic from private methods to public methods or separate classes that can be tested directly.
+2. Use Dependency Injection: Inject dependencies that can be mocked instead of relying on static methods.
+3. Use Wrappers: Create wrapper classes for static methods that can be mocked.
+4. Test Through Public Methods: Focus on testing the public methods that use these private/static/final methods, ensuring that the overall behavior is correct.
+By following these alternatives, you can create more maintainable and robust tests that focus on the behavior of the code rather than its implementation details.
+=============================================================================================================================================================
+verifyNoMoreInteractions vs verifyNoInteractions?
+In Mockito, verifyNoMoreInteractions() and verifyNoInteractions() are both used to verify interactions with mock objects, but they serve different purposes:
+1. verifyNoMoreInteractions():
+This method is used to verify that no more interactions have occurred on the specified mock objects beyond what has already been verified.
+It is typically called after verifying specific method calls to ensure that no unexpected interactions took place.
+Example:
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class NoMoreInteractionsTest {
+    @Test
+    void testVerifyNoMoreInteractions() {
+        MyClass myMock = mock(MyClass.class);
+        myMock.myMethod();
+        verify(myMock).myMethod();
+        verifyNoMoreInteractions(myMock); // Verifies no other interactions occurred
+    }
+}
+2. verifyNoInteractions():
+This method is used to verify that no interactions have occurred on the specified mock objects at all.
+It is typically called at the beginning of a test to ensure that the mock has not been used.
+Example:
+import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+public class NoInteractionsTest {
+    @Test
+    void testVerifyNoInteractions() {
+        MyClass myMock = mock(MyClass.class);
+        verifyNoInteractions(myMock); // Verifies no interactions occurred
+        myMock.myMethod(); // Now we can call methods on the mock
+    }
+}
+In summary, use verifyNoMoreInteractions() to check for unexpected interactions after specific verifications, and use verifyNoInteractions() to
+ensure that a mock has not been used at all.
+================================================================================================================================================
+Mockito default returns (tricky)
+
+If you don’t stub:
+primitives → 0/false
+objects → null
+collections → null
+===============================================================================================================================================================
+How to mock a constructor in Mockito?
+To mock a constructor in Mockito, you can use the PowerMockito library, which extends Mockito's capabilities to allow for mocking constructors and static methods.
+Here is how you can mock a constructor using PowerMockito:
+1. Add the PowerMockito dependency to your project:
+For Maven:
+<dependency>
+    <groupId>org.powermock</groupId>
+    <artifactId>powermock-module-junit4</artifactId>
+    <version>2.0.9</version> <!-- Use the latest version -->
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.powermock</groupId>
+    <artifactId>powermock-api-mockito2</artifactId>
+    <version>2.0.9</version> <!-- Use the latest version -->
+    <scope>test</scope>
+</dependency>
+For Gradle:
+testImplementation 'org.powermock:powermock-module-junit4:2.0.9' // Use the latest version
+testImplementation 'org.powermock:powermock-api-mockito2:2.0.9' // Use the latest version
+2. Use PowerMockito to mock the constructor in your test class:
+import static org.powermock.api.mockito.PowerMockito.*;
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({MyClass.class})
+public class ConstructorMockTest {
+    @Test
+    public void testMockConstructor() throws Exception {
+        // Mock the constructor of MyClass
+        MyClass myClassMock = mock(MyClass.class);
+        whenNew(MyClass.class).withNoArguments().thenReturn(myClassMock);
+        // Call the code that creates a new instance of MyClass
+        MyClass myClassInstance = new MyClass();
+        // Verify that the mock was returned
+        assertSame(myClassMock, myClassInstance);
+    }
+}
+In this example, we use PowerMockito to mock the constructor of MyClass. When new MyClass() is called, it returns the mocked instance instead of creating a new one.
+This allows you to control the behavior of the constructor and test code that relies on it.
+=============================================================================================================================================================
+What are some common pitfalls when using Mockito?
+1. Overusing Mocks: Relying too heavily on mocks can lead to brittle tests that are tightly coupled to implementation details.
+2. Not Verifying Interactions: Failing to verify interactions with mocks can result in tests that pass even when the code under test is not functioning correctly.
+3. Ignoring Return Values: Not stubbing return values for methods that are called on mocks can lead to unexpected behavior in tests.
+4. Mocking Too Much: Mocking every dependency can make tests complex and hard to maintain. It's often better to use real instances for simple dependencies.
+5. Not Resetting Mocks: Failing to reset mocks between tests can lead to state leakage and unpredictable test results.
+6. Mocking Final Classes/Methods Without Proper Setup: Attempting to mock final classes or methods without using the appropriate Mockito extensions can lead to runtime errors.
+7. Not Using Argument Captors: Failing to capture and verify arguments passed to mock methods can result in incomplete tests.
+8. Ignoring Exceptions: Not properly handling exceptions in stubbing can lead to tests that do not accurately reflect error scenarios.
+By being aware of these pitfalls and following best practices, you can create more reliable and maintainable tests using Mockito.
+=============================================================================================================================================================
+How to test private methods in Java using JUnit and Mockito?
+Testing private methods directly is generally discouraged, as it breaks encapsulation and can lead to brittle tests.
+Instead, it's better to test private methods indirectly through public methods that use them.
+However, if you still need to test a private method, you can use reflection to access and invoke the private method.
+Here is an example of how to test a private method using reflection in JUnit:
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Method;
+public class PrivateMethodTest {
+    @Test
+    void testPrivateMethod() throws Exception {
+        MyClass myClass = new MyClass();
+        // Use reflection to access the private method
+        Method privateMethod = MyClass.class.getDeclaredMethod("privateMethod", String.class);
+        privateMethod.setAccessible(true); // Make the method accessible
+        // Invoke the private method and get the result
+        String result = (String) privateMethod.invoke(myClass, "input");
+        // Assert the result
+        assertEquals("Processed: input", result);
+    }
+}
+In this example, we use reflection to access the private method privateMethod() of the MyClass class.
+We make the method accessible using setAccessible(true) and then invoke it with the desired arguments.
+Finally, we assert the result of the method call.
+Remember that testing private methods directly should be a last resort. It's better to focus on testing the public behavior of the class.
+=============================================================================================================================================================
