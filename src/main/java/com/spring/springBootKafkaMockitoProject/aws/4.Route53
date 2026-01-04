@@ -1,0 +1,167 @@
+🌐 What is Route 53? (Big Picture)
+👉 Layman Language:
+Route 53 is like the phone book of the internet.
+Humans remember names → google.com
+Computers understand numbers → 142.250.190.14
+👉 Route 53 converts names into numbers so your browser knows where to go.
+
+📘 Standard Definition:
+Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service that translates domain names
+into IP addresses and routes traffic to AWS resources or external endpoints.
+
+🔁 BASIC FLOW (VERY IMPORTANT)
+User types: www.myapp.com
+        ↓
+Route 53 (DNS lookup)
+        ↓
+Returns IP / Load Balancer / Resource
+        ↓
+User reaches application
+
+🧩 COMPONENTS UNDER ROUTE 53
+1️⃣ Domain Name
+👉 Layman:
+A domain name is your website’s human-friendly name.
+Example:
+amazon.com
+mycompany.in
+📘 Standard:
+A Domain Name is a unique, human-readable address used to identify resources on the internet.
+📌 Route 53 lets you register and manage domains.
+
+2️⃣ Hosted Zone
+👉 Layman:
+A hosted zone is like a contact list for a domain.
+It stores all DNS rules for that domain.
+📘 Standard:
+A Hosted Zone is a container for DNS records that define how traffic is routed for a domain and its subdomains.
+Types of Hosted Zones:
+Public Hosted Zone → Internet-facing
+Private Hosted Zone → Internal AWS only
+
+3️⃣ Public Hosted Zone
+👉 Layman:
+Used when your website or app is accessible from the internet.
+📘 Standard:
+A Public Hosted Zone routes internet traffic to resources such as ALB, EC2, CloudFront, or external IPs.
+📌 Example:
+www.myapp.com → ALB
+
+4️⃣ Private Hosted Zone
+👉 Layman:
+Used for internal communication inside AWS (not visible on internet).
+📘 Standard:
+A Private Hosted Zone routes traffic within one or more VPCs using private IP addresses.
+📌 Example:
+db.internal → RDS private IP
+
+5️⃣ DNS Records (MOST IMPORTANT)
+DNS records are instructions inside Route 53.
+
+🔹 A Record
+👉 Layman:
+Maps name → IP address.
+📘 Standard:
+An A Record maps a domain name to an IPv4 address.
+📌 Example:
+myapp.com → 13.232.45.10
+
+🔹 AAAA Record
+👉 Layman:
+Same as A record but for IPv6.
+📘 Standard:
+An AAAA Record maps a domain name to an IPv6 address.
+
+🔹 CNAME Record
+👉 Layman:
+Points one name to another name.
+📘 Standard:
+A CNAME Record maps a domain name to another domain name.
+📌 Example:
+blog.myapp.com → myapp.medium.com
+⚠️ Cannot be used for root domain (myapp.com).
+
+🔹 Alias Record (AWS Special)
+👉 Layman:
+Alias is like a smart CNAME for AWS services.
+📘 Standard:
+An Alias Record maps a domain name to AWS resources such as ALB, CloudFront, S3 without additional cost.
+📌 Example:
+myapp.com → ALB
+✅ Works on root domain
+✅ Free DNS queries
+
+🔹 MX Record
+👉 Layman:
+Tells where emails should be delivered.
+📘 Standard:
+An MX Record specifies mail servers responsible for receiving email.
+
+🔹 TXT Record
+👉 Layman:
+Used for verification & security.
+📘 Standard:
+A TXT Record stores text information for domain verification and security policies.
+📌 Example:
+Google verification
+SPF, DKIM, DMARC
+
+6️⃣ Routing Policies (CORE FEATURE OF ROUTE 53)
+Routing policy decides HOW traffic is routed.
+🔀 Simple Routing
+👉 Layman:
+One road → one destination.
+📘 Standard:
+Simple routing routes traffic to a single resource.
+
+⚖️ Weighted Routing
+👉 Layman:
+Split traffic by percentage.
+📘 Standard:
+Weighted routing distributes traffic based on assigned weights.
+📌 Example:
+Version A → 80%
+Version B → 20%
+
+🌍 Latency-Based Routing
+👉 Layman:
+Send users to nearest server.
+📘 Standard:
+Latency-based routing routes traffic to the region with the lowest latency.
+
+🏥 Health Check Routing
+👉 Layman:
+If one server is sick, Route 53 avoids it.
+📘 Standard:
+Health check routing routes traffic only to healthy endpoints.
+
+🔁 Failover Routing
+👉 Layman:
+If primary fails → backup takes over.
+📘 Standard:
+Failover routing switches traffic to a secondary resource when the primary becomes unhealthy.
+
+🌐 Geolocation Routing
+👉 Layman:
+Route users based on country or region.
+📘 Standard:
+Geolocation routing routes traffic based on user’s geographic location.
+
+🧭 Geoproximity Routing
+👉 Layman:
+Route based on distance, adjustable with bias.
+📘 Standard:
+Geoproximity routing routes traffic based on geographic location with bias control.
+
+7️⃣ Health Checks
+👉 Layman:
+Route 53 checks your app regularly to see if it’s alive.
+📘 Standard:
+Health checks monitor endpoint availability and allow Route 53 to route traffic away from unhealthy resources.
+
+8️⃣ Route 53 Resolver
+👉 Layman:
+Helps AWS and on-premise networks talk to each other using DNS.
+📘 Standard:
+Route 53 Resolver provides DNS resolution between VPCs and on-premises networks.
+========================================================================================================================
