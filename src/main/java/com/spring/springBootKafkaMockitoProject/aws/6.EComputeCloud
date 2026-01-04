@@ -1,0 +1,332 @@
+🌐 What is EC2? (Big Picture)
+👉 Layman Language:
+EC2 is renting a computer in the cloud.
+Instead of buying a laptop or server:
+AWS gives you a virtual computer
+You choose size, OS, power
+Pay only for what you use
+📘 Standard Definition:
+Amazon EC2 (Elastic Compute Cloud) provides scalable virtual servers that allow you to run applications in the AWS cloud.
+
+🔁 BASIC EC2 FLOW (VERY IMPORTANT)
+User
+ ↓
+Route 53 (DNS)
+ ↓
+Load Balancer
+ ↓
+EC2 Instance
+ ↓
+Application runs
+
+🧩 COMPONENTS UNDER EC2
+1️⃣ EC2 Instance
+👉 Layman:
+An EC2 instance is a virtual computer.
+Has CPU
+Has RAM
+Has storage
+Has OS
+
+📘 Standard:
+An EC2 Instance is a virtual server used to run applications on AWS infrastructure.
+
+2️⃣ AMI (Amazon Machine Image)
+👉 Layman:
+AMI is a ready-made computer template.
+It includes:
+Operating system
+Software
+Configurations
+📘 Standard:
+An AMI is a template that contains the software configuration required to launch an EC2 instance.
+📌 Example:
+Amazon Linux
+Ubuntu
+Windows
+
+3️⃣ Instance Types (VERY IMPORTANT)
+👉 Layman:
+Instance type decides how powerful your computer is.
+Think:
+Small laptop
+Office desktop
+High-end gaming PC
+📘 Standard:
+Instance Types define the CPU, memory, storage, and networking capacity of an EC2 instance.
+
+🧠 EC2 Instance Type Families (Layman + Use Case)
+Family	Meaning	Use Case
+t	Burstable	Small apps, testing
+m	Balanced	General purpose
+c	Compute	CPU-heavy apps
+r	Memory	Databases
+i	Storage	Big data
+g/p	GPU	ML, AI, graphics
+📌 Example:
+t2.micro → Free tier
+m5.large → Production app
+c5.large → CPU-intensive job
+
+4️⃣ Key Pair
+👉 Layman:
+Key pair is your house key.
+Used to login into EC2
+Without key → no access
+📘 Standard:
+A Key Pair is a set of cryptographic keys used to securely connect to an EC2 instance.
+
+5️⃣ Security Group
+👉 Layman:
+Security group is a security guard for your EC2.
+Controls:
+Who can enter
+On which port
+📘 Standard:
+A Security Group acts as a virtual firewall that controls inbound and outbound traffic for EC2 instances.
+
+📌 Example:
+Allow HTTP (80)
+Allow SSH (22) from your IP
+
+6️⃣ Storage for EC2
+🔹 EBS (Elastic Block Store)
+👉 Layman:
+EBS is like a hard disk attached to EC2.
+📘 Standard:
+EBS provides persistent block storage volumes for EC2 instances.
+📌 Even if EC2 stops → data stays.
+
+🔹 Instance Store
+👉 Layman:
+Temporary storage → data lost when EC2 stops.
+📘 Standard:
+Instance Store provides temporary block-level storage tied to the host machine.
+
+🔹 EFS (Elastic File System)
+👉 Layman:
+Shared folder for multiple EC2s.
+📘 Standard:
+EFS provides scalable file storage accessible by multiple EC2 instances.
+
+7️⃣ Elastic IP
+👉 Layman:
+Elastic IP is a fixed public address.
+📘 Standard:
+An Elastic IP is a static IPv4 address designed for dynamic cloud computing.
+
+8️⃣ Auto Scaling Group (ASG)
+👉 Layman:
+Auto Scaling is automatic server creation & removal.
+Traffic increases → add servers
+Traffic decreases → remove servers
+📘 Standard:
+An Auto Scaling Group ensures the correct number of EC2 instances are running based on demand.
+🔁 Auto Scaling Flow
+Traffic ↑
+ ↓
+CloudWatch Alarm
+ ↓
+Auto Scaling Group
+ ↓
+New EC2 Launched
+
+9️⃣ Elastic Load Balancer (with EC2)
+👉 Layman:
+Load balancer is traffic distributor.
+📘 Standard:
+An Elastic Load Balancer distributes incoming traffic across multiple EC2 instances.
+
+🔟 IAM Role for EC2
+👉 Layman:
+IAM Role is permission card for EC2.
+📘 Standard:
+An IAM Role grants permissions to EC2 instances to access AWS services securely.
+📌 Example:
+EC2 access S3 without password
+
+1️⃣1️⃣ User Data (Bootstrap Script)
+👉 Layman:
+User data is auto-setup script.
+📘 Standard:
+User Data allows you to run scripts automatically when an EC2 instance launches.
+📌 Example:
+Install Apache
+Start application
+
+1️⃣2️⃣ Placement Groups
+👉 Layman:
+Decides where EC2s are placed physically.
+📘 Standard:
+Placement Groups influence the placement of instances to optimize performance or availability.
+Types:
+Cluster (low latency)
+Spread (high availability)
+Partition (big data)
+
+1️⃣3️⃣ Pricing Models
+👉 Layman:
+Different ways to pay for EC2.
+📘 Standard:
+EC2 pricing models define how you pay for compute capacity.
+Model	Meaning
+On-Demand	Pay per use
+Reserved	Cheaper, long-term
+Spot	Very cheap, interruptible
+Savings Plan	Flexible discounts
+
+🔁 COMPLETE PRODUCTION FLOW (EC2 BASED APP)
+User
+ ↓
+Route 53
+ ↓
+Application Load Balancer
+ ↓
+Auto Scaling Group
+ ↓
+EC2 Instances
+ ↓
+EBS / EFS
+ ↓
+Application
+========================================================================================================================
+Explain the different instance types in EC2 and when you would choose one over the other?
+Amazon EC2 offers various instance types, each optimized for different use cases based on their CPU, memory, storage, and networking capabilities.
+Here are the main instance types and when to choose each:
+1. General Purpose (e.g., t3, m5):
+- Balanced CPU and memory.
+- Use for web servers, small databases, and development environments.
+2. Compute Optimized (e.g., c5):
+- High CPU-to-memory ratio.
+- Ideal for CPU-intensive applications like batch processing, high-performance web servers, and scientific modeling.
+3. Memory Optimized (e.g., r5):
+- High memory-to-CPU ratio.
+- Best for memory-intensive applications such as databases, in-memory caches, and real-time big data analytics.
+4. Storage Optimized (e.g., i3):
+- High storage throughput and IOPS.
+- Suitable for applications requiring high, sequential read and write access to large datasets,
+like NoSQL databases and data warehousing.
+5. GPU Instances (e.g., p3, g4):
+- Equipped with powerful GPUs.
+- Perfect for machine learning, AI, and graphics-intensive applications.
+Choosing the right instance type depends on your application's specific resource
+requirements and workload characteristics.
+========================================================================================================================
+What are Amazon Machine Images (AMIs) in EC2, and how do you create custom AMIs for your applications?
+Amazon Machine Images (AMIs) are pre-configured templates that contain the necessary information to launch an EC2 instance.
+An AMI includes the operating system, application server, and applications required to run your software.
+To create a custom AMI for your applications, follow these steps:
+1. Launch an EC2 Instance:
+- Start by launching a new EC2 instance using a base AMI that closely matches your requirements.
+2. Configure the Instance:
+- Install and configure your application, software, and any necessary dependencies on the instance.
+3. Clean Up:
+- Remove any temporary files, logs, or sensitive data that should not be included in the AMI.
+4. Create the AMI:
+- In the AWS Management Console, select the configured EC2 instance.
+- Choose "Actions" > "Image" > "Create Image."
+- Provide a name and description for the AMI, and configure any additional settings as needed.
+5. Launch New Instances:
+- Once the AMI is created, you can use it to launch new EC2 instances with the same configuration as the original
+instance.
+Custom AMIs allow you to quickly deploy multiple instances with your application pre-installed,
+ensuring consistency and saving time in the deployment process.
+========================================================================================================================
+How can you secure your EC2 instances, and what are some best practices for enhancing EC2 security?
+Answer: EC2 security best practices include:
+— Restricting network access using Security Groups and Network ACLs.
+— Applying IAM roles and policies for fine-grained access control.
+— Using key pairs for secure SSH/RDP access.
+— Regularly patching and updating your instances and applications.
+— Implementing monitoring and logging, such as CloudWatch and AWS Config, to track security events.
+=========================================================================================================================
+Explain Auto Scaling in EC2 and how it helps ensure application availability.
+Auto Scaling in EC2 automatically adjusts the number of EC2 instances in response to changes in demand.
+It helps ensure application availability by:
+1. Maintaining Desired Capacity: Auto Scaling keeps a specified number of instances running to handle the expected load.
+2. Scaling Out: When demand increases, Auto Scaling launches additional instances to distribute the load.
+3. Scaling In: When demand decreases, Auto Scaling terminates unnecessary instances to save costs.
+4. Health Checks: Auto Scaling monitors the health of instances and replaces unhealthy ones to maintain application
+availability.
+5. Integration with Load Balancers: Auto Scaling works with Elastic Load Balancers to distribute traffic evenly across instances.
+Overall, Auto Scaling ensures that your application can handle varying levels of traffic while optimizing costs.
+=========================================================================================================================
+What is the difference between EBS and Instance Store in EC2, and when would you use each type of storage?
+EBS (Elastic Block Store) and Instance Store are two types of storage options available for EC2 instances:
+1. EBS:
+- Persistent block storage that remains intact even when the EC2 instance is stopped or terminated.
+- Suitable for data that needs to be retained, such as databases and application data.
+- Can be easily backed up using snapshots and can be resized or attached to different instances.
+2. Instance Store:
+- Temporary storage that is physically attached to the host machine.
+- Data is lost when the EC2 instance is stopped or terminated.
+- Ideal for temporary data, caches, or scratch space where data persistence is not required.
+In summary, use EBS for persistent storage needs and Instance Store for temporary, high-performance storage requirements.
+=========================================================================================================================
+Explain the concept of EC2 instance metadata and user data.
+EC2 instance metadata is a service that provides information about the instance,
+such as its instance ID, public IP address, and security groups.
+User data is a feature that allows you to run scripts or commands automatically when an EC2 instance launches.
+You can use user data to install software, configure settings, or perform other setup tasks during the
+instance initialization.
+both data can be accessed from within the instance using a special URL
+(http:// 169.254.169.254/latest/meta-data/ for metadata and
+http://  169. 254.169.254/latest/user-data/ for user data).
+=========================================================================================================================
+What is an EC2 placement group, and in what scenarios would you use it?
+An EC2 placement group is a logical grouping of instances within a single Availability Zone that allows for optimized
+network performance and low-latency communication between instances.
+There are three types of placement groups:
+1. Cluster Placement Group: Instances are placed close together in a single AZ for high network throughput
+and low latency. Ideal for HPC applications.
+2. Spread Placement Group: Instances are distributed across distinct hardware to reduce the risk of simultaneous failures.
+Suitable for critical applications requiring high availability.
+3. Partition Placement Group: Instances are divided into partitions, each on separate racks, to isolate failures.
+Used for large distributed and big data applications.
+You would use placement groups when your application requires high network performance, low latency, or enhanced fault tolerance.
+=========================================================================================================================
+How can you resize an EC2 instance, and what are the considerations when doing so?
+You can resize an EC2 instance by stopping it, changing its instance type, and then starting it again.
+However, it’s essential to ensure that the new instance type meets your application’s resource requirements
+and that any instance-specific settings and data are preserved during the process.
+=========================================================================================================================
+What is an EC2 Spot Instance, and when would you use it?
+An EC2 Spot Instance is a type of EC2 instance that allows you to bid on unused AWS capacity at significantly
+reduced prices compared to On-Demand instances.
+You would use Spot Instances for flexible, fault-tolerant applications that can handle interruptions,
+such as big data processing, batch jobs, and background processing tasks.
+They are ideal when cost savings are a priority, and your workload can tolerate potential instance termination.
+=========================================================================================================================
+How does EC2 handle instance failures, and what strategies can you implement to ensure high availability for your applications?
+Answer: EC2 instances can fail, but you can enhance availability by:
+— Using Auto Scaling to automatically replace failed instances.
+— Distributing your application across multiple Availability Zones.
+— Implementing load balancing with Elastic Load Balancing (ELB).
+— Utilizing Elastic IP addresses and DNS solutions for failover.
+=========================================================================================================================
+Explain the process of attaching and managing EBS volumes to EC2 instances.?
+To attach and manage EBS volumes to EC2 instances, follow these steps:
+1. Create an EBS Volume:
+- In the AWS Management Console, navigate to the EC2 dashboard and select "Volumes" under "Elastic Block Store."
+- Click "Create Volume," specify the size, type, and availability zone, and create the volume.
+2. Attach the EBS Volume:
+- Select the created volume, click "Actions," and choose "Attach Volume."
+- Select the target EC2 instance and specify the device name (e.g., /dev/sdf).
+3. Connect to the EC2 Instance:
+- SSH into the EC2 instance using your key pair.
+4. Format and Mount the Volume:
+- Use commands like `mkfs` to format the volume and `mount` to attach it to a directory.
+5. Manage the Volume:
+- You can resize, create snapshots, or detach the volume as needed using the AWS Management Console or AWS CLI.
+6. Detach the Volume:
+- Before detaching, ensure the volume is unmounted from the instance.
+- In the console, select the volume, click "Actions," and choose "Detach Volume."
+By following these steps, you can effectively attach and manage EBS volumes for your EC2 instances.
+=========================================================================================================================
+Explain how to implement an effective backup and disaster recovery strategy for EC2 instances and data.
+Answer: To implement an effective backup and disaster recovery strategy for EC2, you can:
+— Create regular EBS snapshots for data backup.
+— Utilize automated backup solutions like AWS Backup.
+— Replicate data across multiple Availability Zones.
+— Implement standby instances and recovery procedures to minimize downtime during a disaster.
+=========================================================================================================================
