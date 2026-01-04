@@ -1,0 +1,235 @@
+What is AWS CloudWatch? (Big Picture)
+👉 Layman Language:
+CloudWatch is like a CCTV + health monitor + alarm system for AWS.
+It tells you:
+Is my server running?
+Is CPU high?
+Did my app crash?
+Should I add more servers?
+Should I send an alert?
+
+👉 If EC2 is the machine, CloudWatch is the doctor + security camera.
+📘 Standard Definition:
+Amazon CloudWatch is a monitoring and observability service that collects metrics, logs, and events from AWS
+resources and applications to provide visibility and automated actions.
+
+🔁 BASIC CLOUDWATCH FLOW (VERY IMPORTANT)
+AWS Resource (EC2, RDS, Lambda)
+        ↓
+CloudWatch collects data
+        ↓
+Metrics / Logs / Events
+        ↓
+Alarm triggers
+        ↓
+SNS / Auto Scaling / Action
+
+🧩 CLOUDWATCH COMPONENTS (AS SEEN IN AWS MENU)
+1️⃣ Metrics
+👉 Layman:
+Metrics are numbers that show health.
+Examples:
+CPU usage
+Memory usage
+Disk usage
+Network traffic
+📘 Standard Definition:
+Metrics are time-ordered data points that represent the performance of AWS resources.
+📌 Examples:
+EC2 CPUUtilization
+ALB RequestCount
+Lambda Duration
+🔁 Metric Flow
+EC2 running
+ ↓
+CPU usage measured
+ ↓
+Metric sent to CloudWatch
+
+2️⃣ Logs
+👉 Layman:
+Logs are detailed written records of what happened.
+Examples:
+Error messages
+Application output
+Access logs
+📘 Standard Definition:
+CloudWatch Logs collect and store log files from AWS services and applications.
+
+🔹 Log Group
+👉 Layman:
+A folder for logs.
+📘 Standard:
+A Log Group organizes related log streams.
+
+🔹 Log Stream
+👉 Layman:
+A single source of logs (one EC2 or Lambda).
+📘 Standard:
+A Log Stream is a sequence of log events from a single resource.
+
+🔁 Logs Flow
+Application
+ ↓
+Writes logs
+ ↓
+CloudWatch Log Agent
+ ↓
+Log Group → Log Stream
+
+3️⃣ Alarms (MOST IMPORTANT)
+👉 Layman
+Alarms are alert rules.
+Example:
+CPU > 80% → send alert
+Disk full → scale server
+📘 Standard Definition:
+CloudWatch Alarms monitor metrics and perform actions when thresholds are breached.
+🔁 Alarm Flow
+Metric (CPU)
+ ↓
+Alarm checks value
+ ↓
+Threshold crossed?
+ ↓
+Action (SNS / ASG)
+
+4️⃣ Dashboards
+👉 Layman:
+Dashboard is a single screen view of everything.
+Like:
+Car dashboard
+Hospital monitor
+📘 Standard Definition:
+CloudWatch Dashboards provide customizable visualizations of metrics and alarms.
+📌 Use Case:
+Operations monitoring
+Management overview
+
+5️⃣ Events (Now called EventBridge)
+👉 Layman:
+Events are things that happen.
+Examples:
+EC2 stopped
+User logged in
+Auto Scaling launched instance
+📘 Standard Definition:
+CloudWatch Events / EventBridge delivers near-real-time notifications of changes in AWS resources.
+🔁 Event Flow
+EC2 stopped
+ ↓
+EventBridge detects event
+ ↓
+Rule matches
+ ↓
+Action (Lambda / SNS)
+
+6️⃣ Insights (Advanced Analysis)
+🔹 Logs Insights
+👉 Layman:
+Search & analyze logs using queries.
+📘 Standard:
+CloudWatch Logs Insights allows interactive log analysis using a query language.
+📌 Example:
+Find all ERROR logs in last 1 hour
+
+🔹 Metrics Insights
+👉 Layman:
+Query metrics like a database.
+📘 Standard:
+CloudWatch Metrics Insights provides SQL-like queries for metrics.
+
+7️⃣ Application Insights
+👉 Layman:
+Automatically detects application problems.
+📘 Standard:
+Application Insights identifies and diagnoses application issues using machine learning.
+📌 Use Case:
+App running on EC2 + RDS
+
+8️⃣ ServiceLens
+👉 Layman:
+End-to-end application visibility.
+📘 Standard:
+ServiceLens integrates metrics, logs, and traces to provide application observability.
+
+9️⃣ Synthetics (Canaries)
+👉 Layman:
+Fake users that regularly test your website.
+📘 Standard:
+CloudWatch Synthetics uses canaries to monitor endpoints and APIs.
+📌 Example:
+Check homepage every 5 minutes
+
+🔁 Synthetics Flow
+Canary runs
+ ↓
+Hits website/API
+ ↓
+Records success/failure
+ ↓
+Alarm if failed
+
+🔟 Contributor Insights
+👉 Layman:
+Find who is causing the most load.
+📘 Standard:
+Contributor Insights identifies top contributors to metrics.
+📌 Example:
+Top IPs causing high traffic
+
+🔔 CLOUDWATCH + OTHER SERVICES (REAL USE CASES)
+📌 CloudWatch + SNS (Alerting)
+CPU > 80%
+ ↓
+Alarm
+ ↓
+SNS
+ ↓
+Email / SMS
+
+📌 CloudWatch + Auto Scaling
+High CPU
+ ↓
+Alarm
+ ↓
+Auto Scaling
+ ↓
+New EC2 launched
+
+📌 CloudWatch + Lambda
+Event occurs
+ ↓
+EventBridge
+ ↓
+Lambda triggered
+
+========================================================================================================================
+Explain the difference between CloudWatch Alarms and CloudWatch Events. When and how would you use each?
+Answer:
+— CloudWatch Alarms are used to monitor metrics and trigger actions when a threshold is breached,
+such as sending notifications or performing automated remediation.
+— CloudWatch Events are used for event-driven automation and integration.
+They capture events from AWS services and custom applications and can trigger actions based on those events.
+Alarms are typically used for metric-based monitoring, while Events are used for event-driven actions.
+========================================================================================================================
+Explain the concept of CloudWatch Logs and Log Groups. How can you use them for centralized log management?
+Answer: CloudWatch Logs are used to collect and store log data. Log Groups are containers for log streams.
+You can use Log Groups to organize and manage logs from various sources.
+Centralized log management involves aggregating logs into a central Log Group, making it easier to search,
+analyze, and set up alarms on log data
+========================================================================================================================
+Explain the difference between CloudWatch Logs Insights and CloudWatch Events Rules.
+When would you use one over the other?
+Answer:
+— CloudWatch Logs Insights is used for querying and analyzing log data. It helps you search and analyze log content.
+— CloudWatch Events Rules are used for event-driven automation. They are set up to respond to specific events generated
+by AWS services or custom applications. You would use Logs Insights for log analysis and Events Rules for
+event-driven actions and integrations.
+========================================================================================================================
+What are CloudWatch Alarms’ actions and how can you use them to respond to events?
+Answer: CloudWatch Alarm actions are the responses triggered when an alarm state is reached.
+Actions can include sending notifications (e.g., via SNS), executing an Auto Scaling policy, or invoking a Lambda
+function. These actions allow you to automate responses to events based on alarm conditions.
+========================================================================================================================
+

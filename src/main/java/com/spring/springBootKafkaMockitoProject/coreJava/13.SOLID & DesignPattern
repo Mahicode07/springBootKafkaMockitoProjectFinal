@@ -809,3 +809,4 @@ with a subject (event source) to receive updates when specific events occur. Whe
 triggers an event, it automatically notifies all registered observers, which then react accordingly. This
 decouples the event source from the response logic, making the system more flexible and
 maintainable, as observers can be added or removed dynamically without altering the subject.
+
