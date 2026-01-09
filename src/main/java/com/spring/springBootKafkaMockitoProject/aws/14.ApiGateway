@@ -1,0 +1,499 @@
+1️⃣ What problem does API Gateway solve? (Real-World Context)
+Without API Gateway
+
+Clients directly call:
+
+Lambda
+
+ECS services
+
+EC2 endpoints
+
+Problems:
+❌ No centralized auth
+❌ No rate limiting
+❌ No request validation
+❌ No versioning
+❌ Hard to secure microservices
+
+API Gateway solves this by acting as:
+
+A fully managed front door for backend services
+
+It provides:
+
+Authentication & authorization
+
+Throttling & quotas
+
+Request/response transformation
+
+Monitoring & logging
+
+Versioning & lifecycle management
+
+📌 Senior interview line
+
+API Gateway decouples clients from backend implementations while enforcing security, governance, and traffic control.
+
+2️⃣ What is AWS API Gateway?
+Interview-grade definition
+
+AWS API Gateway is a managed service that allows you to create, publish, secure, monitor, and scale APIs that act as an entry point to backend services such as Lambda, ECS, EC2, or external HTTP services.
+
+3️⃣ API Gateway Types (VERY IMPORTANT)
+Type	When to Use
+REST API	Full control, legacy systems
+HTTP API	Lightweight, low latency, cheaper
+WebSocket API	Real-time bidirectional communication
+
+📌 Interview Tip
+
+Prefer HTTP API unless you need REST-specific features.
+
+4️⃣ Core Architecture (How it works internally)
+Client
+  ↓
+API Gateway
+  ├─ Auth (JWT / IAM / Lambda)
+  ├─ Throttling
+  ├─ Validation
+  ├─ Mapping
+  ↓
+Backend (Lambda / ECS / EC2 / ALB)
+
+
+API Gateway is:
+
+Region-based
+
+Highly available
+
+Auto-scaling
+
+5️⃣ Core Concepts (Senior-Level Understanding)
+Concept	Meaning
+API	Collection of resources
+Resource	URL path
+Method	HTTP verb
+Integration	Backend connection
+Stage	Environment (dev/prod)
+Deployment	Snapshot of API config
+6️⃣ Resources & Methods (Deep)
+Resource
+/users
+/users/{id}
+
+Method
+GET /users
+POST /users
+
+
+Each method has:
+
+Authorization
+
+Integration
+
+Request/response mapping
+
+Throttling rules
+
+📌 Interview line
+
+Each method is independently configurable, enabling fine-grained API governance.
+
+7️⃣ Integrations (CRITICAL)
+Types of Integrations
+Integration	Use Case
+Lambda	Serverless backend
+HTTP	Call external APIs
+AWS Service	Direct S3/DynamoDB
+VPC Link	Private ECS/ALB
+7.1️⃣ Lambda Integration (Most Common)
+Events:
+  GetUser:
+    Type: Api
+    Properties:
+      Path: /users/{id}
+      Method: GET
+
+
+Lambda receives:
+
+{
+  "pathParameters": { "id": "123" },
+  "headers": {},
+  "body": null
+}
+
+
+📌 Supports:
+
+Proxy integration (recommended)
+
+Non-proxy (fine control)
+
+7.2️⃣ VPC Link (Senior Topic)
+
+Used when backend is private.
+
+API Gateway → VPC Link → ALB → ECS
+
+
+📌 Why?
+
+No public exposure
+
+Secure microservices
+
+8️⃣ Authorization & Authentication (HIGH-VALUE)
+8.1️⃣ IAM Authorization
+
+Uses AWS SigV4
+
+Best for:
+
+Internal services
+
+AWS SDK clients
+
+📌 Not browser-friendly.
+
+8.2️⃣ Lambda Authorizer (Custom Auth)
+def handler(event, context):
+    token = event['authorizationToken']
+    # Validate token
+    return policy
+
+
+Used when:
+
+Custom logic needed
+
+Legacy auth systems
+
+8.3️⃣ Cognito / JWT Authorizer (BEST PRACTICE)
+Authorization: Bearer eyJhbGciOi...
+
+
+Token validated at gateway
+
+No Lambda cold start
+
+Scales efficiently
+
+📌 Interview line
+
+JWT authorizers shift authentication responsibility from backend to the gateway.
+
+9️⃣ Request Validation
+
+Prevents bad requests reaching backend.
+
+RequestValidator:
+  ValidateRequestBody: true
+  ValidateRequestParameters: true
+
+
+Used for:
+
+Required headers
+
+Query params
+
+JSON schema validation
+
+📌 Reduces backend load.
+
+🔟 Mapping Templates (Advanced)
+
+Transform requests/responses.
+
+Example (VTL)
+{
+  "userId": "$input.params('id')"
+}
+
+
+Used when:
+
+Legacy backend expects specific format
+
+Aggregation required
+
+📌 HTTP APIs mostly eliminate need for mapping.
+
+1️⃣1️⃣ Stages (VERY IMPORTANT)
+What is a Stage?
+
+Logical environment
+
+Each stage has:
+
+URL
+
+Variables
+
+Logs
+
+Throttling
+
+/dev
+/qa
+/prod
+
+
+Stage variables:
+
+backendUrl: https://service.dev
+
+1️⃣2️⃣ Deployments
+
+A deployment = snapshot of API config
+
+Required for REST APIs
+
+HTTP APIs deploy automatically
+
+📌 Interview line
+
+Deployment immutability enables predictable API behavior.
+
+1️⃣3️⃣ Throttling & Quotas (Senior Topic)
+Why?
+
+Protect backend
+
+Prevent abuse
+
+Limits:
+
+Burst limit
+
+Steady-state rate
+
+1000 req/sec
+2000 burst
+
+
+Can be:
+
+Global
+
+Stage-level
+
+API key-level
+
+1️⃣4️⃣ API Keys & Usage Plans
+
+Used for:
+
+Partner APIs
+
+Rate limiting per consumer
+
+Usage Plan
+  ├─ Throttle
+  ├─ Quota
+  └─ API Key
+
+
+📌 Not for authentication.
+
+1️⃣5️⃣ Caching (Performance Optimization)
+
+In-memory cache at edge
+
+Reduces backend calls
+
+Configurable per:
+
+Stage
+
+Method
+
+📌 Used for:
+
+Read-heavy APIs
+
+Static responses
+
+1️⃣6️⃣ Monitoring & Logging
+CloudWatch Metrics
+
+Latency
+
+4XX / 5XX
+
+Cache hit/miss
+
+Access Logs
+{
+  "requestId": "$context.requestId",
+  "status": "$context.status"
+}
+
+
+📌 Essential for debugging prod issues.
+
+1️⃣7️⃣ Error Handling
+
+Gateway-level errors:
+
+401 Unauthorized
+
+403 Forbidden
+
+429 Too Many Requests
+
+Custom Gateway Responses possible.
+
+1️⃣8️⃣ Versioning Strategies (Senior Design)
+Strategy	Description
+URL	/v1/users
+Stage	/prod vs /v2
+Header	Accept-Version
+
+📌 URL versioning is most common.
+
+1️⃣9️⃣ Security Best Practices
+
+✔ Use HTTPS only
+✔ Enable WAF
+✔ Use JWT authorizers
+✔ Throttle aggressively
+✔ Restrict VPC Link targets
+
+2️⃣0️⃣ API Gateway vs ALB (INTERVIEW CLASSIC)
+Feature	API Gateway	ALB
+Auth	Built-in	Limited
+Throttling	Yes	No
+Serverless	Yes	Partial
+Cost	Per request	Per hour
+
+📌 Choose API Gateway for APIs, ALB for services.
+
+2️⃣1️⃣ Real-World Architecture Example
+Mobile App
+  ↓
+API Gateway (JWT + Throttling)
+  ↓
+ALB (VPC Link)
+  ↓
+ECS Microservices
+  ↓
+DynamoDB / RDS
+
+2️⃣2️⃣ Common Interview Questions (With Perfect Answers)
+
+Q: How does API Gateway scale?
+→ Fully managed, auto-scales per request
+
+Q: How to secure private services?
+→ VPC Link + private ALB
+
+Q: REST vs HTTP API?
+→ HTTP API for modern microservices
+
+2️⃣3️⃣ One-Line Senior Engineer Summary
+
+API Gateway provides a scalable, secure, and decoupled API front door that enforces authentication, throttling, validation,
+and observability independent of backend implementation.
+============================================================================================================================
+Why is my API Gateway returning a 403 Forbidden error despite having the correct IAM permissions?
+Scenario
+Your API Gateway is configured with IAM authentication, and you have attached the correct IAM policy to your role.
+However, API requests still return a 403 Forbidden error.
+
+Possible Causes & Fixes
+IAM Role Trust Relationship Issue: Ensure the IAM role associated with the caller has an appropriate trust policy.
+The API Gateway execution role must have "sts:AssumeRole" permission.
+Incorrect Signature Version: If using Signature Version 4 (SigV4), ensure your request is correctly signed using AWS SDKs or
+aws4 signer.
+Method Request Authorization Misconfiguration: Verify that the method request authentication is set to AWS_IAM in the
+API Gateway console.
+Resource Policy Blocking Access: Check if an explicit Deny rule exists in the API Gateway resource policy blocking access.
+============================================================================================================================
+API Gateway with Lambda Proxy Integration Returns 502 Bad Gateway
+Scenario
+You deployed an API Gateway with Lambda Proxy Integration, but API calls return 502 Bad Gateway errors.
+
+Possible Causes & Fixes
+Incorrect Response Format: Ensure that your Lambda function returns a response in the correct format:
+{
+  "statusCode": 200,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"message\":\"Success\"}"
+}
+Uncaught Exceptions in Lambda: If an unhandled exception occurs, API Gateway will return a 502 error.
+Always wrap your Lambda function in try-catch blocks.
+Execution Role Missing Required Permissions: Ensure the Lambda execution role has permissions like AWSLambdaBasicExecutionRole.
+Timeout Issues: API Gateway has a maximum timeout of 29 seconds. If your Lambda function runs longer, consider optimizing
+the logic or using an asynchronous processing approach with SQS or EventBridge.
+============================================================================================================================
+How to Secure API Gateway Without API Keys?
+Scenario
+Your organization requires API Gateway security, but you don’t want to rely on API keys.
+Best Practices
+Use AWS IAM Authorization: Restrict access using IAM authentication via SigV4 signing.
+Implement Cognito User Pools: Use Cognito for authentication and enforce role-based access control (RBAC).
+Enable JWT Validation with Lambda Authorizer: Validate JSON Web Tokens (JWT) using a custom Lambda Authorizer.
+Set up Resource Policies: Use fine-grained access control by defining resource policies to allow/deny access based on IP addresses,
+AWS accounts, or VPC endpoints.
+============================================================================================================================
+API Gateway Private Endpoint Not Working in a VPC
+Scenario
+You have configured an API Gateway private endpoint, but API requests from within the VPC fail.
+
+Possible Causes & Fixes
+VPC Endpoint Misconfiguration: Ensure that your API Gateway is associated with the correct VPC Endpoint in AWS PrivateLink.
+Security Groups and NACLs: Confirm that your security groups and network ACLs allow inbound/outbound HTTPS traffic on port 443.
+Route Table Configuration: Verify that your subnet’s route table has a route to the API Gateway VPC endpoint.
+Cross-Account Access Issue: If accessing from another AWS account, ensure the VPC endpoint policy allows access to your API Gateway.
+============================================================================================================================
+Throttling Issue: API Gateway Returns 429 Too Many Requests
+Scenario
+Your API is frequently returning 429 Too Many Requests errors, even though the request rate seems reasonable.
+
+Possible Causes & Fixes
+Default Throttling Limits: By default, AWS API Gateway enforces a rate limit of 10,000 RPS (requests per
+ second) and a burst of 5000 requests. Customize throttling limits in Usage Plans.
+Per-Client Throttling: If using API keys, ensure each key is assigned a proper request quota in the usage plan.
+Unintentional High Traffic: Check CloudWatch metrics to identify unexpected spikes in request traffic.
+Regional vs. Edge API: Consider deploying Regional APIs instead of Edge-optimized APIs to reduce latency and improve performance
+============================================================================================================================
+CORS Errors Despite Correct Configuration
+Scenario
+Your frontend (React, Angular, Vue) makes API Gateway calls but encounters CORS policy errors.
+
+Possible Causes & Fixes
+Incorrect CORS Headers: Ensure that API Gateway includes Access-Control-Allow-Origin in the response headers:
+{
+  "statusCode": 200,
+  "headers": {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
+  },
+  "body": "Success"
+}
+Preflight Requests Not Handled: If your API supports POST, ensure OPTIONS method is configured with an appropriate CORS response.
+Incorrect Client-Side Request: Ensure that the frontend makes requests with matching headers.
+============================================================================================================================
+API Gateway Deployment Not Reflecting Changes
+Scenario
+You made updates to your API Gateway configuration, but changes are not reflecting in the live API.
+
+Possible Causes & Fixes
+Stage Deployment Missing: After making changes, always deploy the API to a stage (Deploy API option in API Gateway).
+Cache Stale Data: If caching is enabled, clear the API Gateway cache in the stage settings.
+Client-Side Caching: Ensure that API responses don’t contain aggressive caching headers (Cache-Control: no-cache).
+DNS Propagation Delay: If using a custom domain, wait for Route 53 DNS updates to propagate.
+============================================================================================================================
+
+
+
+
+

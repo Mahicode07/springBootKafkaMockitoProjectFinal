@@ -1,0 +1,822 @@
+What is AWS SNS?
+Simple explanation: SNS is a messaging service that sends notifications to multiple recipients at once.
+It's like a broadcasting system - you send one message, and it delivers to many subscribers automatically.
+Real-world analogy: Think of it like a news channel. When they broadcast news (publish a message),
+all viewers who tuned in (subscribers) receive it simultaneously. You don't send the news to each viewer individually.
+Key characteristic: Pub/Sub (Publish/Subscribe) model - Publishers send messages to topics, subscribers receive them.
+
+Core Concepts
+1. Topics
+What it is: A communication channel or message hub where publishers send messages.
+Simple explanation: Like a radio station frequency. Publishers broadcast on it, subscribers tune in to receive.
+Types:
+Standard Topics
+
+Message ordering: Not guaranteed (best effort)
+Delivery: At-least-once (may receive duplicates)
+Throughput: Unlimited
+Use case: Most common scenarios where order doesn't matter
+
+FIFO Topics (First-In-First-Out)
+
+Message ordering: Strictly preserved
+Delivery: Exactly-once (no duplicates)
+Throughput: 300 messages/sec (or 10 MB/sec)
+Use case: Order matters (financial transactions, event sequencing)
+Requirement: Must end with .fifo suffix
+Must subscribe: Only FIFO SQS queues can subscribe
+
+Topic ARN Format:
+arn:aws:sns:us-east-1:123456789012:MyTopic
+arn:aws:sns:us-east-1:123456789012:MyTopic.fifo
+
+2. Publishers (Who sends messages)
+What it is: Services or applications that send messages to SNS topics.
+Simple explanation: The sender/broadcaster of information.
+Can be:
+AWS services (S3, CloudWatch, Lambda, EC2, etc.)
+Your applications (using AWS SDK)
+Other AWS accounts
+AWS Console/CLI
+
+How to publish:
+pythonimport boto3
+
+sns = boto3.client('sns')
+
+response = sns.publish(
+    TopicArn='arn:aws:sns:us-east-1:123456789012:MyTopic',
+    Message='Server CPU usage exceeded 80%',
+    Subject='Alert: High CPU Usage'
+)
+
+3. Subscribers (Who receives messages)
+What it is: Endpoints that receive messages published to topics.
+Simple explanation: The receivers/listeners of broadcast messages.
+Subscription Types:
+Email
+
+Use case: Human notifications
+Example: Alert admins about system issues
+Note: Requires confirmation via email
+Format: Plain text or JSON
+
+Email-JSON
+
+Use case: Structured data to email
+Example: Detailed logs with JSON formatting
+Format: Raw JSON in email
+
+SMS (Text Message)
+
+Use case: Mobile alerts
+Example: OTP codes, critical alerts
+Limitation: Availability varies by region
+Cost: Per message charge
+
+HTTP/HTTPS
+
+Use case: Webhook to external services
+Example: Notify your web application, third-party services
+Format: JSON POST request
+Requires: Endpoint confirmation
+
+HTTP POST Example received:
+json{
+  "Type": "Notification",
+  "MessageId": "abc-123",
+  "TopicArn": "arn:aws:sns:us-east-1:123456789012:MyTopic",
+  "Message": "Your message here",
+  "Timestamp": "2025-01-09T10:00:00.000Z"
+}
+SQS Queue
+
+Use case: Decouple services, reliable processing
+Example: SNS → SQS → Lambda (fan-out pattern)
+Benefit: Guaranteed delivery, retry logic
+Type: Standard or FIFO SQS
+
+Lambda Function
+
+Use case: Execute code on notifications
+Example: SNS triggers Lambda to process alert
+Benefit: Serverless processing
+
+Kinesis Data Firehose
+
+Use case: Stream to data lakes
+Example: Send logs to S3 or Redshift
+Benefit: Batch processing, archival
+
+Platform Application Endpoints (Mobile Push)
+
+Use case: Mobile notifications (iOS, Android)
+Platforms: APNS (Apple), FCM (Google), ADM (Amazon)
+Example: Push notifications to mobile apps
+
+
+4. Message Structure
+Standard Message Format:
+json{
+  "Type": "Notification",
+  "MessageId": "abc-123-def-456",
+  "TopicArn": "arn:aws:sns:us-east-1:123456789012:MyTopic",
+  "Subject": "Test Message",
+  "Message": "This is the actual message content",
+  "Timestamp": "2025-01-09T10:00:00.000Z",
+  "SignatureVersion": "1",
+  "Signature": "...",
+  "UnsubscribeURL": "https://..."
+}
+Message Components:
+
+Message: Actual content (up to 256 KB)
+Subject: Optional subject line (100 characters max)
+Message Attributes: Key-value metadata
+Message ID: Unique identifier
+
+
+5. Message Attributes
+What it is: Metadata attached to messages for filtering and routing.
+Simple explanation: Like tags or labels on a package that help sort and route it.
+Use cases:
+
+Filter messages at subscription level
+Add context without modifying message body
+Routing decisions
+
+Types:
+
+String
+Number
+Binary
+String Array
+
+Example:
+pythonsns.publish(
+    TopicArn='arn:aws:sns:us-east-1:123456789012:MyTopic',
+    Message='CPU alert',
+    MessageAttributes={
+        'priority': {'DataType': 'String', 'StringValue': 'high'},
+        'region': {'DataType': 'String', 'StringValue': 'us-east-1'},
+        'cpu_usage': {'DataType': 'Number', 'StringValue': '85'}
+    }
+)
+```
+
+---
+
+### 6. **Subscription Filter Policies**
+**What it is**: Rules that determine which messages a subscriber receives.
+
+**Simple explanation**: Like setting preferences for what type of emails you want to receive - only get what matches your criteria.
+
+**Use case**: One topic, different subscribers interested in different message types.
+
+**Example Scenario**:
+```
+Topic: OrderEvents
+- Subscriber 1: Only high-value orders (> $1000)
+- Subscriber 2: Only electronics category
+- Subscriber 3: All orders
+Filter Policy Example:
+json{
+  "order_value": [{"numeric": [">", 1000]}],
+  "category": ["electronics", "computers"]
+}
+```
+
+**Operators**:
+- **Exact match**: `["value1", "value2"]`
+- **Numeric**: `[{"numeric": [">", 100]}]`
+- **Prefix**: `[{"prefix": "order-"}]`
+- **Anything-but**: `[{"anything-but": ["test"]}]`
+- **Exists**: `[{"exists": true}]`
+
+**Benefit**: Reduces unnecessary message deliveries, saves costs
+
+---
+
+### 7. **Message Delivery Status**
+**What it is**: Logging of delivery attempts and results.
+
+**Simple explanation**: Track whether messages were successfully delivered or failed.
+
+**Supported for**:
+- Lambda
+- SQS
+- HTTP/HTTPS
+- Platform applications (mobile push)
+
+**Configuration**:
+- Success sample rate (0-100%)
+- CloudWatch Logs or Kinesis Data Firehose as destination
+- IAM role for SNS to write logs
+
+**Use case**: Monitor delivery failures, troubleshoot issues
+
+**What you can track**:
+- Delivery attempts
+- Success/failure
+- Status codes
+- Timestamps
+
+---
+
+### 8. **Dead Letter Queue (DLQ)**
+**What it is**: SQS queue where failed message deliveries are sent.
+
+**Simple explanation**: A "failed deliveries" box for messages that couldn't be delivered to subscribers.
+
+**Use case**:
+- Lambda function fails repeatedly
+- HTTP endpoint unavailable
+- Debug delivery issues
+
+**Flow**:
+```
+SNS Topic → Subscriber (Lambda fails) →
+Retry attempts → Still fails → Send to DLQ
+Configuration: Set at subscription level, specify SQS queue ARN
+
+9. Message Delivery Retries
+What it is: SNS automatically retries failed deliveries.
+Retry Policies by Protocol:
+ProtocolRetry PatternHTTP/HTTPSImmediate, 3 retries over 20 seconds, then exponential backoffLambdaTwiceSQSExtensive retriesEmailManaged by email serviceSMSProvider dependent
+Phases:
+
+Immediate retry: Right away
+Pre-backoff: 3 retries in first 20 seconds
+Backoff: Exponential delays (20s, 40s, 80s...)
+Post-backoff: After backoff phase
+
+Total retry period: Up to 23 days (HTTP/HTTPS)
+
+10. Access Control
+Topic Policies (Resource-based)
+What it is: Permissions attached to the topic itself.
+Use cases:
+
+Allow other AWS accounts to publish
+Allow AWS services to publish (S3, CloudWatch)
+Cross-account subscriptions
+
+Example:
+json{
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {"Service": "s3.amazonaws.com"},
+    "Action": "SNS:Publish",
+    "Resource": "arn:aws:sns:us-east-1:123456789012:MyTopic",
+    "Condition": {
+      "ArnLike": {"aws:SourceArn": "arn:aws:s3:::my-bucket"}
+    }
+  }]
+}
+IAM Policies (Identity-based)
+What it is: Permissions for IAM users/roles.
+Use case: Control who can publish, subscribe, manage topics
+Example:
+json{
+  "Effect": "Allow",
+  "Action": [
+    "sns:Publish",
+    "sns:Subscribe"
+  ],
+  "Resource": "arn:aws:sns:us-east-1:123456789012:MyTopic"
+}
+```
+
+---
+
+### 11. **Message Encryption**
+
+#### **Encryption at Rest**
+- Uses AWS KMS
+- Encrypts stored messages
+- Configure at topic level
+
+#### **Encryption in Transit**
+- HTTPS for HTTP/HTTPS subscriptions
+- TLS for all AWS service integrations
+- Automatic
+
+**Configuration**:
+```
+Topic → Encryption → Select KMS key
+
+12. Message Formatting for Multiple Protocols
+What it is: Send different message formats to different subscriber types.
+Simple explanation: Like writing one letter but having it automatically translated for different readers.
+Use case: JSON for SQS/Lambda, plain text for email, short text for SMS
+Example:
+pythonmessage = {
+    'default': 'Default message',
+    'email': 'Detailed email content here',
+    'sms': 'Short SMS: Alert!',
+    'sqs': json.dumps({'alert': 'cpu_high', 'value': 85})
+}
+
+sns.publish(
+    TopicArn='arn:aws:sns:us-east-1:123456789012:MyTopic',
+    Message=json.dumps(message),
+    MessageStructure='json'
+)
+```
+
+---
+
+## Common Use Cases
+
+### Use Case 1: **Application Alerts and Monitoring**
+**Scenario**: Notify team when server issues occur
+
+**Flow**:
+```
+CloudWatch Alarm (CPU > 80%) → SNS Topic →
+  → Email (to on-call engineer)
+  → SMS (to manager)
+  → Lambda (auto-remediation)
+  → Slack (via HTTPS webhook)
+```
+
+**Benefits**: Multiple notification channels, immediate alerts
+
+---
+
+### Use Case 2: **Fan-Out Pattern**
+**Scenario**: One event triggers multiple independent processes
+
+**Flow**:
+```
+New Order Placed → SNS Topic →
+  → SQS Queue 1 → Lambda (Inventory update)
+  → SQS Queue 2 → Lambda (Email confirmation)
+  → SQS Queue 3 → Lambda (Analytics processing)
+  → SQS Queue 4 → Lambda (Fraud detection)
+```
+
+**Benefits**:
+- Decouple services
+- Each processes independently
+- Reliable delivery
+- Parallel processing
+
+**Why SNS + SQS?**
+- SNS: One-to-many distribution
+- SQS: Guaranteed processing, retry logic, buffering
+
+---
+
+### Use Case 3: **System-Wide Event Broadcasting**
+**Scenario**: User registration event
+
+**Flow**:
+```
+User Registers → Application publishes to SNS →
+  → Lambda (Create user profile)
+  → Lambda (Send welcome email)
+  → Lambda (Add to CRM)
+  → Kinesis (Analytics)
+```
+
+---
+
+### Use Case 4: **AWS Service Notifications**
+**Scenario**: React to AWS events
+
+**Examples**:
+- **S3 Event**: File uploaded → SNS → Process file
+- **Auto Scaling**: Instance launched → SNS → Update monitoring
+- **RDS**: Snapshot completed → SNS → Log completion
+- **CloudFormation**: Stack update → SNS → Notify team
+
+---
+
+### Use Case 5: **Mobile Push Notifications**
+**Scenario**: Send notifications to mobile app users
+
+**Flow**:
+```
+Backend event → SNS Topic →
+  → iOS devices (via APNS)
+  → Android devices (via FCM)
+  → Fire OS devices (via ADM)
+```
+
+**Use case**: News apps, social media, delivery updates
+
+---
+
+### Use Case 6: **SMS Notifications**
+**Scenario**: Two-factor authentication, delivery updates
+
+**Flow**:
+```
+User action → Lambda → SNS → SMS to user's phone
+```
+
+**Types**:
+- **Transactional**: OTP codes, alerts (higher priority)
+- **Promotional**: Marketing messages (lower priority)
+
+---
+
+### Use Case 7: **Cross-Region/Cross-Account Communication**
+**Scenario**: Multi-region architecture
+
+**Flow**:
+```
+Region 1: S3 upload → SNS Topic (Region 1) →
+  → SQS Queue (Region 2)
+  → Lambda (Region 2)
+```
+
+---
+
+### Use Case 8: **Event-Driven Architectures**
+**Scenario**: Microservices communication
+
+**Flow**:
+```
+Order Service → SNS (OrderEvents) →
+  → Payment Service (subscribes)
+  → Inventory Service (subscribes)
+  → Notification Service (subscribes)
+```
+
+**Benefits**: Loose coupling, scalability, flexibility
+
+---
+
+## SNS vs Other AWS Services
+
+### **SNS vs SQS**
+
+| Feature | SNS | SQS |
+|---------|-----|-----|
+| **Pattern** | Pub/Sub (one-to-many) | Queue (one-to-one) |
+| **Delivery** | Push (immediate) | Pull (consumers poll) |
+| **Message retention** | Not retained after delivery | Up to 14 days |
+| **Use case** | Broadcasting, notifications | Job queues, decoupling |
+| **Subscribers** | Multiple, different types | Single consumer at a time |
+
+**When to use both**: Fan-out pattern (SNS distributes to multiple SQS queues)
+
+---
+
+### **SNS vs EventBridge**
+
+| Feature | SNS | EventBridge |
+|---------|-----|-------------|
+| **Best for** | Simple pub/sub | Complex event routing |
+| **Filtering** | Basic (message attributes) | Advanced (content-based) |
+| **Integrations** | AWS services, custom | 90+ SaaS integrations |
+| **Event patterns** | Simple | Complex pattern matching |
+| **Schema registry** | No | Yes |
+| **Archive/replay** | No | Yes |
+
+**Use SNS when**: Simple notifications, mobile push, SMS
+**Use EventBridge when**: Complex routing, SaaS integrations, event archiving
+
+---
+
+### **SNS vs Kinesis**
+
+| Feature | SNS | Kinesis |
+|---------|-----|---------|
+| **Purpose** | Notifications | Stream processing |
+| **Data retention** | No retention | 1-365 days |
+| **Ordering** | Not guaranteed (Standard) | Guaranteed (per shard) |
+| **Use case** | Alerts, fan-out | Real-time analytics, logs |
+| **Processing** | Per message | Batch/streaming |
+
+---
+
+## SNS Limits (Important!)
+
+### **Message Size**
+- **Maximum**: 256 KB
+- **SMS**: 140 bytes (160 characters)
+- **Large messages**: Use S3 + SNS reference pattern
+
+### **Topics**
+- **Per region**: 100,000 topics (soft limit)
+
+### **Subscriptions**
+- **Per topic**: 12,500,000 subscriptions
+- **Pending confirmations**: 100,000
+
+### **Message Attributes**
+- **Maximum**: 10 attributes per message
+- **Name**: 256 characters
+- **Value**: 256 KB
+
+### **Throughput**
+- **Standard**: Unlimited
+- **FIFO**: 300 messages/sec (or 10 MB/sec)
+
+### **Filter Policy**
+- **Size**: 256 KB
+- **Conditions**: 150 per policy
+
+---
+
+## Pricing Model
+
+**Components**:
+
+1. **API Requests**:
+   - First 1 million requests/month: FREE
+   - After: $0.50 per 1 million requests
+
+2. **Message Delivery**:
+   - **HTTP/HTTPS**: $0.60 per 1 million deliveries
+   - **SQS**: $0 (free)
+   - **Lambda**: $0 (free)
+   - **Email**: $2.00 per 100,000 deliveries
+   - **SMS**: Varies by country ($0.00645 per SMS in US)
+   - **Mobile Push**: $0.50 per 1 million
+
+3. **Data Transfer**:
+   - Within AWS: Usually free
+   - To internet: Standard data transfer rates
+
+**Example Calculation**:
+- 10 million messages published
+- Delivered to 2 SQS queues and 1 Lambda
+
+**Cost**:
+- Publish: (10M - 1M free) × $0.50/1M = $4.50
+- SQS delivery: Free
+- Lambda delivery: Free
+- **Total: $4.50/month**
+
+---
+
+## Best Practices
+
+### 1. **Design Patterns**
+- Use fan-out (SNS → multiple SQS) for reliability
+- Combine with SQS for guaranteed processing
+- Use FIFO when order matters
+- Implement idempotent subscribers (handle duplicates)
+
+### 2. **Security**
+- Enable encryption at rest (KMS)
+- Use VPC endpoints for private communication
+- Implement least privilege IAM policies
+- Validate message signatures (HTTP/HTTPS)
+
+### 3. **Reliability**
+- Configure DLQs for failed deliveries
+- Enable delivery status logging
+- Monitor with CloudWatch metrics
+- Set up alarms for failures
+
+### 4. **Cost Optimization**
+- Use filter policies to reduce unnecessary deliveries
+- SNS → SQS is free
+- Consider message batching where possible
+- Monitor and optimize SMS usage
+
+### 5. **Performance**
+- Use message attributes for filtering (faster than content filtering)
+- Keep message size reasonable
+- Use FIFO only when necessary (lower throughput)
+- Batch operations when possible
+
+### 6. **Monitoring**
+- **Metrics to watch**:
+  - NumberOfMessagesPublished
+  - NumberOfNotificationsDelivered
+  - NumberOfNotificationsFailed
+  - NumberOfNotificationsFilteredOut
+- Set CloudWatch alarms
+- Enable delivery status logging
+
+---
+
+## Common Integration Patterns
+
+### Pattern 1: **SNS + SQS + Lambda** (Reliable Processing)
+```
+Event → SNS Topic →
+  → SQS Queue 1 → Lambda 1
+  → SQS Queue 2 → Lambda 2
+  → SQS Queue 3 → Lambda 3
+```
+
+**Benefits**:
+- Decoupling
+- Independent scaling
+- Retry logic
+- No lost messages
+
+---
+
+### Pattern 2: **SNS + Email + SMS + Lambda** (Multi-Channel Alerts)
+```
+CloudWatch Alarm → SNS →
+  → Email (to team)
+  → SMS (to on-call)
+  → Lambda (auto-remediation)
+```
+
+---
+
+### Pattern 3: **Cross-Account Communication**
+```
+Account A: S3 event → SNS Topic →
+  → Account B: SQS Queue → Lambda
+```
+
+**Requirements**: Topic policy allowing cross-account
+
+---
+
+### Pattern 4: **Message Filtering**
+```
+SNS Topic (All Orders) →
+  → Subscriber 1 (filter: high-value) → High-value processing
+  → Subscriber 2 (filter: international) → International shipping
+  → Subscriber 3 (no filter) → General logging
+```
+
+---
+
+## SNS Mobile Push
+
+### **Platform Application**
+**What**: Container for platform-specific credentials
+
+**Platforms**:
+- **APNS**: Apple Push Notification Service (iOS)
+- **FCM**: Firebase Cloud Messaging (Android)
+- **ADM**: Amazon Device Messaging (Kindle)
+- **Baidu**: Baidu Cloud Push (Android China)
+- **MPNS**: Microsoft Push Notification Service (Windows Phone)
+- **WNS**: Windows Push Notification Service
+
+### **Flow**:
+```
+1. Create Platform Application (with credentials)
+2. Register device → Get device token
+3. Create endpoint in SNS (device token)
+4. Publish to endpoint or subscribe to topic
+5. SNS → Platform → Device
+```
+
+### **Use Cases**:
+- News alerts
+- Chat messages
+- Order updates
+- Social media notifications
+
+---
+
+## Troubleshooting SNS
+
+### **Common Issues**:
+
+1. **Messages not received**:
+   - Check subscription confirmation
+   - Verify filter policies
+   - Check endpoint availability
+   - Review IAM/topic policies
+
+2. **Lambda not triggered**:
+   - Check Lambda permissions
+   - Review CloudWatch logs
+   - Verify subscription is active
+
+3. **HTTP endpoint failures**:
+   - Confirm subscription
+   - Check endpoint URL
+   - Verify SSL certificate (HTTPS)
+   - Review server logs
+
+4. **Email not delivered**:
+   - Check spam folder
+   - Confirm subscription
+   - Verify email address
+
+5. **High costs**:
+   - Review SMS usage
+   - Check message delivery counts
+   - Implement filter policies
+   - Monitor with CloudWatch
+
+---
+
+## Common Interview Questions
+
+### Q1: "What's the difference between SNS and SQS?"
+**Answer**:
+- **SNS**: Push-based pub/sub, one-to-many, no retention, immediate delivery
+- **SQS**: Pull-based queue, one-to-one, retains messages, consumer polls
+- **Together**: SNS for distribution, SQS for guaranteed processing
+
+### Q2: "How does the fan-out pattern work?"
+**Answer**:
+- Publish once to SNS topic
+- Multiple SQS queues subscribe
+- Each queue gets copy of message
+- Independent Lambdas process from each queue
+- **Benefits**: Decoupling, parallel processing, reliability
+
+### Q3: "How do you ensure message delivery?"
+**Answer**:
+- Use SNS → SQS for guaranteed delivery
+- Configure DLQs for failures
+- Enable retry logic
+- Monitor with CloudWatch
+- Use delivery status logging
+
+### Q4: "When would you use FIFO vs Standard?"
+**Answer**:
+- **FIFO**: When order matters (financial transactions, command sequences)
+- **Standard**: Most use cases, higher throughput, order doesn't matter
+- **Trade-off**: FIFO has lower throughput (300 msg/sec)
+
+### Q5: "How do you secure SNS?"
+**Answer**:
+- Encryption at rest (KMS)
+- Encryption in transit (TLS/HTTPS)
+- IAM policies (who can publish/subscribe)
+- Topic policies (cross-account, service access)
+- VPC endpoints (private communication)
+- Message signature validation (HTTP/HTTPS)
+
+### Q6: "How do filter policies work?"
+**Answer**:
+- Set at subscription level
+- Based on message attributes
+- Only matching messages delivered
+- Reduces costs and unnecessary processing
+- Example: Filter by priority, region, type
+
+### Q7: "Can SNS guarantee exactly-once delivery?"
+**Answer**:
+- **Standard**: No, at-least-once (possible duplicates)
+- **FIFO**: Yes, exactly-once (with FIFO SQS)
+- **Solution**: Make subscribers idempotent
+
+### Q8: "How do you handle large messages?"
+**Answer**:
+- SNS limit: 256 KB
+- **Solution**: Store in S3, send S3 reference via SNS
+- Subscriber retrieves from S3
+- **Pattern**: Extended client library
+
+### Q9: "What's the retry behavior?"
+**Answer**:
+- **HTTP/HTTPS**: Immediate, then 3 retries over 20s, then exponential backoff
+- **Lambda**: 2 retries
+- **SQS**: Extensive retries by SQS itself
+- **Total**: Up to 23 days for HTTP
+- **Failed**: Can send to DLQ
+
+### Q10: "How do you monitor SNS?"
+**Answer**:
+- **CloudWatch Metrics**: Published, delivered, failed, filtered
+- **Delivery Status**: Log to CloudWatch Logs
+- **Alarms**: Set thresholds for failures
+- **DLQ**: Check for failed messages
+- **X-Ray**: Trace message flow
+
+---
+
+## Real-World Example: Complete System
+
+**Scenario**: E-commerce order processing
+```
+Order Placed → SNS Topic (OrderEvents) →
+
+  → SQS Queue 1 → Lambda → Update Inventory
+      ↓ (if fails)
+      DLQ → Manual review
+
+  → SQS Queue 2 → Lambda → Send Confirmation Email
+      ↓ (if fails)
+      DLQ → Retry later
+
+  → SQS Queue 3 → Lambda → Process Payment
+      ↓ (if fails)
+      DLQ → Alert finance team
+
+  → SQS Queue 4 → Lambda → Update Analytics
+      ↓ (if fails)
+      DLQ → Log for batch processing
+
+  → SMS → Notify customer (order confirmed)
+
+  → Email → Send detailed receipt
+Configuration:
+
+Topic: Standard (order doesn't matter)
+Subscriptions: 6 total
+Filter policies: High-value orders get SMS
+DLQs: On each SQS queue
+Monitoring: CloudWatch alarms on failures
+Encryption: KMS enabled

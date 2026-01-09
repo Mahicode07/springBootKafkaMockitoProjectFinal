@@ -1,0 +1,352 @@
+1️⃣ What problem does SQS solve?
+Before SQS
+
+Services communicated synchronously and directly (REST calls).
+
+Producer had to wait for consumer response.
+
+If the consumer service was down or slow → entire request failed.
+
+Sudden traffic spikes overwhelmed downstream services.
+
+❌ Tight coupling – services depended on each other’s availability
+❌ No buffering – no place to hold requests
+❌ Poor fault tolerance – failures cascaded
+
+SQS solves this by:
+
+Decoupling services → producer and consumer don’t know each other
+
+Acting as a buffer → messages stored safely
+
+Allowing async processing → faster response to users
+
+Absorbing traffic spikes → smooth load handling
+
+📌 Analogy (Interview-friendly):
+
+SQS is like a WhatsApp inbox – sender sends a message, receiver reads it when ready.
+
+2️⃣ What exactly is AWS SQS?
+Interview-ready definition:
+
+Amazon SQS is a fully managed message queuing service that enables asynchronous communication between distributed system components by reliably storing messages until they are processed.
+
+Why interviewers like this definition:
+
+Asynchronous → no blocking
+
+Decoupling → independent services
+
+Reliable → messages are durable
+
+Fully managed → no infra to manage
+
+3️⃣ Core Concepts (Must Know)
+Term	Meaning
+Producer	Application/service that sends messages to SQS
+Consumer	Application/service that polls and processes messages
+Message	Payload containing data (event, command, request)
+Queue	Temporary storage that holds messages safely
+
+📌 Interview tip:
+
+SQS uses a pull-based model, not push.
+
+4️⃣ Types of SQS Queues (VERY IMPORTANT)
+4.1️⃣ Standard Queue
+Characteristics:
+
+At-least-once delivery
+
+Best-effort ordering
+
+Virtually unlimited throughput
+
+What it means:
+
+Same message may be delivered more than once
+
+Order of messages cannot be guaranteed
+
+AWS prioritizes scalability over ordering
+
+Use cases:
+
+High-volume systems
+
+Log processing
+
+Metrics ingestion
+
+Event pipelines
+
+📌 Interview line:
+
+Use Standard queues when throughput matters more than ordering.
+
+4.2️⃣ FIFO Queue
+Characteristics:
+
+Exactly-once delivery
+
+Strict ordering
+
+Lower throughput than Standard queues
+
+Key requirements:
+
+Queue name must end with .fifo
+
+Mandatory fields:
+
+MessageGroupId → ordering
+
+DeduplicationId → duplicate prevention
+
+Use cases:
+
+Payment transactions
+
+Order processing
+
+Financial systems
+
+📌 Interview line:
+
+FIFO queues trade scalability for correctness and ordering.
+
+5️⃣ Message Lifecycle (VERY IMPORTANT)
+Step-by-step:
+
+Producer sends message
+
+SQS stores it redundantly across multiple AZs
+
+Consumer polls the queue
+
+Message becomes invisible
+
+Consumer processes the message
+
+Consumer deletes the message
+
+📌 If consumer crashes:
+
+Message becomes visible again
+
+Another consumer can process it
+
+6️⃣ Visibility Timeout (Common Interview Question)
+What is it?
+
+A lock period during which the message is hidden from other consumers.
+
+Why needed?
+
+Prevents parallel processing of the same message
+
+Important:
+
+Must be greater than processing time
+
+Can be extended dynamically
+
+🚨 If timeout expires:
+
+Message reappears
+
+Causes duplicate delivery
+
+7️⃣ Message Retention Period
+
+Time SQS stores messages if not deleted
+
+Range: 1 minute to 14 days
+
+Default: 4 days
+
+📌 Helps in:
+
+Handling consumer downtime
+
+Retry-based architectures
+
+8️⃣ Message Size & Limits
+Feature	Limit
+Message size	256 KB
+Batch send	10 messages
+Batch receive	10 messages
+
+📌 For large payloads:
+
+Store data in S3
+
+Send S3 object reference in SQS
+
+9️⃣ Polling Types (Interview Favorite)
+Short Polling
+
+Immediate response
+
+May return empty results
+
+Higher cost due to more API calls
+
+Long Polling (Recommended)
+
+Waits up to 20 seconds
+
+Reduces empty responses
+
+Cost-efficient
+
+📌 Interview line:
+
+Long polling improves performance and reduces cost.
+
+🔟 Dead Letter Queue (DLQ) (VERY IMPORTANT)
+What is DLQ?
+
+A separate queue that stores failed messages.
+
+How it works:
+
+Message retried multiple times
+
+After maxReceiveCount → moved to DLQ
+
+Why needed?
+
+Debugging poison messages
+
+Prevent infinite retries
+
+Maintain system health
+
+📌 Interview line:
+
+DLQs isolate problematic messages without blocking the main queue.
+
+1️⃣1️⃣ Delivery Guarantees
+Queue Type	Guarantee
+Standard	At-least-once
+FIFO	Exactly-once
+
+🚨 Exactly-once ≠ no retries
+It means no duplicate delivery by SQS, not business logic guarantee.
+
+1️⃣2️⃣ Ordering Guarantees
+Queue	Ordering
+Standard	Best effort
+FIFO	Strict per MessageGroupId
+1️⃣3️⃣ Deduplication (FIFO)
+Two mechanisms:
+
+Content-based deduplication
+
+Explicit DeduplicationId
+
+📌 Deduplication window: 5 minutes
+
+1️⃣4️⃣ Scaling & Throughput
+Standard Queue:
+
+Near-infinite TPS
+
+AWS handles scaling automatically
+
+FIFO Queue:
+
+Limited TPS
+
+Parallelism achieved via multiple MessageGroupIds
+
+1️⃣5️⃣ Security & IAM
+IAM Policies:
+
+Control who can send/receive messages
+
+Encryption:
+
+Server-side encryption using AWS KMS
+
+Networking:
+
+Private access via VPC endpoints
+
+1️⃣6️⃣ SQS with Lambda (Very Common)
+How it works:
+
+Lambda polls messages in batches
+
+On success → messages deleted
+
+On failure → retried
+
+📌 Critical rule:
+
+Visibility timeout must be greater than Lambda timeout.
+
+1️⃣7️⃣ SQS with ECS / EC2
+Pattern:
+
+ECS/EC2 services act as consumers
+
+Auto-scale workers based on queue depth
+
+📌 Common in:
+
+Background processing systems
+
+Order pipelines
+
+1️⃣8️⃣ Cost Model
+
+You pay for:
+
+API requests
+
+Payload size
+
+Minor data transfer
+
+📌 No cost when queue is idle.
+
+1️⃣9️⃣ Common Real-World Patterns
+1️⃣ Async Processing
+
+API → SQS → Worker
+
+2️⃣ Traffic Buffering
+
+SQS smooths sudden spikes
+
+3️⃣ Fan-out
+
+SNS → multiple SQS queues
+
+2️⃣0️⃣ Failure Scenarios (Interview Gold)
+
+Consumer crashes → message reappears
+
+Message always fails → move to DLQ
+
+Duplicate message → handle via idempotency
+
+2️⃣1️⃣ SQS vs SNS vs EventBridge
+Service	Pattern
+SQS	Queue (pull-based)
+SNS	Pub/Sub (push-based)
+EventBridge	Event bus (routing & filtering)
+2️⃣2️⃣ SQS Best Practices
+
+✔ Long polling
+✔ Idempotent consumers
+✔ DLQ usage
+✔ Proper visibility timeout
+✔ Monitor queue depth
+
+2️⃣3️⃣ One-Line Interview Summary
+
+AWS SQS is a fully managed, durable, and scalable message queue that enables decoupled asynchronous communication between distributed systems.
