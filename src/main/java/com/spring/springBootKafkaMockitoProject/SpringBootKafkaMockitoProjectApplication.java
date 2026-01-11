@@ -8,5 +8,6 @@ public class SpringBootKafkaMockitoProjectApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootKafkaMockitoProjectApplication.class, args);
+		System.out.println("Application Started");
 	}
 }

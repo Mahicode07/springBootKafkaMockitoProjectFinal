@@ -434,7 +434,7 @@ int sumOfDigits = String.valueOf(number).chars()
     .sum();
 System.out.println(sumOfDigits); // Output: 15
 ===================================================
-    Find the largest digit in a number
+ Find the largest digit in a number
 int number = 583920;
 int largestDigit = String.valueOf(number).chars()
     .map(c -> c - '0')

@@ -102,6 +102,51 @@ It is more suitable for modern applications that require high concurrency and sc
         }
     }
     ```
+What is RestClient in Spring 6?
+RestClient is a modern, synchronous HTTP client introduced in Spring Framework 6.
+It is:
+A replacement for RestTemplate
+Built on top of WebClient internals
+Blocking (unlike WebClient)
+👉 Think of it as:
+RestTemplate (simplicity) + WebClient (power)
+
+RestClient restClient = RestClient.create();
+RestClient restClient = RestClient.builder()
+        .baseUrl("https://api.example.com")
+        .build();
+GET Request (Advanced)
+restClient.get()
+    .uri("/secure")
+    .header("Authorization", "Bearer " + token)
+    .retrieve()
+    .body(String.class);
+post->UserResponse response = restClient.post()
+              .uri("/users")
+              .body(new UserRequest("Mahendra"))
+              .retrieve()
+              .body(UserResponse.class);
+
+| Aspect                    | RestTemplate                          | RestClient (Spring 6)          |
+| ------------------------- | ------------------------------------- | ------------------------------ |
+| Introduced In             | Spring 3                              | Spring 6                       |
+| Current Status            | ❌ Deprecated for new development      | ✅ Recommended                  |
+| Programming Model         | Blocking                              | Blocking                       |
+| API Style                 | Verbose, imperative                   | Fluent, modern                 |
+| Internal Engine           | HttpURLConnection / Apache HttpClient | Built on WebClient             |
+| Configuration Flexibility | Limited                               | High                           |
+| Interceptors              | ClientHttpRequestInterceptor          | Request Interceptors / Filters |
+| Error Handling            | try-catch or ResponseErrorHandler     | Centralized status handlers    |
+| Declarative HTTP Calls    | ❌ Not supported                       | ✅ `@HttpExchange`              |
+| Readability               | Low                                   | High                           |
+| Customization             | Hard                                  | Easy                           |
+| Timeout Configuration     | Complex                               | Clean builder-based            |
+| Logging Support           | Manual                                | Filter-based                   |
+| Serialization             | MessageConverters                     | Same codecs as WebClient       |
+| OAuth2 / Security         | Manual                                | Easy integration               |
+| Maintenance               | Legacy                                | Future-proof                   |
+| Best Use Case             | Legacy apps                           | Modern Spring 6 apps           |
+
 In summary, RestTemplate is a synchronous HTTP client suitable for simple use cases, while WebClient is a more advanced, non-blocking client ideal for reactive applications. Depending on your application's requirements,
 =====================================================================================================================================================================
 your spring boot application needs to accept cross origin requests from specific domains how would you achieve that?
@@ -436,13 +481,11 @@ handling of real-time events in your application.
 
 How would you ensure that your custom starter doesn’t interfere with Spring Boot's own
 auto-configuration?
-To ensure that our custom starter doesn't interfere with Spring Boot's auto-configuration, use
-conditional annotations such as @ConditionalOnMissingBean, @ConditionalOnClass, and
-@ConditionalOnProperty. These annotations prevent our configurations from being applied if
-certain classes, beans, or properties are already defined by Spring Boot's default configuration.
-Place these conditions in your auto-configuration classes. This approach ensures that our starter
-adds functionality only when it doesn't conflict with what's already configured, maintaining
-compatibility and preventing configuration clashes.
+To ensure our custom starter doesn’t interfere unintentionally with Spring Boot auto-configuration,
+we use conditional annotations such as @ConditionalOnMissingBean, @ConditionalOnClass, and @ConditionalOnProperty.
+This allows Spring Boot to back off when user-defined beans or configurations are present.
+However, Spring Boot auto-configuration is intentionally designed to be overridden,
+so if an application explicitly defines its own beans or disables auto-config via properties or exclusions, those definitions take precedence.
 
 Suppose you need to ensure zero downtime deployments for a Spring Boot e-commerce
 application. What approach would you take?
