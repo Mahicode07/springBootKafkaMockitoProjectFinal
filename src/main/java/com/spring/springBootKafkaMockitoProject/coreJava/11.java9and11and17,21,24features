@@ -32,6 +32,9 @@ Java 9 features ->
    that should not be exposed to the implementing classes or users of the interface.
 
 4)Optional to Stream->
+Java 9 introduced three new methods to the java.util.Optional class: ifPresentOrElse(), or(), and stream().
+These additions facilitate more concise and functional-style code for handling potentially absent values
+
     ifPresentOrElse() methods
       Optional<String> optional = Optional.of("Hello");
       optional.ifPresentOrElse(
@@ -93,7 +96,7 @@ Java 11 features->
 
     repeat(int count)->
     String str = "Java ";
-    System.out.println(str.repeat(3)); // Output: "Java Java Java "
+    System.out.println(str.repeat(3)); // Output: "Java Java Java"
 
     toArray()->
     String str = "Java";

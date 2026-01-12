@@ -667,7 +667,7 @@ choosing different logging implementations at deployment time. It acts as a simp
 facade or abstraction for various logging frameworks, such as log4j and java.util.logging,
 which means we can swap the logging framework without changing our main code. This
 flexibility helps in maintaining and managing the logging capabilities of a Java application
-more efficiently.
+more efficiently. only dependency change is needed. no code change required
 ========================================================================================================================
 What details are present in a JWT token?
 A JWT (JSON Web Token) contains three main parts: the header, the payload, and the
@@ -1014,6 +1014,7 @@ AuthorizationFilter
         ↓
 Controller
 
+shortform->bjjSA
 ========================================================================================================================
 Easy Difference: JWT vs OAuth 2.0
 Topic	JWT-based Security	OAuth 2.0-based Security
